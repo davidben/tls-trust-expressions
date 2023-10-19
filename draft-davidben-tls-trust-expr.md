@@ -272,7 +272,7 @@ The `max_age` and `max_lifetime` fields define an expiration time for trust stor
 
 Expiration times for entries in the latest version are not defined. They are determined once the root store appends a new version.
 
-Trust store entries are not removed from their containing version after they expire. Rather, the expiration time is the point at which all unexpired certificates have incorporated information about subsequent trust store versions, per {{computing-trust-store-inclusions}}. This ensures the procedures in {{evaluating-trust-expressions}} and {{constructing-trust-expressions}} interoperate.
+Trust store entries are not removed from their containing version after they expire. Rather, the expiration time is the point at which all unexpired certificates have incorporated information about subsequent trust store versions, per {{computing-trust-store-inclusions}}. This ensures the negotiation procedures in {{evaluating-trust-expressions}} and {{constructing-trust-expressions}} interoperate.
 
 ## Labels
 
