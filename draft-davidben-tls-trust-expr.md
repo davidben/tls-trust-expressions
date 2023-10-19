@@ -692,9 +692,9 @@ A multi-certificate deployment model avoids these transition problems. Key rotat
 
 4. Relying parties send trust expressions that evaluate to either the old or new root, and are served the appropriate option.
 
-5. Once subscribers have been provisioned with new certificates, root programs can distrust the old root without causing relying party validation failures. The CA operator continues to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.
+5. Once subscribers have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator continues to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.
 
-Moreover, this process can complete with no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party, as specified in {{subscriber-behavior}}.
+Moreover, this process can complete with no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party.
 
 ## Adding CAs
 
