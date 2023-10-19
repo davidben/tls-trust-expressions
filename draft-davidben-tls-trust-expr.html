@@ -2073,10 +2073,10 @@ How to compute this set depends on the root program's label allocation scheme (<
             <p id="section-9.1-3.4.1">Relying parties send trust expressions that evaluate to either the old or new root, and are served the appropriate option.<a href="#section-9.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-9.1-3.5">
-            <p id="section-9.1-3.5.1">Once subscribers have been provisioned with new certificates, root programs can distrust the old root without causing relying party validation failures. The CA operator continues to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.<a href="#section-9.1-3.5.1" class="pilcrow">¶</a></p>
+            <p id="section-9.1-3.5.1">Once subscribers have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator continues to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.<a href="#section-9.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-9.1-4">Moreover, this process can complete with no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party, as specified in <a href="#subscriber-behavior" class="auto internal xref">Section 6.4</a>.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
+<p id="section-9.1-4">Moreover, this process can complete with no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="adding-cas">
