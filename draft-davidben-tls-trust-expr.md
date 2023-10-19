@@ -126,7 +126,7 @@ Subscribers typically provision a single certificate, which must meet all requir
 
 * Single-certificate deployments on subscribers are fragile, particularly in the face of distrusts or other changes to what a relying party accepts.
 
-* Certificates must meet the superset of policy requirements, which may differ between relying parties.
+* Certificates must meet all relying policy requirements at once, and requirements may differ being relying parties.
 
 * When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers.
 
