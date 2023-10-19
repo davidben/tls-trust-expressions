@@ -19,18 +19,17 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
+title: "TLS Trust Expressions"
 category: info
 
-docname: draft-todo-yourname-protocol-latest
+docname: draft-davidben-tls-trust-expr-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
 consensus: true
 v: 3
 area: AREA
-workgroup: WG Working Group
+workgroup: TLS
 keyword:
  - next generation
  - unicorn
