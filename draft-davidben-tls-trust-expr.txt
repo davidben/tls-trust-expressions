@@ -1194,7 +1194,7 @@ Table of Contents
    Dilithium3 [Dilithium], for example, has a total public key and
    signature size of 5,245 bytes.
 
-   [I-D.jackson-tls-cert-abridge] proposes to predistribute known
+   [I-D.ietf-tls-cert-abridge] proposes to predistribute known
    intermediate certificates to relying parties, as a compression
    scheme.  A multi-certificate deployment model provides another way to
    achieve this effect.  To relying parties, a predistributed
@@ -1525,11 +1525,11 @@ Informative References
               crystals.org/dilithium/data/dilithium-specification-
               round3-20210208.pdf>.
 
-   [I-D.jackson-tls-cert-abridge]
+   [I-D.ietf-tls-cert-abridge]
               Jackson, D., "Abridged Compression for WebPKI
               Certificates", Work in Progress, Internet-Draft, draft-
-              jackson-tls-cert-abridge-00, 6 July 2023,
-              <https://datatracker.ietf.org/doc/html/draft-jackson-tls-
+              ietf-tls-cert-abridge-00, 6 September 2023,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
               cert-abridge-00>.
 
    [MOZILLA-ROOTS]
