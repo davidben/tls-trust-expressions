@@ -1292,7 +1292,7 @@ Table of Contents
 
    The certificate negotiation mechanism described in this document
    facilitates which certification path is served to relying parties,
-   but has no impact on the relying party’s trust preferences
+   but has no impact on the relying party's trust preferences
    themselves.
 
    As a result, this allows for a more flexible and agile PKI, which can
