@@ -386,7 +386,7 @@ Table of Contents
    after they expire.  Rather, the expiration time is the point at which
    all unexpired certificates have incorporated information about
    subsequent trust store versions, per Section 5.2.  This ensures the
-   procedures in Section 6.3 and Section 6.5 interoperate.
+   negotiation procedures in Section 6.3 and Section 6.5 interoperate.
 
 4.2.  Labels
 
