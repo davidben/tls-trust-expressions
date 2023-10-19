@@ -752,7 +752,7 @@ Additionally, two relying parties may express the same trust anchor list with di
 
 # Security Considerations
 
-The certificate negotiation mechanism described in this document facilitates which certification path is served to relying parties, but has no impact on the relying party’s trust preferences themselves.
+The certificate negotiation mechanism described in this document facilitates which certification path is served to relying parties, but has no impact on the relying party's trust preferences themselves.
 
 As a result, this allows for a more flexible and agile PKI, which can better mitigate security risks to users. {{use-cases}} discusses some scenarios which benefit from the multi-certificate deployment this document enables. In general, robust certificate negotiation helps subscribers navigate differences in relying party requirements. This means security improvements for one set of relying parties can be deployed without needing to risk incompatibility or breakage for others.
 
