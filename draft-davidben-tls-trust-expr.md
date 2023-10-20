@@ -120,13 +120,11 @@ This document defines TLS trust expressions, a mechanism for relying parties to 
 
 TLS {{!RFC8446}} endpoints typically authenticate using X.509 certificates {{!RFC5280}}. These certificates are issued by a certification authority (CA) and associate the TLS public key with some application identifier, such as a DNS name. If the CA is among those trusted by the peer, it will accept this association. The authenticating party is known as the subscriber and the peer is the relying party.
 
-Subscribers typically provision a single certificate, which must meet all requirements of all supported relying parties because relying parties do not communicate which CAs are trusted. This imposes significant costs on CAs, subscribers, and relying parties:
+Subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. The certificate must then meet all relying party requirements simultaneously. This constraint imposes significant costs on CAs, subscribers, and relying parties:
 
 * It is difficult for newer CAs to enter the ecosystem if they are not trusted by all relying parties, including older ones. Existing CAs face similar challenges when rotating or deploying new keys.
 
 * Single-certificate deployments on subscribers are fragile, particularly in the face of distrusts or other changes to what a relying party accepts.
-
-* Certificates must meet all relying policy requirements at once, and requirements may differ being relying parties.
 
 * When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers.
 
