@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 21 April 2024                                        Google LLC
-                                                         19 October 2023
+Expires: 22 April 2024                                        Google LLC
+                                                         20 October 2023
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 April 2024.
+   This Internet-Draft will expire on 22 April 2024.
 
 Copyright Notice
 
@@ -819,10 +819,10 @@ Table of Contents
 
 7.1.  ACME Extension
 
-   This section extends ACME [RFC8555] to issue multiple certification
-   paths, each with a CertificatePropertyList, within a single ACME
-   order.  It extends the ACME order object with a configurable boolean
-   field, "trustExpressions".
+   This section extends ACME [RFC8555] to be able to issue certificate
+   paths, each with an associated CertificatePropertyList by defining a
+   new media type in Section 5.3.  It extends the ACME order object with
+   a configurable boolean field, "trustExpressions".
 
    First, ACME clients indicate they support certification paths
    selected by trust expressions by setting "trustExpressions" to "true"
