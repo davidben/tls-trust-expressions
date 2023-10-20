@@ -521,7 +521,7 @@ Subscribers MAY additionally combine the outputs from multiple CAs. This may be 
 
 ## ACME Extension
 
-This section extends ACME {{!RFC8555}} to issue multiple certification paths, each with a CertificatePropertyList, within a single ACME order. It extends the ACME order object with a configurable boolean field, "trustExpressions".
+This section extends ACME {{!RFC8555}} to be able to issue certificate paths, each with an associated CertificatePropertyList by defining a new media type in {{media-type}}. It extends the ACME order object with a configurable boolean field, "trustExpressions".
 
 First, ACME clients indicate they support certification paths selected by trust expressions by setting "trustExpressions" to "true" in the ACME newOrder request ({{Section 7.4 of !RFC8555}}). If the server accepts the request, it MUST reflect the field in the resulting order object.
 
