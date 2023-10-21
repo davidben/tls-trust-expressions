@@ -445,7 +445,7 @@ A TrustExpression is said to match a TrustStoreInclusionList if there is at leas
 
 * The `name` fields of two structures' `trust_store` fields are equal.
 
-* Either the `version` fields of the two structures' `trust_store` fields are equal, or the TrustStoreInclusion's `status` is `latest_version_at_issuance` and the `version` field of TrustExpression's `trust_store` is greater than that of the TrustStoreEntry's `trust_store`.
+* Either the `version` fields of the two structures' `trust_store` fields are equal, or the TrustStoreInclusion's `status` is `latest_version_at_issuance` and the `version` field of TrustExpression's `trust_store` is greater than that of the TrustStoreInclusion's `trust_store`.
 
 * There is no value in common between the TrustStoreInclusion's `labels` field and the TrustExpression's `excluded_labels` field.
 
@@ -509,7 +509,7 @@ This procedure uses `excluded_labels` for two kinds of exclusions:
 
 First, if the trust store version includes undesired trust anchors, the trust expression should exclude them. This may occur if, for example, the trust store is used by all versions of the relying party's software, but some trust anchors are gated by software version.
 
-Second, trust expressions exclude unexpired entries from previous versions. This is because the matching criteria described in {{evaluating-trust-expressions}} predictively applies TrustStoreEntry values with `status` of `latest_version_at_issuance` to all future versions of a trust store. This allows relying parties to interoperate with subscribers with stale information. Unexpired entries are those for which such an unexpired certification path may still exist. Where this prediction is incorrect, trust expressions MUST mitigate this by excluding the past entries.
+Second, trust expressions exclude unexpired entries from previous versions. This is because the matching criteria described in {{evaluating-trust-expressions}} predictively applies TrustStoreInclusion values with `status` of `latest_version_at_issuance` to all future versions of a trust store. This allows relying parties to interoperate with subscribers with stale information. Unexpired entries are those for which such an unexpired certification path may still exist. Where this prediction is incorrect, trust expressions MUST mitigate this by excluding the past entries.
 
 # Issuing Certificates
 
@@ -563,21 +563,21 @@ On January 1st, 2023, the root program includes A1, A2, B1, and B2. It allocates
 }
 ~~~
 
-A certification path, A1_old, issued by A1 would then contain the TrustStoreEntry:
+A certification path, A1_old, issued by A1 would then contain the TrustStoreInclusion:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 0
 * `status` is `latest_version_at_issuance`
 * `labels` is 0, 100
 
-A certification path, B1_old, issued by B1 would then contain the TrustStoreEntry:
+A certification path, B1_old, issued by B1 would then contain the TrustStoreInclusion:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 0
 * `status` is `latest_version_at_issuance`
 * `labels` is 2, 101
 
-A certification path, C1_old, issued by C1 would contain no TrustStoreEntry values that reference "example".
+A certification path, C1_old, issued by C1 would contain no TrustStoreInclusion values that reference "example".
 
 On February 1st, 2023, the root program added CAs C1 and C2 but removed CAs B1 and B2. It continues the previous label allocation scheme, but now wishes to allocate label 200 for CAs A1 and C1. The manifest may then be:
 
@@ -624,7 +624,7 @@ On February 1st, 2023, the root program added CAs C1 and C2 but removed CAs B1 a
 }
 ~~~
 
-A certification path, A1_new, now issued by A1 would contain two TrustStoreEntry values. The first:
+A certification path, A1_new, now issued by A1 would contain two TrustStoreInclusion values. The first:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 0
@@ -638,37 +638,37 @@ And the second:
 * `status` is `latest_version_at_issuance`
 * `labels` is 0, 100, 200
 
-A certification path, B1_new, now issued by B1 would contain a TrustStoreEntry:
+A certification path, B1_new, now issued by B1 would contain a TrustStoreInclusion:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 0
 * `status` is `previous_version`
 * `labels` contains 2, 101
 
-A certification path, C1_new, now issued by C1 would contain a TrustStoreEntry:
+A certification path, C1_new, now issued by C1 would contain a TrustStoreInclusion:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 1
 * `status` is `previous_version`
 * `labels` contains 2, 101, 200
 
-A relying party which trusts trust anchors A1, A2, B1, and B2 might send a TrustExpression referencing trust store "example", version 0, with empty `excluded_labels`. This would match A1_old, A1_new, B1_old, and B1_new by the corresponding TrustStoreEntry. It would not match C1_old or C1_new.
+A relying party which trusts trust anchors A1, A2, B1, and B2 might send a TrustExpression referencing trust store "example", version 0, with empty `excluded_labels`. This would match A1_old, A1_new, B1_old, and B1_new by the corresponding TrustStoreInclusion. It would not match C1_old or C1_new.
 
 A relying party which trusts trust anchors A2, B1, and B2, but not A1, might send a TrustExpression referencing trust store "example", version 0, with `excluded_labels` of 0. This would match B1_old and B1_new, but not A1_old or A1_new because the TrustExpression excludes A1.
 
 A relying party which trusts trust anchors A1, A2, C1, and C2 might send a TrustExpression referencing trust store "example", version 1, with `excluded_labels` of 101. Although B1 and B2 are not contained in version 1 of the trust store, the relying party must exclude them, per {{constructing-trust-expressions}}. This TrustExpression matches the above certification paths as follows:
 
-* A1_old matches. Although it has no version 1 TrustStoreEntry, the version 0 TrustStoreEntry has a `status` of `latest_version_at_issuance`.
+* A1_old matches. Although it has no version 1 TrustStoreInclusion, the version 0 TrustStoreInclusion has a `status` of `latest_version_at_issuance`.
 
-* A1_new matches via its version 1 TrustStoreEntry.
+* A1_new matches via its version 1 TrustStoreInclusion.
 
-* B1_old does not match. Although its version 0 TrustStoreEntry has a `status` of `latest_version_at_issuance` and thus applies, `excluded_labels` exclude it.
+* B1_old does not match. Although its version 0 TrustStoreInclusion has a `status` of `latest_version_at_issuance` and thus applies, `excluded_labels` exclude it.
 
-* B1_new does not match. Its version 0 TrustStoreEntry has a `status` of `previous_version` and does not apply. It has no version 1 TrustStoreEntry.
+* B1_new does not match. Its version 0 TrustStoreInclusion has a `status` of `previous_version` and does not apply. It has no version 1 TrustStoreInclusion.
 
 * C1_old does not match. Although the relying party trusts C1, C1_old was issued before C1 was able to communicate this to the subscriber.
 
-* C1_new matches via its version 1 TrustStoreEntry.
+* C1_new matches via its version 1 TrustStoreInclusion.
 
 The relying party could equivalently have sent a TrustExpression referencing trust store "example", version 1, with `excluded_labels` of 2 and 3. This pair of labels excludes the same CAs as 101.
 
