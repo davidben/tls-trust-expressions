@@ -1881,7 +1881,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 }
 </pre><a href="#section-8-3" class="pilcrow">¶</a>
 </div>
-<p id="section-8-4">A certification path, A1_old, issued by A1 would then contain the TrustStoreInclusion:<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-4">A certification path, A1_old, issued by A1, would have a TrustStoreInclusion:<a href="#section-8-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-5.1">
           <p id="section-8-5.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-5.1.1" class="pilcrow">¶</a></p>
@@ -1896,7 +1896,7 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-5.4.1"><code>labels</code> is 0, 100<a href="#section-8-5.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-8-6">A certification path, B1_old, issued by B1 would then contain the TrustStoreInclusion:<a href="#section-8-6" class="pilcrow">¶</a></p>
+<p id="section-8-6">A certification path, B1_old, issued by B1, would have a TrustStoreInclusion:<a href="#section-8-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-7.1">
           <p id="section-8-7.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-7.1.1" class="pilcrow">¶</a></p>
@@ -1911,7 +1911,7 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-7.4.1"><code>labels</code> is 2, 101<a href="#section-8-7.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-8-8">A certification path, C1_old, issued by C1 would contain no TrustStoreInclusion values that reference "example".<a href="#section-8-8" class="pilcrow">¶</a></p>
+<p id="section-8-8">A certification path, C1_old, issued by C1, would have no TrustStoreInclusions that reference "example".<a href="#section-8-8" class="pilcrow">¶</a></p>
 <p id="section-8-9">On February 1st, 2023, the root program added CAs C1 and C2 but removed CAs B1 and B2. It continues the previous label allocation scheme, but now wishes to allocate label 200 for CAs A1 and C1. The manifest may then be:<a href="#section-8-9" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-8-10">
 <pre>
@@ -1957,7 +1957,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 }
 </pre><a href="#section-8-10" class="pilcrow">¶</a>
 </div>
-<p id="section-8-11">A certification path, A1_new, now issued by A1 would contain two TrustStoreInclusion values. The first:<a href="#section-8-11" class="pilcrow">¶</a></p>
+<p id="section-8-11">A certification path, A1_new, newly issued by A1, would have two TrustStoreInclusions. The first:<a href="#section-8-11" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-12.1">
           <p id="section-8-12.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-12.1.1" class="pilcrow">¶</a></p>
@@ -1987,7 +1987,7 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-14.4.1"><code>labels</code> is 0, 100, 200<a href="#section-8-14.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-8-15">A certification path, B1_new, now issued by B1 would contain a TrustStoreInclusion:<a href="#section-8-15" class="pilcrow">¶</a></p>
+<p id="section-8-15">A certification path, B1_new, newly issued by B1, would have a TrustStoreInclusion:<a href="#section-8-15" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-16.1">
           <p id="section-8-16.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-16.1.1" class="pilcrow">¶</a></p>
@@ -2002,7 +2002,7 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-16.4.1"><code>labels</code> contains 2, 101<a href="#section-8-16.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-8-17">A certification path, C1_new, now issued by C1 would contain a TrustStoreInclusion:<a href="#section-8-17" class="pilcrow">¶</a></p>
+<p id="section-8-17">A certification path, C1_new, newly issued by C1, would have a TrustStoreInclusion:<a href="#section-8-17" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-18.1">
           <p id="section-8-18.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-18.1.1" class="pilcrow">¶</a></p>

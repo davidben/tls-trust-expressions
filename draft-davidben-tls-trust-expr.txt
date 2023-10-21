@@ -898,7 +898,7 @@ Table of Contents
      ]
    }
 
-   A certification path, A1_old, issued by A1 would then contain the
+   A certification path, A1_old, issued by A1, would have a
    TrustStoreInclusion:
 
    *  trust_store.name is "example"
@@ -909,7 +909,7 @@ Table of Contents
 
    *  labels is 0, 100
 
-   A certification path, B1_old, issued by B1 would then contain the
+   A certification path, B1_old, issued by B1, would have a
    TrustStoreInclusion:
 
    *  trust_store.name is "example"
@@ -920,8 +920,8 @@ Table of Contents
 
    *  labels is 2, 101
 
-   A certification path, C1_old, issued by C1 would contain no
-   TrustStoreInclusion values that reference "example".
+   A certification path, C1_old, issued by C1, would have no
+   TrustStoreInclusions that reference "example".
 
    On February 1st, 2023, the root program added CAs C1 and C2 but
    removed CAs B1 and B2.  It continues the previous label allocation
@@ -969,8 +969,8 @@ Table of Contents
      ]
    }
 
-   A certification path, A1_new, now issued by A1 would contain two
-   TrustStoreInclusion values.  The first:
+   A certification path, A1_new, newly issued by A1, would have two
+   TrustStoreInclusions.  The first:
 
    *  trust_store.name is "example"
 
@@ -990,7 +990,7 @@ Table of Contents
 
    *  labels is 0, 100, 200
 
-   A certification path, B1_new, now issued by B1 would contain a
+   A certification path, B1_new, newly issued by B1, would have a
    TrustStoreInclusion:
 
    *  trust_store.name is "example"
@@ -1001,7 +1001,7 @@ Table of Contents
 
    *  labels contains 2, 101
 
-   A certification path, C1_new, now issued by C1 would contain a
+   A certification path, C1_new, newly issued by C1, would have a
    TrustStoreInclusion:
 
    *  trust_store.name is "example"
