@@ -1731,7 +1731,7 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
             <p id="section-6.3-3.1.1">The <code>name</code> fields of two structures' <code>trust_store</code> fields are equal.<a href="#section-6.3-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.3-3.2">
-            <p id="section-6.3-3.2.1">Either the <code>version</code> fields of the two structures' <code>trust_store</code> fields are equal, or the TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code> and the <code>version</code> field of TrustExpression's <code>trust_store</code> is greater than that of the TrustStoreEntry's <code>trust_store</code>.<a href="#section-6.3-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-6.3-3.2.1">Either the <code>version</code> fields of the two structures' <code>trust_store</code> fields are equal, or the TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code> and the <code>version</code> field of TrustExpression's <code>trust_store</code> is greater than that of the TrustStoreInclusion's <code>trust_store</code>.<a href="#section-6.3-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.3-3.3">
             <p id="section-6.3-3.3.1">There is no value in common between the TrustStoreInclusion's <code>labels</code> field and the TrustExpression's <code>excluded_labels</code> field.<a href="#section-6.3-3.3.1" class="pilcrow">¶</a></p>
@@ -1819,7 +1819,7 @@ How to compute this set depends on the root program's label allocation scheme (<
         </ol>
 <p id="section-6.5-5">This procedure uses <code>excluded_labels</code> for two kinds of exclusions:<a href="#section-6.5-5" class="pilcrow">¶</a></p>
 <p id="section-6.5-6">First, if the trust store version includes undesired trust anchors, the trust expression should exclude them. This may occur if, for example, the trust store is used by all versions of the relying party's software, but some trust anchors are gated by software version.<a href="#section-6.5-6" class="pilcrow">¶</a></p>
-<p id="section-6.5-7">Second, trust expressions exclude unexpired entries from previous versions. This is because the matching criteria described in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a> predictively applies TrustStoreEntry values with <code>status</code> of <code>latest_version_at_issuance</code> to all future versions of a trust store. This allows relying parties to interoperate with subscribers with stale information. Unexpired entries are those for which such an unexpired certification path may still exist. Where this prediction is incorrect, trust expressions MUST mitigate this by excluding the past entries.<a href="#section-6.5-7" class="pilcrow">¶</a></p>
+<p id="section-6.5-7">Second, trust expressions exclude unexpired entries from previous versions. This is because the matching criteria described in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a> predictively applies TrustStoreInclusion values with <code>status</code> of <code>latest_version_at_issuance</code> to all future versions of a trust store. This allows relying parties to interoperate with subscribers with stale information. Unexpired entries are those for which such an unexpired certification path may still exist. Where this prediction is incorrect, trust expressions MUST mitigate this by excluding the past entries.<a href="#section-6.5-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1881,7 +1881,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 }
 </pre><a href="#section-8-3" class="pilcrow">¶</a>
 </div>
-<p id="section-8-4">A certification path, A1_old, issued by A1 would then contain the TrustStoreEntry:<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-4">A certification path, A1_old, issued by A1 would then contain the TrustStoreInclusion:<a href="#section-8-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-5.1">
           <p id="section-8-5.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-5.1.1" class="pilcrow">¶</a></p>
@@ -1896,7 +1896,7 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-5.4.1"><code>labels</code> is 0, 100<a href="#section-8-5.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-8-6">A certification path, B1_old, issued by B1 would then contain the TrustStoreEntry:<a href="#section-8-6" class="pilcrow">¶</a></p>
+<p id="section-8-6">A certification path, B1_old, issued by B1 would then contain the TrustStoreInclusion:<a href="#section-8-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-7.1">
           <p id="section-8-7.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-7.1.1" class="pilcrow">¶</a></p>
@@ -1911,7 +1911,7 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-7.4.1"><code>labels</code> is 2, 101<a href="#section-8-7.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-8-8">A certification path, C1_old, issued by C1 would contain no TrustStoreEntry values that reference "example".<a href="#section-8-8" class="pilcrow">¶</a></p>
+<p id="section-8-8">A certification path, C1_old, issued by C1 would contain no TrustStoreInclusion values that reference "example".<a href="#section-8-8" class="pilcrow">¶</a></p>
 <p id="section-8-9">On February 1st, 2023, the root program added CAs C1 and C2 but removed CAs B1 and B2. It continues the previous label allocation scheme, but now wishes to allocate label 200 for CAs A1 and C1. The manifest may then be:<a href="#section-8-9" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-8-10">
 <pre>
@@ -1957,7 +1957,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 }
 </pre><a href="#section-8-10" class="pilcrow">¶</a>
 </div>
-<p id="section-8-11">A certification path, A1_new, now issued by A1 would contain two TrustStoreEntry values. The first:<a href="#section-8-11" class="pilcrow">¶</a></p>
+<p id="section-8-11">A certification path, A1_new, now issued by A1 would contain two TrustStoreInclusion values. The first:<a href="#section-8-11" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-12.1">
           <p id="section-8-12.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-12.1.1" class="pilcrow">¶</a></p>
@@ -1987,7 +1987,7 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-14.4.1"><code>labels</code> is 0, 100, 200<a href="#section-8-14.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-8-15">A certification path, B1_new, now issued by B1 would contain a TrustStoreEntry:<a href="#section-8-15" class="pilcrow">¶</a></p>
+<p id="section-8-15">A certification path, B1_new, now issued by B1 would contain a TrustStoreInclusion:<a href="#section-8-15" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-16.1">
           <p id="section-8-16.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-16.1.1" class="pilcrow">¶</a></p>
@@ -2002,7 +2002,7 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-16.4.1"><code>labels</code> contains 2, 101<a href="#section-8-16.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-8-17">A certification path, C1_new, now issued by C1 would contain a TrustStoreEntry:<a href="#section-8-17" class="pilcrow">¶</a></p>
+<p id="section-8-17">A certification path, C1_new, now issued by C1 would contain a TrustStoreInclusion:<a href="#section-8-17" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-18.1">
           <p id="section-8-18.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-18.1.1" class="pilcrow">¶</a></p>
@@ -2017,27 +2017,27 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-18.4.1"><code>labels</code> contains 2, 101, 200<a href="#section-8-18.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-8-19">A relying party which trusts trust anchors A1, A2, B1, and B2 might send a TrustExpression referencing trust store "example", version 0, with empty <code>excluded_labels</code>. This would match A1_old, A1_new, B1_old, and B1_new by the corresponding TrustStoreEntry. It would not match C1_old or C1_new.<a href="#section-8-19" class="pilcrow">¶</a></p>
+<p id="section-8-19">A relying party which trusts trust anchors A1, A2, B1, and B2 might send a TrustExpression referencing trust store "example", version 0, with empty <code>excluded_labels</code>. This would match A1_old, A1_new, B1_old, and B1_new by the corresponding TrustStoreInclusion. It would not match C1_old or C1_new.<a href="#section-8-19" class="pilcrow">¶</a></p>
 <p id="section-8-20">A relying party which trusts trust anchors A2, B1, and B2, but not A1, might send a TrustExpression referencing trust store "example", version 0, with <code>excluded_labels</code> of 0. This would match B1_old and B1_new, but not A1_old or A1_new because the TrustExpression excludes A1.<a href="#section-8-20" class="pilcrow">¶</a></p>
 <p id="section-8-21">A relying party which trusts trust anchors A1, A2, C1, and C2 might send a TrustExpression referencing trust store "example", version 1, with <code>excluded_labels</code> of 101. Although B1 and B2 are not contained in version 1 of the trust store, the relying party must exclude them, per <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a>. This TrustExpression matches the above certification paths as follows:<a href="#section-8-21" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-22.1">
-          <p id="section-8-22.1.1">A1_old matches. Although it has no version 1 TrustStoreEntry, the version 0 TrustStoreEntry has a <code>status</code> of <code>latest_version_at_issuance</code>.<a href="#section-8-22.1.1" class="pilcrow">¶</a></p>
+          <p id="section-8-22.1.1">A1_old matches. Although it has no version 1 TrustStoreInclusion, the version 0 TrustStoreInclusion has a <code>status</code> of <code>latest_version_at_issuance</code>.<a href="#section-8-22.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-22.2">
-          <p id="section-8-22.2.1">A1_new matches via its version 1 TrustStoreEntry.<a href="#section-8-22.2.1" class="pilcrow">¶</a></p>
+          <p id="section-8-22.2.1">A1_new matches via its version 1 TrustStoreInclusion.<a href="#section-8-22.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-22.3">
-          <p id="section-8-22.3.1">B1_old does not match. Although its version 0 TrustStoreEntry has a <code>status</code> of <code>latest_version_at_issuance</code> and thus applies, <code>excluded_labels</code> exclude it.<a href="#section-8-22.3.1" class="pilcrow">¶</a></p>
+          <p id="section-8-22.3.1">B1_old does not match. Although its version 0 TrustStoreInclusion has a <code>status</code> of <code>latest_version_at_issuance</code> and thus applies, <code>excluded_labels</code> exclude it.<a href="#section-8-22.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-22.4">
-          <p id="section-8-22.4.1">B1_new does not match. Its version 0 TrustStoreEntry has a <code>status</code> of <code>previous_version</code> and does not apply. It has no version 1 TrustStoreEntry.<a href="#section-8-22.4.1" class="pilcrow">¶</a></p>
+          <p id="section-8-22.4.1">B1_new does not match. Its version 0 TrustStoreInclusion has a <code>status</code> of <code>previous_version</code> and does not apply. It has no version 1 TrustStoreInclusion.<a href="#section-8-22.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-22.5">
           <p id="section-8-22.5.1">C1_old does not match. Although the relying party trusts C1, C1_old was issued before C1 was able to communicate this to the subscriber.<a href="#section-8-22.5.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-22.6">
-          <p id="section-8-22.6.1">C1_new matches via its version 1 TrustStoreEntry.<a href="#section-8-22.6.1" class="pilcrow">¶</a></p>
+          <p id="section-8-22.6.1">C1_new matches via its version 1 TrustStoreInclusion.<a href="#section-8-22.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-8-23">The relying party could equivalently have sent a TrustExpression referencing trust store "example", version 1, with <code>excluded_labels</code> of 2 and 3. This pair of labels excludes the same CAs as 101.<a href="#section-8-23" class="pilcrow">¶</a></p>
