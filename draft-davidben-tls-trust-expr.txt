@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 22 April 2024                                        Google LLC
-                                                         20 October 2023
+Expires: 23 April 2024                                        Google LLC
+                                                         21 October 2023
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 April 2024.
+   This Internet-Draft will expire on 23 April 2024.
 
 Copyright Notice
 
@@ -108,11 +108,11 @@ Table of Contents
      12.2.  Media Type Updates
      12.3.  ACME Order Object Fields Updates
      12.4.  CertificatePropertyType Registry
-   13. CDDL Schema
+   13. References
+     13.1.  Normative References
+     13.2.  Informative References
+   Appendix A.  CDDL Schema
    Acknowledgements
-   References
-     Normative References
-     Informative References
    Authors' Addresses
 
 1.  Introduction
@@ -355,7 +355,7 @@ Table of Contents
 
    Recipients MUST ignore JSON object members with unrecognized names in
    each of the objects defined above.  Future documents MAY extend these
-   formats with new names.  Section 13 contains a CDDL [RFC8610]
+   formats with new names.  Appendix A contains a CDDL [RFC8610]
    describing the above structure.
 
    When updating a trust store manifest, root programs append a new
@@ -1389,46 +1389,9 @@ Table of Contents
 
    [[TODO: Establish a CertificatePropertyType registry.]]
 
-13.  CDDL Schema
+13.  References
 
-   The following is a non-normative CDDL [RFC8610] schema which
-   describes a trust store manifest structure (Section 4):
-
-   trust-anchor = {
-       type: text,
-       * text => any,
-   }
-
-   trust-store-entry = {
-       id: text,
-       labels: [+ uint],
-       max_lifetime: uint,
-       * text => any,
-   }
-
-   trust-store-version = {
-       timestamp: int,
-       entries: [+ trust-store-entry],
-       * text => any,
-   }
-
-   trust-store-manifest = {
-       name: text,
-       max_age: uint,
-       trust_anchors: {+ text => trust-anchor},
-       versions: [+ trust-store-version],
-       * text => any,
-   }
-
-Acknowledgements
-
-   The authors thank Nick Harper, Sophie Schmieg, and Emily Stark for
-   many valuable discussions and insights which led to this document, as
-   well as review of early iterations.
-
-References
-
-Normative References
+13.1.  Normative References
 
    [POSIX]    "IEEE Standard for Information Technology--Portable
               Operating System Interface (POSIX(TM)) Base
@@ -1505,7 +1468,7 @@ Normative References
               Encoding Rules (CER) and Distinguished Encoding Rules
               (DER)", ISO/IEC 8825-1:2002, 2002.
 
-Informative References
+13.2.  Informative References
 
    [CCADB]    Mozilla, Microsoft, Google, Apple, and Cisco, "Common CA
               Database", 9 October 2023, <https://www.ccadb.org/>.
@@ -1544,6 +1507,43 @@ Informative References
               Express Concise Binary Object Representation (CBOR) and
               JSON Data Structures", RFC 8610, DOI 10.17487/RFC8610,
               June 2019, <https://www.rfc-editor.org/rfc/rfc8610>.
+
+Appendix A.  CDDL Schema
+
+   The following is a non-normative CDDL [RFC8610] schema which
+   describes a trust store manifest structure (Section 4):
+
+   trust-anchor = {
+       type: text,
+       * text => any,
+   }
+
+   trust-store-entry = {
+       id: text,
+       labels: [+ uint],
+       max_lifetime: uint,
+       * text => any,
+   }
+
+   trust-store-version = {
+       timestamp: int,
+       entries: [+ trust-store-entry],
+       * text => any,
+   }
+
+   trust-store-manifest = {
+       name: text,
+       max_age: uint,
+       trust_anchors: {+ text => trust-anchor},
+       versions: [+ trust-store-version],
+       * text => any,
+   }
+
+Acknowledgements
+
+   The authors thank Nick Harper, Sophie Schmieg, and Emily Stark for
+   many valuable discussions and insights which led to this document, as
+   well as review of early iterations.
 
 Authors' Addresses
 
