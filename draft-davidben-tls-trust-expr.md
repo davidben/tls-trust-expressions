@@ -563,21 +563,21 @@ On January 1st, 2023, the root program includes A1, A2, B1, and B2. It allocates
 }
 ~~~
 
-A certification path, A1_old, issued by A1 would then contain the TrustStoreInclusion:
+A certification path, A1_old, issued by A1, would have a TrustStoreInclusion:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 0
 * `status` is `latest_version_at_issuance`
 * `labels` is 0, 100
 
-A certification path, B1_old, issued by B1 would then contain the TrustStoreInclusion:
+A certification path, B1_old, issued by B1, would have a TrustStoreInclusion:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 0
 * `status` is `latest_version_at_issuance`
 * `labels` is 2, 101
 
-A certification path, C1_old, issued by C1 would contain no TrustStoreInclusion values that reference "example".
+A certification path, C1_old, issued by C1, would have no TrustStoreInclusions that reference "example".
 
 On February 1st, 2023, the root program added CAs C1 and C2 but removed CAs B1 and B2. It continues the previous label allocation scheme, but now wishes to allocate label 200 for CAs A1 and C1. The manifest may then be:
 
@@ -624,7 +624,7 @@ On February 1st, 2023, the root program added CAs C1 and C2 but removed CAs B1 a
 }
 ~~~
 
-A certification path, A1_new, now issued by A1 would contain two TrustStoreInclusion values. The first:
+A certification path, A1_new, newly issued by A1, would have two TrustStoreInclusions. The first:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 0
@@ -638,14 +638,14 @@ And the second:
 * `status` is `latest_version_at_issuance`
 * `labels` is 0, 100, 200
 
-A certification path, B1_new, now issued by B1 would contain a TrustStoreInclusion:
+A certification path, B1_new, newly issued by B1, would have a TrustStoreInclusion:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 0
 * `status` is `previous_version`
 * `labels` contains 2, 101
 
-A certification path, C1_new, now issued by C1 would contain a TrustStoreInclusion:
+A certification path, C1_new, newly issued by C1, would have a TrustStoreInclusion:
 
 * `trust_store.name` is "example"
 * `trust_store.version` is 1
