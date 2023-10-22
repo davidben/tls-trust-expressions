@@ -1,0 +1,114 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2023-10-22T01:22:48.724182+00:00",
+  "repo": "davidben/tls-trust-expressions",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOKigz-s50ZUKW",
+      "title": "Allow pruning deactivated trust anchors?",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/1",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The document is currently written to be append-only, which is correct for X.509 and also shouldn't grow significantly. @bwesterb points out Merkle tree certs have different properties:\r\n\r\n1. MTC trust anchors are minted every hour\r\n2. MTC trust anchors naturally deactivate themselves\r\n\r\nProperty 1 means the manifest will grow over time and potentially get unwieldy. But property 2 implies an easy fix. Once an MTC trust anchor expires, there is no benefit to listing it in the manifest beyond historical interest. So we could potentially allow those to get trimmed. That will, in turn, allow trimming the old versions since they become empty. We have no way to express either of these, so we may want to add some allowance for this in the format.\r\n\r\nWe also don't necessarily need to do this here. Since the manifest document is consumed by just the root programs and CAs, who know what type of CA they are, we can always put this extra allowance in the MTC document. But it would be convenient if the changes slot nicely into the existing format, so we may want to look at this a bit.",
+      "createdAt": "2023-10-19T18:00:38Z",
+      "updatedAt": "2023-10-19T18:00:38Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 2,
+      "id": "PR_kwDOKigz-s5dapOK",
+      "title": "Slightly tweak the intro",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/2",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Rereading it, that sentence was a little long and hard to parse. Also the third bullet is kinda redundant with it, so remove it. That also cleans things up because we talk about costs to CAs, subscribers, and RPs, and then have one bullet for each in order.",
+      "createdAt": "2023-10-20T19:46:17Z",
+      "updatedAt": "2023-10-21T02:07:31Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "bcf0fea1e62016c8e1dd4a981fa1a52db2b36a42",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "intro-tweak",
+      "headRefOid": "f5726eb7b712a70bda58e0677790b198c98bf4b0",
+      "closedAt": "2023-10-20T23:26:37Z",
+      "mergedAt": "2023-10-20T23:26:37Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "0c61ee50d9ee04897ab093ef27ffa43be9827ee0"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5kyVR6",
+          "commit": {
+            "abbreviatedOid": "f5726eb"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-20T21:21:12Z",
+          "updatedAt": "2023-10-20T21:21:12Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
+}
