@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-10-22T01:22:48.724182+00:00",
+  "timestamp": "2023-10-26T01:16:09.083829+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -63,6 +63,22 @@
       "body": "The document is currently written to be append-only, which is correct for X.509 and also shouldn't grow significantly. @bwesterb points out Merkle tree certs have different properties:\r\n\r\n1. MTC trust anchors are minted every hour\r\n2. MTC trust anchors naturally deactivate themselves\r\n\r\nProperty 1 means the manifest will grow over time and potentially get unwieldy. But property 2 implies an easy fix. Once an MTC trust anchor expires, there is no benefit to listing it in the manifest beyond historical interest. So we could potentially allow those to get trimmed. That will, in turn, allow trimming the old versions since they become empty. We have no way to express either of these, so we may want to add some allowance for this in the format.\r\n\r\nWe also don't necessarily need to do this here. Since the manifest document is consumed by just the root programs and CAs, who know what type of CA they are, we can always put this extra allowance in the MTC document. But it would be convenient if the changes slot nicely into the existing format, so we may want to look at this a bit.",
       "createdAt": "2023-10-19T18:00:38Z",
       "updatedAt": "2023-10-19T18:00:38Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOKigz-s501GPP",
+      "title": "Tidy up who prepares trust expressions",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/3",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "We mostly want it to be the root program, but relying parties might end up tweaking things if, say, something is conditioned on software version. I was envisioning the root program sends down some private structure like \"also include these exclusions under these conditions\", etc., but that's very hard to describe.\r\n\r\nPerhaps a better separation is to say:\r\n* Root programs compute the compatibility exclusions\r\n* Better yet, stick them in the manifest so people can easily use them; root programs periodically recompute them to trim away stuff they don't need anymore\r\n* Relying parties take the mandatory ones from the manifest and then add in their own as needed. If that task is half done by the software vendor and half done on the client device, that's the application's business, but we describe it as the relying party doing it.\r\n\r\nThe problem is that computing exclusions is a little tricky. Maybe we need to mark which label is the singleton one, so that computing the label set is always possible? This does add quite a lot more moving parts though.",
+      "createdAt": "2023-10-24T21:07:21Z",
+      "updatedAt": "2023-10-24T21:07:21Z",
       "closedAt": null,
       "comments": []
     }
