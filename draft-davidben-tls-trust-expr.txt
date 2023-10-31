@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 23 April 2024                                        Google LLC
-                                                         21 October 2023
+Expires: 3 May 2024                                           Google LLC
+                                                         31 October 2023
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 April 2024.
+   This Internet-Draft will expire on 3 May 2024.
 
 Copyright Notice
 
@@ -1370,7 +1370,7 @@ Table of Contents
 
    Author:  See Authors' Addresses section.
 
-   Change controller:  IESG
+   Change controller:  IETF
 
 12.3.  ACME Order Object Fields Updates
 
