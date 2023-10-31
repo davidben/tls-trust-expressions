@@ -818,7 +818,7 @@ Author:
 : See Authors' Addresses section.
 
 Change controller:
-: IESG
+: IETF
 
 
 ## ACME Order Object Fields Updates
