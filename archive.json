@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-09T01:19:39.083756+00:00",
+  "timestamp": "2023-11-12T01:24:09.885425+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -79,6 +79,22 @@
       "body": "We mostly want it to be the root program, but relying parties might end up tweaking things if, say, something is conditioned on software version. I was envisioning the root program sends down some private structure like \"also include these exclusions under these conditions\", etc., but that's very hard to describe.\r\n\r\nPerhaps a better separation is to say:\r\n* Root programs compute the compatibility exclusions\r\n* Better yet, stick them in the manifest so people can easily use them; root programs periodically recompute them to trim away stuff they don't need anymore\r\n* Relying parties take the mandatory ones from the manifest and then add in their own as needed. If that task is half done by the software vendor and half done on the client device, that's the application's business, but we describe it as the relying party doing it.\r\n\r\nThe problem is that computing exclusions is a little tricky. Maybe we need to mark which label is the singleton one, so that computing the label set is always possible? This does add quite a lot more moving parts though.",
       "createdAt": "2023-10-24T21:07:21Z",
       "updatedAt": "2023-10-24T21:07:21Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOKigz-s52V37W",
+      "title": "Limit to TLS 1.3 and up",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/4",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The certificate message extension doesn't work otherwise. Just add a sentence somewhere.",
+      "createdAt": "2023-11-09T11:42:20Z",
+      "updatedAt": "2023-11-09T11:42:20Z",
       "closedAt": null,
       "comments": []
     }
