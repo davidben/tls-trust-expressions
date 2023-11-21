@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-19T01:27:40.397711+00:00",
+  "timestamp": "2023-11-21T01:24:33.074355+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -62,9 +62,24 @@
       "labels": [],
       "body": "The document is currently written to be append-only, which is correct for X.509 and also shouldn't grow significantly. @bwesterb points out Merkle tree certs have different properties:\r\n\r\n1. MTC trust anchors are minted every hour\r\n2. MTC trust anchors naturally deactivate themselves\r\n\r\nProperty 1 means the manifest will grow over time and potentially get unwieldy. But property 2 implies an easy fix. Once an MTC trust anchor expires, there is no benefit to listing it in the manifest beyond historical interest. So we could potentially allow those to get trimmed. That will, in turn, allow trimming the old versions since they become empty. We have no way to express either of these, so we may want to add some allowance for this in the format.\r\n\r\nWe also don't necessarily need to do this here. Since the manifest document is consumed by just the root programs and CAs, who know what type of CA they are, we can always put this extra allowance in the MTC document. But it would be convenient if the changes slot nicely into the existing format, so we may want to look at this a bit.",
       "createdAt": "2023-10-19T18:00:38Z",
-      "updatedAt": "2023-10-19T18:00:38Z",
+      "updatedAt": "2023-11-20T23:07:06Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "aarongable",
+          "authorAssociation": "NONE",
+          "body": "This was my first thought when I read the draft -- unlimited growth with no way to prune old versions which contain only expired anchors will be a footgun, whether it's for reasons we can forsee right now or not. I'm strongly in favor of allowing pruning.",
+          "createdAt": "2023-11-20T20:51:01Z",
+          "updatedAt": "2023-11-20T20:51:01Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Other than syntactic concerns (we'd need to start the counter later in the JSON document, or add a `version` key), I think the main consideration with pruning them is what happens to older RPs:\r\n\r\nA root program might stop really paying attention to old relying parties after, let's say, 1 year. (I'm making this number up.) E.g. If some Chrome hasn't taken software or component updates for so long, it's probably going to stay that way. Even if the private key of one of its CAs leaked online, if we cannot push code or config to those clients, we can't help them anyway.\r\n\r\nBut that says nothing about whether web servers care about serving those Chromes (and anyone else using the trust store version). That may happen for longer. Examples:\r\n\r\n* Maybe some old version of Chromium ended up in an old Electron that some popular apps are still using\r\n* Maybe this is on unupdated copy of WebView\r\n* Maybe this server is part of some enterprise deployment that has intentionally stayed on a very old Chrome\r\n* Maybe this server is just very popular and very risk-averse and doesn't want to stop serving those clients\r\n* Maybe this isn't Chromium at all, but and some other root program spun off, forked off of the Chrome list initially, and is still sending an old Chrome trust store name for compatibility while certs update their metadata.\r\n* Maybe this is some random IoT device that copied the root store as of some year and never updated it ever again\r\n\r\nCAs will need metadata about those old trust store versions for as long as they wish to serve subscribers that, in turn, which to serve these relying parties. In most of these cases, that schedule is completely detached from the root program that maintains the manifest.\r\n\r\nThis doesn't _really_ matter because the old versions are frozen and the CA can always just hold on to the old file before the root program stops trying to serve it. But I'm sure folks will mess this up, and it seems easier to not tempt fate if the growth isn't actually a problem. (Of course, if it is a problem, that's a whole different matter. I also wouldn't want to tempt fate if we think growth is fine and it turns out to be bad...)\r\n\r\nAside: There is arguably _a_ way to prune it as-is. It's just gross and terrible. :-) Just make a new trust store name. But this causes a minor bit of disruption at the transition point. (I think RPs would need to send trust expressions for both names for a spell.) Depending on how unforeseeable this unforeseen thing is, that can always been an option in a pinch. ",
+          "createdAt": "2023-11-20T23:04:49Z",
+          "updatedAt": "2023-11-20T23:07:06Z"
+        }
+      ]
     },
     {
       "number": 3,
