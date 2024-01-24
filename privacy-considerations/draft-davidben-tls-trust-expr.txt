@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 22 April 2024                                        Google LLC
-                                                         20 October 2023
+Expires: 27 July 2024                                         Google LLC
+                                                         24 January 2024
 
 
                          TLS Trust Expressions
@@ -55,11 +55,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 April 2024.
+   This Internet-Draft will expire on 27 July 2024.
 
 Copyright Notice
 
-   Copyright (c) 2023 IETF Trust and the persons identified as the
+   Copyright (c) 2024 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -108,11 +108,11 @@ Table of Contents
      12.2.  Media Type Updates
      12.3.  ACME Order Object Fields Updates
      12.4.  CertificatePropertyType Registry
-   13. CDDL Schema
+   13. References
+     13.1.  Normative References
+     13.2.  Informative References
+   Appendix A.  CDDL Schema
    Acknowledgements
-   References
-     Normative References
-     Informative References
    Authors' Addresses
 
 1.  Introduction
@@ -355,7 +355,7 @@ Table of Contents
 
    Recipients MUST ignore JSON object members with unrecognized names in
    each of the objects defined above.  Future documents MAY extend these
-   formats with new names.  Section 13 contains a CDDL [RFC8610]
+   formats with new names.  Appendix A contains a CDDL [RFC8610]
    describing the above structure.
 
    When updating a trust store manifest, root programs append a new
@@ -662,7 +662,7 @@ Table of Contents
       fields are equal, or the TrustStoreInclusion's status is
       latest_version_at_issuance and the version field of
       TrustExpression's trust_store is greater than that of the
-      TrustStoreEntry's trust_store.
+      TrustStoreInclusion's trust_store.
 
    *  There is no value in common between the TrustStoreInclusion's
       labels field and the TrustExpression's excluded_labels field.
@@ -730,11 +730,12 @@ Table of Contents
 6.5.  Constructing Trust Expressions
 
    Relying parties send the trust_expressions extension to advertise a
-   set of accepted trust anchors.  Each trust expression to be sent
-   advertises a subset of some trust store version.  Relying parties MAY
-   send multiple trust expressions, each referencing a different trust
-   store, if it wishes to communicate a set of trust anchors that span
-   multiple trust stores.
+   set of accepted trust anchors.  Section 10 discusses which trust
+   anchors to advertise.  Each trust expression to be sent advertises a
+   subset of some trust store version.  Relying parties MAY send
+   multiple trust expressions, each referencing a different trust store,
+   if it wishes to communicate a set of trust anchors that span multiple
+   trust stores.
 
    For each referenced trust store version, the following procedure
    constructs a trust expression.  This procedure is expected to be run
@@ -793,12 +794,12 @@ Table of Contents
 
    Second, trust expressions exclude unexpired entries from previous
    versions.  This is because the matching criteria described in
-   Section 6.3 predictively applies TrustStoreEntry values with status
-   of latest_version_at_issuance to all future versions of a trust
-   store.  This allows relying parties to interoperate with subscribers
-   with stale information.  Unexpired entries are those for which such
-   an unexpired certification path may still exist.  Where this
-   prediction is incorrect, trust expressions MUST mitigate this by
+   Section 6.3 predictively applies TrustStoreInclusion values with
+   status of latest_version_at_issuance to all future versions of a
+   trust store.  This allows relying parties to interoperate with
+   subscribers with stale information.  Unexpired entries are those for
+   which such an unexpired certification path may still exist.  Where
+   this prediction is incorrect, trust expressions MUST mitigate this by
    excluding the past entries.
 
 7.  Issuing Certificates
@@ -898,8 +899,8 @@ Table of Contents
      ]
    }
 
-   A certification path, A1_old, issued by A1 would then contain the
-   TrustStoreEntry:
+   A certification path, A1_old, issued by A1, would have a
+   TrustStoreInclusion:
 
    *  trust_store.name is "example"
 
@@ -909,8 +910,8 @@ Table of Contents
 
    *  labels is 0, 100
 
-   A certification path, B1_old, issued by B1 would then contain the
-   TrustStoreEntry:
+   A certification path, B1_old, issued by B1, would have a
+   TrustStoreInclusion:
 
    *  trust_store.name is "example"
 
@@ -920,8 +921,8 @@ Table of Contents
 
    *  labels is 2, 101
 
-   A certification path, C1_old, issued by C1 would contain no
-   TrustStoreEntry values that reference "example".
+   A certification path, C1_old, issued by C1, would have no
+   TrustStoreInclusions that reference "example".
 
    On February 1st, 2023, the root program added CAs C1 and C2 but
    removed CAs B1 and B2.  It continues the previous label allocation
@@ -969,8 +970,8 @@ Table of Contents
      ]
    }
 
-   A certification path, A1_new, now issued by A1 would contain two
-   TrustStoreEntry values.  The first:
+   A certification path, A1_new, newly issued by A1, would have two
+   TrustStoreInclusions.  The first:
 
    *  trust_store.name is "example"
 
@@ -990,8 +991,8 @@ Table of Contents
 
    *  labels is 0, 100, 200
 
-   A certification path, B1_new, now issued by B1 would contain a
-   TrustStoreEntry:
+   A certification path, B1_new, newly issued by B1, would have a
+   TrustStoreInclusion:
 
    *  trust_store.name is "example"
 
@@ -1001,8 +1002,8 @@ Table of Contents
 
    *  labels contains 2, 101
 
-   A certification path, C1_new, now issued by C1 would contain a
-   TrustStoreEntry:
+   A certification path, C1_new, newly issued by C1, would have a
+   TrustStoreInclusion:
 
    *  trust_store.name is "example"
 
@@ -1015,8 +1016,8 @@ Table of Contents
    A relying party which trusts trust anchors A1, A2, B1, and B2 might
    send a TrustExpression referencing trust store "example", version 0,
    with empty excluded_labels.  This would match A1_old, A1_new, B1_old,
-   and B1_new by the corresponding TrustStoreEntry.  It would not match
-   C1_old or C1_new.
+   and B1_new by the corresponding TrustStoreInclusion.  It would not
+   match C1_old or C1_new.
 
    A relying party which trusts trust anchors A2, B1, and B2, but not
    A1, might send a TrustExpression referencing trust store "example",
@@ -1031,25 +1032,25 @@ Table of Contents
    per Section 6.5.  This TrustExpression matches the above
    certification paths as follows:
 
-   *  A1_old matches.  Although it has no version 1 TrustStoreEntry, the
-      version 0 TrustStoreEntry has a status of
+   *  A1_old matches.  Although it has no version 1 TrustStoreInclusion,
+      the version 0 TrustStoreInclusion has a status of
       latest_version_at_issuance.
 
-   *  A1_new matches via its version 1 TrustStoreEntry.
+   *  A1_new matches via its version 1 TrustStoreInclusion.
 
-   *  B1_old does not match.  Although its version 0 TrustStoreEntry has
-      a status of latest_version_at_issuance and thus applies,
+   *  B1_old does not match.  Although its version 0 TrustStoreInclusion
+      has a status of latest_version_at_issuance and thus applies,
       excluded_labels exclude it.
 
-   *  B1_new does not match.  Its version 0 TrustStoreEntry has a status
-      of previous_version and does not apply.  It has no version 1
-      TrustStoreEntry.
+   *  B1_new does not match.  Its version 0 TrustStoreInclusion has a
+      status of previous_version and does not apply.  It has no version
+      1 TrustStoreInclusion.
 
    *  C1_old does not match.  Although the relying party trusts C1,
       C1_old was issued before C1 was able to communicate this to the
       subscriber.
 
-   *  C1_new matches via its version 1 TrustStoreEntry.
+   *  C1_new matches via its version 1 TrustStoreInclusion.
 
    The relying party could equivalently have sent a TrustExpression
    referencing trust store "example", version 1, with excluded_labels of
@@ -1252,39 +1253,52 @@ Table of Contents
 
 10.  Privacy Considerations
 
-   The negotiation mechanism described in this document presumes the
-   relying party's trust anchor list is not sensitive.  While an
-   attacker may already query this list by probing which certification
-   paths are accepted by the relying party, this extension introduces a
-   faster and more reliable method.
+   The negotiation mechanism described in this document is analogous to
+   the certificate_authorities extension (Section 4.2.4 of [RFC8446]),
+   but more size-efficient.  Like that extension, it presumes the
+   advertised trust anchor list is not sensitive.  While an attacker may
+   already query a relying party's full trust anchor list by testing
+   individual certification paths, reading the ClientHello or
+   CertificateRequest is faster and more reliable.
 
-   Thus, this mechanism SHOULD NOT be used in contexts where the list
-   reveals information about an individual user.  For example, a web
-   browser may support both a common set of trust anchors configured by
-   the browser vendor, and a set of user-specified trust anchors.  The
-   common trust anchors would only reveal which browser is used, while
-   the user-specified trust anchors may reveal identifying information
-   about the user.  In this case, the trust anchor list SHOULD be
-   limited to the common trust anchors.  This limits the benefits of
-   trust anchor agility to subscribers that use one of the advertised
-   trust anchors.  However, deployments that rely on an unadvertised
-   trust anchor will fall back to the default behavior, as if this
-   extension were not used.
+   Thus, this mechanism SHOULD NOT be used to advertise trust anchors or
+   distrusts which are unique to an individual user.  Rather, trust
+   expressions SHOULD be computed based only on the trust anchors common
+   to the relying party's anonymity set (Section 3.3 of [RFC6973]).
+   Additionally, multiple trust expressions may evaluate to the same
+   trust anchor list, so relying parties within an anonymity set SHOULD
+   send the same trust expression.  To achieve this, trust expressions
+   SHOULD be assembled by the root program and configured in relying
+   parties alongside trust store updates.
 
-   Likewise, a client that allows user-specified distrusts of common
-   trust anchors will reveal user-specific information if distrusts are
-   reflected in transmitted trust expressions.  Trust expressions SHOULD
-   be constructed as if those trust anchors were trusted.  This may
-   result in servers selecting a distrusted certificate, despite a
-   trusted one being available.
+   This means the trust_expressions extension MAY describe a slightly
+   different trust anchor list than the relying party's complete trust
+   anchor list.
 
-   Additionally, two relying parties may express the same trust anchor
-   list with different trust expressions.  Doing so may also reveal
-   information about an individual user.  Relying parties within an
-   anonymity set (Section 3.3 of [RFC6973]) SHOULD send the same trust
-   expression.  To achieve this, the trust expressions SHOULD be
-   assembled by the root program and configured in relying parties
-   alongside trust store updates.
+   For example, a web browser may support both a common set of trust
+   anchors configured by the browser vendor, along with user-specified
+   additions and removals.  The common trust anchors would reveal, at
+   most, which browser is used, while the user-specified modifications
+   may reveal identifying information about the user.  The trust
+   expression SHOULD reflect only the common trust anchors.  This limits
+   the benefits of trust anchor agility in two ways:
+
+   *  If a subscriber relies on a user-specified additions, the
+      procedure in Section 6.4 will fallback to preexisting behavior,
+      such as selecting a default certificate.  The subscriber then
+      relies on the default certificate matching the relying party.
+
+   *  If a subscriber has a certificate issued by a CA distrusted by the
+      user, the procedure in Section 6.4 may select a distrusted
+      certificate.  In that case, the connection will fail, even if the
+      subscriber has another certificate available.
+
+   Both of these cases match the preexisting behavior in PKIs that do
+   not use trust expressions.  In a single-certificate deployment model,
+   relying parties implicitly claim to support some, often ill-defined,
+   common set of trust anchors. trust_expressions and
+   certificate_authorities enable PKI agility for this common set, but
+   they do not address user-specific variations within an anonymity set.
 
 11.  Security Considerations
 
@@ -1370,7 +1384,7 @@ Table of Contents
 
    Author:  See Authors' Addresses section.
 
-   Change controller:  IESG
+   Change controller:  IETF
 
 12.3.  ACME Order Object Fields Updates
 
@@ -1389,46 +1403,9 @@ Table of Contents
 
    [[TODO: Establish a CertificatePropertyType registry.]]
 
-13.  CDDL Schema
+13.  References
 
-   The following is a non-normative CDDL [RFC8610] schema which
-   describes a trust store manifest structure (Section 4):
-
-   trust-anchor = {
-       type: text,
-       * text => any,
-   }
-
-   trust-store-entry = {
-       id: text,
-       labels: [+ uint],
-       max_lifetime: uint,
-       * text => any,
-   }
-
-   trust-store-version = {
-       timestamp: int,
-       entries: [+ trust-store-entry],
-       * text => any,
-   }
-
-   trust-store-manifest = {
-       name: text,
-       max_age: uint,
-       trust_anchors: {+ text => trust-anchor},
-       versions: [+ trust-store-version],
-       * text => any,
-   }
-
-Acknowledgements
-
-   The authors thank Nick Harper, Sophie Schmieg, and Emily Stark for
-   many valuable discussions and insights which led to this document, as
-   well as review of early iterations.
-
-References
-
-Normative References
+13.1.  Normative References
 
    [POSIX]    "IEEE Standard for Information Technology--Portable
               Operating System Interface (POSIX(TM)) Base
@@ -1505,7 +1482,7 @@ Normative References
               Encoding Rules (CER) and Distinguished Encoding Rules
               (DER)", ISO/IEC 8825-1:2002, 2002.
 
-Informative References
+13.2.  Informative References
 
    [CCADB]    Mozilla, Microsoft, Google, Apple, and Cisco, "Common CA
               Database", 9 October 2023, <https://www.ccadb.org/>.
@@ -1544,6 +1521,43 @@ Informative References
               Express Concise Binary Object Representation (CBOR) and
               JSON Data Structures", RFC 8610, DOI 10.17487/RFC8610,
               June 2019, <https://www.rfc-editor.org/rfc/rfc8610>.
+
+Appendix A.  CDDL Schema
+
+   The following is a non-normative CDDL [RFC8610] schema which
+   describes a trust store manifest structure (Section 4):
+
+   trust-anchor = {
+       type: text,
+       * text => any,
+   }
+
+   trust-store-entry = {
+       id: text,
+       labels: [+ uint],
+       max_lifetime: uint,
+       * text => any,
+   }
+
+   trust-store-version = {
+       timestamp: int,
+       entries: [+ trust-store-entry],
+       * text => any,
+   }
+
+   trust-store-manifest = {
+       name: text,
+       max_age: uint,
+       trust_anchors: {+ text => trust-anchor},
+       versions: [+ trust-store-version],
+       * text => any,
+   }
+
+Acknowledgements
+
+   The authors thank Nick Harper, Sophie Schmieg, and Emily Stark for
+   many valuable discussions and insights which led to this document, as
+   well as review of early iterations.
 
 Authors' Addresses
 
