@@ -475,7 +475,7 @@ If no candidates match, or if the peer did not send a `trust_expressions` extens
 
 ## Constructing Trust Expressions
 
-Relying parties send the `trust_expressions` extension to advertise a set of accepted trust anchors. {{privacy-considerations}} discusses which trust anchors to advertise. Each trust expression to be sent advertises a subset of some trust store version. Relying parties MAY send multiple trust expressions, each referencing a different trust store, if it wishes to communicate a set of trust anchors that span multiple trust stores.
+Relying parties send the `trust_expressions` extension to advertise a set of accepted trust anchors. {{privacy-considerations}} discusses which trust anchors to advertise. Each trust expression to be sent advertises a subset of some trust store version. To communicate a set of trust anchors that span multiple trust stores, relying parties MAY send multiple trust expressions, each referencing a different trust store.
 
 For each referenced trust store version, the following procedure constructs a trust expression. This procedure is expected to be run by the root program, as part of defining new trust store versions and provisioning supported trust anchors in relying parties.
 
@@ -740,19 +740,17 @@ In order to support this, TLS serving software SHOULD permit users to configure 
 
 # Privacy Considerations
 
-The negotiation mechanism described in this document is analogous to the `certificate_authorities` extension ({{Section 4.2.4 of RFC8446}}), but more size-efficient. Like that extension, it presumes the advertised trust anchor list is not sensitive. While an attacker may already query a relying party's full trust anchor list by testing individual certification paths, reading the ClientHello or CertificateRequest is faster and more reliable.
+The negotiation mechanism described in this document is analogous to the `certificate_authorities` extension ({{Section 4.2.4 of RFC8446}}), but more size-efficient. Like that extension, it presumes the advertised trust anchor list is not sensitive.
 
-Thus, this mechanism SHOULD NOT be used to advertise trust anchors or distrusts which are unique to an individual user. Rather, trust expressions SHOULD be computed based only on the trust anchors common to the relying party's anonymity set ({{Section 3.3 of !RFC6973}}). Additionally, multiple trust expressions may evaluate to the same trust anchor list, so relying parties within an anonymity set SHOULD send the same trust expression. To achieve this, trust expressions SHOULD be assembled by the root program and configured in relying parties alongside trust store updates.
-
-This means the `trust_expressions` extension MAY describe a slightly different trust anchor list than the relying party's complete trust anchor list.
+Thus, this mechanism SHOULD NOT be used to advertise trust anchors or distrusts which are unique to an individual user. Rather, trust expressions SHOULD be computed based only on the trust anchors common to the relying party's anonymity set ({{Section 3.3 of !RFC6973}}). Additionally, multiple trust expressions may evaluate to the same trust anchor list, so relying parties in the same anonymity set SHOULD send the same trust expression. To achieve this, trust expressions SHOULD be assembled by the root program and configured in relying parties alongside trust store updates.
 
 For example, a web browser may support both a common set of trust anchors configured by the browser vendor, along with user-specified additions and removals. The common trust anchors would reveal, at most, which browser is used, while the user-specified modifications may reveal identifying information about the user. The trust expression SHOULD reflect only the common trust anchors. This limits the benefits of trust anchor agility in two ways:
 
-* If a subscriber relies on a user-specified additions, the procedure in {{subscriber-behavior}} will fallback to preexisting behavior, such as selecting a default certificate. The subscriber then relies on the default certificate matching the relying party.
+* If a subscriber relies on a user-specified addition, the procedure in {{subscriber-behavior}} will fallback to preexisting behavior, such as selecting a default certificate. The subscriber then relies on the default certificate matching the relying party.
 
 * If a subscriber has a certificate issued by a CA distrusted by the user, the procedure in {{subscriber-behavior}} may select a distrusted certificate. In that case, the connection will fail, even if the subscriber has another certificate available.
 
-Both of these cases match the preexisting behavior in PKIs that do not use trust expressions. In a single-certificate deployment model, relying parties implicitly claim to support some, often ill-defined, common set of trust anchors. `trust_expressions` and `certificate_authorities` enable PKI agility for this common set, but they do not address user-specific variations within an anonymity set.
+Both of these cases match the preexisting behavior in PKIs that do not use trust expressions.
 
 # Security Considerations
 
