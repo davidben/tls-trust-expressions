@@ -11,23 +11,23 @@
 <meta content="
        This document defines TLS trust expressions, a mechanism for relying parties to succinctly convey trusted certification authorities to subscribers by referencing named and versioned trust stores. It also defines supporting mechanisms for subscribers to evaluate these trust expressions, and select one of several available certification paths to present. This enables a multi-certificate deployment model, for a more agile and flexible PKI that can better meet security requirements. 
     " name="description">
-<meta content="xml2rfc 3.18.2" name="generator">
+<meta content="xml2rfc 3.19.1" name="generator">
 <meta content="draft-davidben-tls-trust-expr-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.18.2
+  xml2rfc 3.19.1
     Python 3.11.6
-    ConfigArgParse 1.5.3
+    ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
     Jinja2 3.1.2
     lxml 4.9.3
-    platformdirs 3.11.0
+    platformdirs 4.1.0
     pycountry 22.3.5
-    PyYAML 6.0
+    PyYAML 6.0.1
     requests 2.31.0
-    setuptools 67.7.2
+    setuptools 68.2.2
     six 1.16.0
-    wcwidth 0.2.9
+    wcwidth 0.2.13
 -->
 <link href="draft-davidben-tls-trust-expr.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1026,11 +1026,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS Trust Expressions</td>
-<td class="right">October 2023</td>
+<td class="right">January 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin, et al.</td>
-<td class="center">Expires 3 May 2024</td>
+<td class="center">Expires 28 July 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1043,12 +1043,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-davidben-tls-trust-expr-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-10-31" class="published">31 October 2023</time>
+<time datetime="2024-01-25" class="published">25 January 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-05-03">3 May 2024</time></dd>
+<dd class="expires"><time datetime="2024-07-28">28 July 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1106,7 +1106,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 May 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 28 July 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1115,7 +1115,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2023 IETF Trust and the persons identified as the
+            Copyright (c) 2024 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1774,7 +1774,7 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
         <h3 id="name-constructing-trust-expressi">
 <a href="#section-6.5" class="section-number selfRef">6.5. </a><a href="#name-constructing-trust-expressi" class="section-name selfRef">Constructing Trust Expressions</a>
         </h3>
-<p id="section-6.5-1">Relying parties send the <code>trust_expressions</code> extension to advertise a set of accepted trust anchors. Each trust expression to be sent advertises a subset of some trust store version. Relying parties MAY send multiple trust expressions, each referencing a different trust store, if it wishes to communicate a set of trust anchors that span multiple trust stores.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
+<p id="section-6.5-1">Relying parties send the <code>trust_expressions</code> extension to advertise a set of accepted trust anchors. <a href="#privacy-considerations" class="auto internal xref">Section 10</a> discusses which trust anchors to advertise. Each trust expression to be sent advertises a subset of some trust store version. To communicate a set of trust anchors that span multiple trust stores, relying parties MAY send multiple trust expressions, each referencing a different trust store.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
 <p id="section-6.5-2">For each referenced trust store version, the following procedure constructs a trust expression. This procedure is expected to be run by the root program, as part of defining new trust store versions and provisioning supported trust anchors in relying parties.<a href="#section-6.5-2" class="pilcrow">¶</a></p>
 <p id="section-6.5-3">[[TODO: This is written as a procedure, but we expect root programs to fill in the expected exclusions when they define a new trust store version, and then trim the compatibility exclusions as they expire. Also the root programs know their label allocation scheme and are the ones deciding on removals, so they're best situated to pick a set of <code>excluded_labels</code>. Perhaps this should get moved to the manifest?]]<a href="#section-6.5-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-6.5-4">
@@ -2135,10 +2135,18 @@ How to compute this set depends on the root program's label allocation scheme (<
       <h2 id="name-privacy-considerations">
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-10-1">The negotiation mechanism described in this document presumes the relying party's trust anchor list is not sensitive. While an attacker may already query this list by probing which certification paths are accepted by the relying party, this extension introduces a faster and more reliable method.<a href="#section-10-1" class="pilcrow">¶</a></p>
-<p id="section-10-2">Thus, this mechanism SHOULD NOT be used in contexts where the list reveals information about an individual user. For example, a web browser may support both a common set of trust anchors configured by the browser vendor, and a set of user-specified trust anchors. The common trust anchors would only reveal which browser is used, while the user-specified trust anchors may reveal identifying information about the user. In this case, the trust anchor list SHOULD be limited to the common trust anchors. This limits the benefits of trust anchor agility to subscribers that use one of the advertised trust anchors. However, deployments that rely on an unadvertised trust anchor will fall back to the default behavior, as if this extension were not used.<a href="#section-10-2" class="pilcrow">¶</a></p>
-<p id="section-10-3">Likewise, a client that allows user-specified distrusts of common trust anchors will reveal user-specific information if distrusts are reflected in transmitted trust expressions. Trust expressions SHOULD be constructed as if those trust anchors were trusted. This may result in servers selecting a distrusted certificate, despite a trusted one being available.<a href="#section-10-3" class="pilcrow">¶</a></p>
-<p id="section-10-4">Additionally, two relying parties may express the same trust anchor list with different trust expressions. Doing so may also reveal information about an individual user. Relying parties within an anonymity set (<span><a href="https://rfc-editor.org/rfc/rfc6973#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC6973" class="cite xref">RFC6973</a>]</span>) SHOULD send the same trust expression. To achieve this, the trust expressions SHOULD be assembled by the root program and configured in relying parties alongside trust store updates.<a href="#section-10-4" class="pilcrow">¶</a></p>
+<p id="section-10-1">The negotiation mechanism described in this document is analogous to the <code>certificate_authorities</code> extension (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.4" class="relref">Section 4.2.4</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>), but more size-efficient. Like that extension, it presumes the advertised trust anchor list is not sensitive.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-2">Thus, this mechanism SHOULD NOT be used to advertise trust anchors or distrusts which are unique to an individual user. Rather, trust expressions SHOULD be computed based only on the trust anchors common to the relying party's anonymity set (<span><a href="https://rfc-editor.org/rfc/rfc6973#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC6973" class="cite xref">RFC6973</a>]</span>). Additionally, multiple trust expressions may evaluate to the same trust anchor list, so relying parties in the same anonymity set SHOULD send the same trust expression. To achieve this, trust expressions SHOULD be assembled by the root program and configured in relying parties alongside trust store updates.<a href="#section-10-2" class="pilcrow">¶</a></p>
+<p id="section-10-3">For example, a web browser may support both a common set of trust anchors configured by the browser vendor, along with user-specified additions and removals. The common trust anchors would reveal, at most, which browser is used, while the user-specified modifications may reveal identifying information about the user. The trust expression SHOULD reflect only the common trust anchors. This limits the benefits of trust anchor agility in two ways:<a href="#section-10-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10-4.1">
+          <p id="section-10-4.1.1">If a subscriber relies on a user-specified addition, the procedure in <a href="#subscriber-behavior" class="auto internal xref">Section 6.4</a> will fallback to preexisting behavior, such as selecting a default certificate. The subscriber then relies on the default certificate matching the relying party.<a href="#section-10-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-4.2">
+          <p id="section-10-4.2.1">If a subscriber has a certificate issued by a CA distrusted by the user, the procedure in <a href="#subscriber-behavior" class="auto internal xref">Section 6.4</a> may select a distrusted certificate. In that case, the connection will fail, even if the subscriber has another certificate available.<a href="#section-10-4.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-10-5">Both of these cases match the preexisting behavior in PKIs that do not use trust expressions.<a href="#section-10-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
