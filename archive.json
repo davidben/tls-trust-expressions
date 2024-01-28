@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-01-25T01:24:35.467485+00:00",
+  "timestamp": "2024-01-28T01:21:48.809460+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -162,7 +162,7 @@
       "id": "PR_kwDOKigz-s5lAEZA",
       "title": "Rework the privacy considerations section",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/5",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -171,19 +171,35 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-01-24T21:53:12Z",
-      "updatedAt": "2024-01-24T21:53:12Z",
+      "updatedAt": "2024-01-25T17:17:05Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "a00613b25482bd0d7a3ab418fe8bf9f38691559e",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "privacy-considerations",
-      "headRefOid": "4ecc383373e46b77730764e1ec4defc774a45749",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "87ac048c5aa7d001c1585ab44440e62685d0ca99",
+      "closedAt": "2024-01-25T17:17:00Z",
+      "mergedAt": "2024-01-25T17:17:00Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "e7dcbf6c5d3d70636ecf9507c94a1f61b2b3869b"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5t7Uqv",
+          "commit": {
+            "abbreviatedOid": "87ac048"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-25T17:16:34Z",
+          "updatedAt": "2024-01-25T17:16:34Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
