@@ -1,0 +1,205 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2024-02-13T01:17:02.038444+00:00",
+  "repo": "davidben/tls-trust-expressions",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOKigz-s50ZUKW",
+      "title": "Allow pruning deactivated trust anchors?",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/1",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The document is currently written to be append-only, which is correct for X.509 and also shouldn't grow significantly. @bwesterb points out Merkle tree certs have different properties:\r\n\r\n1. MTC trust anchors are minted every hour\r\n2. MTC trust anchors naturally deactivate themselves\r\n\r\nProperty 1 means the manifest will grow over time and potentially get unwieldy. But property 2 implies an easy fix. Once an MTC trust anchor expires, there is no benefit to listing it in the manifest beyond historical interest. So we could potentially allow those to get trimmed. That will, in turn, allow trimming the old versions since they become empty. We have no way to express either of these, so we may want to add some allowance for this in the format.\r\n\r\nWe also don't necessarily need to do this here. Since the manifest document is consumed by just the root programs and CAs, who know what type of CA they are, we can always put this extra allowance in the MTC document. But it would be convenient if the changes slot nicely into the existing format, so we may want to look at this a bit.",
+      "createdAt": "2023-10-19T18:00:38Z",
+      "updatedAt": "2023-11-20T23:07:06Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "aarongable",
+          "authorAssociation": "NONE",
+          "body": "This was my first thought when I read the draft -- unlimited growth with no way to prune old versions which contain only expired anchors will be a footgun, whether it's for reasons we can forsee right now or not. I'm strongly in favor of allowing pruning.",
+          "createdAt": "2023-11-20T20:51:01Z",
+          "updatedAt": "2023-11-20T20:51:01Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Other than syntactic concerns (we'd need to start the counter later in the JSON document, or add a `version` key), I think the main consideration with pruning them is what happens to older RPs:\r\n\r\nA root program might stop really paying attention to old relying parties after, let's say, 1 year. (I'm making this number up.) E.g. If some Chrome hasn't taken software or component updates for so long, it's probably going to stay that way. Even if the private key of one of its CAs leaked online, if we cannot push code or config to those clients, we can't help them anyway.\r\n\r\nBut that says nothing about whether web servers care about serving those Chromes (and anyone else using the trust store version). That may happen for longer. Examples:\r\n\r\n* Maybe some old version of Chromium ended up in an old Electron that some popular apps are still using\r\n* Maybe this is on unupdated copy of WebView\r\n* Maybe this server is part of some enterprise deployment that has intentionally stayed on a very old Chrome\r\n* Maybe this server is just very popular and very risk-averse and doesn't want to stop serving those clients\r\n* Maybe this isn't Chromium at all, but and some other root program spun off, forked off of the Chrome list initially, and is still sending an old Chrome trust store name for compatibility while certs update their metadata.\r\n* Maybe this is some random IoT device that copied the root store as of some year and never updated it ever again\r\n\r\nCAs will need metadata about those old trust store versions for as long as they wish to serve subscribers that, in turn, which to serve these relying parties. In most of these cases, that schedule is completely detached from the root program that maintains the manifest.\r\n\r\nThis doesn't _really_ matter because the old versions are frozen and the CA can always just hold on to the old file before the root program stops trying to serve it. But I'm sure folks will mess this up, and it seems easier to not tempt fate if the growth isn't actually a problem. (Of course, if it is a problem, that's a whole different matter. I also wouldn't want to tempt fate if we think growth is fine and it turns out to be bad...)\r\n\r\nAside: There is arguably _a_ way to prune it as-is. It's just gross and terrible. :-) Just make a new trust store name. But this causes a minor bit of disruption at the transition point. (I think RPs would need to send trust expressions for both names for a spell.) Depending on how unforeseeable this unforeseen thing is, that can always been an option in a pinch. ",
+          "createdAt": "2023-11-20T23:04:49Z",
+          "updatedAt": "2023-11-20T23:07:06Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOKigz-s501GPP",
+      "title": "Tidy up who prepares trust expressions",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/3",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "We mostly want it to be the root program, but relying parties might end up tweaking things if, say, something is conditioned on software version. I was envisioning the root program sends down some private structure like \"also include these exclusions under these conditions\", etc., but that's very hard to describe.\r\n\r\nPerhaps a better separation is to say:\r\n* Root programs compute the compatibility exclusions\r\n* Better yet, stick them in the manifest so people can easily use them; root programs periodically recompute them to trim away stuff they don't need anymore\r\n* Relying parties take the mandatory ones from the manifest and then add in their own as needed. If that task is half done by the software vendor and half done on the client device, that's the application's business, but we describe it as the relying party doing it.\r\n\r\nThe problem is that computing exclusions is a little tricky. Maybe we need to mark which label is the singleton one, so that computing the label set is always possible? This does add quite a lot more moving parts though.",
+      "createdAt": "2023-10-24T21:07:21Z",
+      "updatedAt": "2023-10-24T21:07:21Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOKigz-s52V37W",
+      "title": "Limit to TLS 1.3 and up",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/4",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The certificate message extension doesn't work otherwise. Just add a sentence somewhere.",
+      "createdAt": "2023-11-09T11:42:20Z",
+      "updatedAt": "2023-11-09T11:42:20Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 2,
+      "id": "PR_kwDOKigz-s5dapOK",
+      "title": "Slightly tweak the intro",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/2",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Rereading it, that sentence was a little long and hard to parse. Also the third bullet is kinda redundant with it, so remove it. That also cleans things up because we talk about costs to CAs, subscribers, and RPs, and then have one bullet for each in order.",
+      "createdAt": "2023-10-20T19:46:17Z",
+      "updatedAt": "2023-10-21T02:07:31Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "bcf0fea1e62016c8e1dd4a981fa1a52db2b36a42",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "intro-tweak",
+      "headRefOid": "f5726eb7b712a70bda58e0677790b198c98bf4b0",
+      "closedAt": "2023-10-20T23:26:37Z",
+      "mergedAt": "2023-10-20T23:26:37Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "0c61ee50d9ee04897ab093ef27ffa43be9827ee0"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5kyVR6",
+          "commit": {
+            "abbreviatedOid": "f5726eb"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-20T21:21:12Z",
+          "updatedAt": "2023-10-20T21:21:12Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOKigz-s5lAEZA",
+      "title": "Rework the privacy considerations section",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/5",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-01-24T21:53:12Z",
+      "updatedAt": "2024-01-25T17:17:05Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "a00613b25482bd0d7a3ab418fe8bf9f38691559e",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "privacy-considerations",
+      "headRefOid": "87ac048c5aa7d001c1585ab44440e62685d0ca99",
+      "closedAt": "2024-01-25T17:17:00Z",
+      "mergedAt": "2024-01-25T17:17:00Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "e7dcbf6c5d3d70636ecf9507c94a1f61b2b3869b"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5t7Uqv",
+          "commit": {
+            "abbreviatedOid": "87ac048"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-25T17:16:34Z",
+          "updatedAt": "2024-01-25T17:16:34Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
+}
