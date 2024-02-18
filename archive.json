@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-02-15T01:16:39.518109+00:00",
+  "timestamp": "2024-02-18T01:20:58.954628+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -112,6 +112,37 @@
       "updatedAt": "2023-11-09T11:42:20Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOKigz-s5_Y37F",
+      "title": "Does CertificatePropertyList confer any semantics on its own?",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/6",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "In prototyping some subscriber support, one thing came up: trust-expression-enabled credentials are different from normal credentials:\r\n\r\n* The credentials are expected to be gated on trust expressions, or some other kind of issuer negotiation. (You could imagine also checking the `certificate_authorities` extension, or other mechanisms.)\r\n* Due to this negotiation, the credentials are expected be exact certificate paths, with nothing extra or missing. In particular, this means it should be safe for the subscriber to check against the `signature_algorithms` and `signature_algorithms_cert` without worrying about stray MD2 self-signed roots.\r\n\r\nHowever, CertificatePropertyList is extensible, which is nice because it allows us to introduce other kinds of properties without changing the CA -> server software -> TLS library flow. It's basically a grab-bag of any kind of CA -> server software communication.\r\n\r\nBut this, combined with wanting to minimize how much layers in between need to inspect CertificatePropertyList puts us in a pickle: what does it mean if you get a CertificatePropertyList without any trust expression property? Maybe it's got some other property you don't understand. Does it still imply that it's still issuer-gated and a whole path?\r\n\r\nIf yes, the extensibility is less useful. There may well be use cases that don't want to be issuer-gated.\r\nIf no, we don't want the certificate to accidentally get interpreted as non-issuer-gated when it actually was issuer-gated by some other mechanism.\r\n\r\nIn writing this, I think I'm coming around to \"no\" being the right answer, but then...\r\n* Should the caller be required to call some \"this is an issuer-gated credential\" API? I.e. we use an out-of-band signal rather than relying on in-band signals that might disappear.\r\n* Do we have a general \"this is issuer-gated\" property and say everyone must understand this? That seems a bit weird.\r\n* Do we need to invent critical properties??? \ud83d\ude2d ",
+      "createdAt": "2024-02-15T19:01:39Z",
+      "updatedAt": "2024-02-17T14:11:56Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "What about:\r\n\r\n1. If there is a trust expression property, ignore other properties you don't understand.\r\n2. If there are no properties you understand, ignore the credential.\r\n\r\nNew properties can define different semantics as desired.",
+          "createdAt": "2024-02-16T18:12:13Z",
+          "updatedAt": "2024-02-16T18:12:13Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "What if, say, we moved SCT lists to a certificate property (could be a convenient way for the CA to deliver them and allow the server to negotiate which to send)? If you see only that property, do you ignore the credential?\r\n\r\nBob, Devon, and I talked a bit about this earlier and are currently leaning towards the first of the three options: CPLs are just a bag of data, and it's on the TLS library user to say \"this credential needs to match the issuer\" and \"I believe this credential is ubiquitous and a viable candidate for the default\".\r\n\r\nIt does make the API a bit more annoying, but that does ultimately translate to what probably the application's config file will be: a new directive for \"here are my negotiated certs\". (Or \"here are some ACME URLs to get negotiated certs\".) You need a new one mostly because the existing one has an implicit \"this is ubiquitous\" semantic.",
+          "createdAt": "2024-02-17T14:11:55Z",
+          "updatedAt": "2024-02-17T14:11:55Z"
+        }
+      ]
     }
   ],
   "pulls": [
