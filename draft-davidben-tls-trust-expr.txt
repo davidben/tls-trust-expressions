@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 28 July 2024                                         Google LLC
-                                                         25 January 2024
+Expires: 29 August 2024                                       Google LLC
+                                                        26 February 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 July 2024.
+   This Internet-Draft will expire on 29 August 2024.
 
 Copyright Notice
 
@@ -120,15 +120,14 @@ Table of Contents
    TLS [RFC8446] endpoints typically authenticate using X.509
    certificates [RFC5280].  These certificates are issued by a
    certification authority (CA) and associate the TLS public key with
-   some application identifier, such as a DNS name.  If the CA is among
-   those trusted by the peer, it will accept this association.  The
-   authenticating party is known as the subscriber and the peer is the
-   relying party.
+   some application identifier, such as a DNS name.  If the peer trusts
+   the CA, it will accept this association.  The authenticating party is
+   known as the subscriber and the peer is the relying party.
 
    Subscribers typically provision a single certificate for all
    supported relying parties, because relying parties do not communicate
-   which CAs are trusted.  The certificate must then meet all relying
-   party requirements simultaneously.  This constraint imposes
+   which CAs are trusted.  The certificate must then simultaneously meet
+   requirements for all relying parties.  This constraint imposes
    significant costs on CAs, subscribers, and relying parties:
 
    *  It is difficult for newer CAs to enter the ecosystem if they are
