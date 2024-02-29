@@ -7,6 +7,7 @@ This is the working area for the individual Internet-Draft, "TLS Trust Expressio
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr)
 * [Compare Editor's Copy to Individual Draft](https://davidben.github.io/tls-trust-expressions/#go.draft-davidben-tls-trust-expr.diff)
 
+There is also an informal [explainer](explainer.md) document.
 
 ## Contributing
 
