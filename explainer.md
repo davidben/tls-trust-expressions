@@ -15,7 +15,7 @@ This document is a high-level overview and [explainer](https://tag.w3.org/explai
 
 ## Introduction
 
-[TLS](https://www.rfc-editor.org/rfc/rfc8446) endpoints typically authenticate using [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280), which are assertions by a certification authority (CA) to associate some TLS key with some DNS name or other identifier. If the peer trusts the CA, it will accept this association. The authenticating party (usually the server) is known as the *subscriber* and the peer (usually the client) is the *relying party*.
+[TLS](https://www.rfc-editor.org/rfc/rfc8446) endpoints typically authenticate using [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280), which are assertions by a certification authority (CA) that associate some TLS key with some DNS name or other identifier. If the peer trusts the CA, it will accept this association. The authenticating party (usually the server) is known as the *subscriber* and the peer (usually the client) is the *relying party*.
 
 Today, subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. We call this a *single-certificate deployment model*. In this model, the single certificate must simultaneously satisfy all relying parties.
 
