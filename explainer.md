@@ -19,7 +19,7 @@ This document is a high-level overview and [explainer](https://tag.w3.org/explai
 
 Today, subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. We call this a *single-certificate deployment model*. In this model, the single certificate must simultaneously satisfy all relying parties.
 
-This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, forcing subscribers to choose between compatibility with new clients, or breaking old clients. These subscriber costs translate to analogous costs to CAs and relying parties:
+This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, forcing subscribers to choose between compatibility with new clients, or breaking old clients. This translates to analogous costs for CAs and relying parties:
 
 * For a new CA to be usable by subscribers, it must be trusted by all relying parties. This is particularly challenging for  including older, unupdatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.
 
