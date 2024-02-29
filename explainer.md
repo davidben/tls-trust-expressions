@@ -126,7 +126,7 @@ The multi-certificate model removes this constraint. If a subscriber's CA is dis
 
 ### Intermediate Elision
 
-Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. This means the long-lived root key is less exposed to attack. The short-lived intermediate key can be more easily replaced without changes to relying parties. This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate. Post-quantum algorithms will further inflate this cost.
+Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. This means the long-lived root key is less exposed to attack. The short-lived intermediate key can be more easily replaced without changes to relying parties. This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate. Post-quantum algorithms will further inflate this cost. A single [Dilithium3](https://pq-crystals.org/dilithium/) intermediate certificate uses 5,245 bytes in cryptographic material (public key and signature) alone.
 
 The multi-certificate model reduces this cost. A CA operator could provide subscribers with two certificate paths: a longer path ending at a long-lived root and shorter path the other ending at a short-lived root. Relying parties would trust both the long-lived root and the most recent short-lived root. Up-to-date relying parties will match on the short-lived root and use less bandwidth. On mismatch, older relying parties will continue to work with the long-lived root. Subscribers are no longer limited to the lowest-common denominator.
 
