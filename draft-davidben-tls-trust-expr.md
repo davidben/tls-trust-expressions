@@ -192,7 +192,7 @@ TrustStoreInclusionList:
 
 # Overview
 
-In the TLS handshake, a client (respectively, server) relying party sends trust expressions, which reference named, versioned trust stores to describe a list of trust anchors. The subscriber uses this information to select a certification path to return.
+In the TLS handshake, a relying party sends trust expressions, which reference named, versioned trust stores to describe a list of trust anchors. The subscriber uses this information to select a certification path to return.
 
 These structures are intended to be provisioned by root programs and CAs as follows:
 
