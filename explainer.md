@@ -25,7 +25,7 @@ This constraint imposes costs on the ecosystem as PKIs evolve over time. The old
 
 * When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.
 
-TLS trust expressions aims to remove this constraint, by enabling a *multi-certificate deployment model*. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for older and newer relying parties.
+TLS trust expressions aims to remove this constraint, by enabling a *multi-certificate deployment model*. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates different relying parties, including older and newer ones.
 
 There are three parts to understanding this proposal:
 
@@ -39,17 +39,13 @@ Together, these aim to support a more flexible and robust Public Key Infrastruct
 
 At a high level, the goal for TLS Trust Expressions is to enable a multi-certificate deployment model for TLS, particularly as used in HTTPS on the web.
 
-* PKIs can evolve over time, to meet user security needs, without conflicting with availability
-* Subscribers can configure multiple TLS certificates, with TLS software automatically sending the right one on each connection
-* CAs, via automated protocols like ACME, can provision subscribers with multiple TLS certificates
-* Minimal bandwidth cost to the TLS handshake
+Our goals in doing so are:
 
-In doing so, we aim to unlock size optimizations by skipping unnecessary
-intermediate certificates and cross-signs in the common case. This will be
-particularly valuable for the post-quantum transition, when signatures become
-[much more expensive](https://pq-crystals.org/dilithium/). The flexibility will
-also simplify the post-quantum transition itself, as different post-quantum CAs
-may be added at different times.
+* PKIs can evolve over time, to meet user security needs, without conflicting with availability.
+* Subscribers can configure multiple TLS certificates, with TLS software automatically sending the right one on each connection.
+* CAs, via automated protocols like ACME, can transparently provision subscribers with multiple TLS certificates.
+* As much as possible, minimize manual changes by server operators. Most ongoing decisions should instead come from TLS software, ACME client software, and ACME servers.
+* Minimal bandwidth cost to the TLS handshake.
 
 We discuss the motivations for a multi-certificate deployment model in more
 depth below.
@@ -92,6 +88,13 @@ in TLS and the web platform:
   use techniques like [progressive enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement)
   and [feature detection](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/Feature_detection)
   to support a range of browser capabilities.
+
+Multiple certificates cam additionally unlock size optimizations by skipping
+unnecessary intermediate certificates and cross-signs in the common case. This
+will be particularly valuable for the post-quantum transition, when signatures
+become [much more expensive](https://pq-crystals.org/dilithium/). The
+flexibility will also simplify the post-quantum transition itself, as different
+post-quantum CAs may be added at different times.
 
 ## Overview
 
