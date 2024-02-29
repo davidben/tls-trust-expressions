@@ -21,7 +21,7 @@ Today, subscribers typically provision a single certificate for all supported re
 
 This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, forcing subscribers to choose between compatibility with new clients, or breaking old clients. This translates to analogous costs for CAs and relying parties:
 
-* For a new CA to be usable by subscribers, it must be trusted by all relying parties. This is particularly challenging for  including older, unupdatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.
+* For a new CA to be usable by subscribers, it must be trusted by all relying parties. This is particularly challenging for older, unupdatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.
 
 * When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.
 
