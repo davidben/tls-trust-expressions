@@ -89,7 +89,7 @@ in TLS and the web platform:
   and [feature detection](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/Feature_detection)
   to support a range of browser capabilities.
 
-Multiple certificates cam additionally unlock size optimizations by skipping
+Multiple certificates can additionally unlock size optimizations by skipping
 unnecessary intermediate certificates and cross-signs in the common case. This
 will be particularly valuable for the post-quantum transition, when signatures
 become [much more expensive](https://pq-crystals.org/dilithium/). The
