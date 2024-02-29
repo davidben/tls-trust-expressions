@@ -190,8 +190,9 @@ topologies, adds compatibility risk to servers.
 
 Certificate negotiation avoids these problems and complements path-based
 strategies. The server can send predictable, pre-built paths to the relying
-party. It is also free to select between unrelated paths, which allows size
-optimizes with post-quantum cryptography.
+party. It is also free to use unrelated paths, which reduces the need for
+intermediate certificates and cross-signs. This is particularly valuable for
+post-quantum cryptography's larger sizes.
 
 ### Fingerprinting
 
