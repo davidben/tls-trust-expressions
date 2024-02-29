@@ -15,17 +15,19 @@ This document is a high-level overview and [explainer](https://tag.w3.org/explai
 
 ## Introduction
 
-[TLS](https://www.rfc-editor.org/rfc/rfc8446) endpoints typically authenticate using [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280). Certificates are issued by a certification authority (CA) and associate the TLS public key with a DNS name or other identifier. If the peer trusts the CA, it will accept this association. The authenticating party (usually the server) is known as the *subscriber* and the peer (usually the client) is the *relying party*.
+[TLS](https://www.rfc-editor.org/rfc/rfc8446) endpoints typically authenticate using [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280), which are assertions by a certification authority (CA) to associate some TLS key with some DNS name or other identifier. If the peer trusts the CA, it will accept this association. The authenticating party (usually the server) is known as the *subscriber* and the peer (usually the client) is the *relying party*.
 
-Today, subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. We call this a *single-certificate deployment model*. In this model, the single certificate must simultaneously meet requirements for all relying parties. This imposes significant costs on CAs, subscribers, and relying parties:
+Today, subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. We call this a *single-certificate deployment model*. In this model, the single certificate must simultaneously satisfy all relying parties.
 
-* It is difficult for newer CAs to enter the ecosystem if they are not trusted by all relying parties, including older ones. Existing CAs face similar challenges when rotating or deploying new keys.
+This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, forcing subscribers to choose between compatibility with new clients, or breaking old clients. These subscriber costs translate to analogous costs to CAs and relying parties:
 
-* Single-certificate deployments on subscribers are fragile, particularly in the face of distrusts or other changes to what a relying party accepts.
+* For a new CA to be usable by subscribers, it must be trusted by all relying parties. This is particularly challenging for  including older, unupdatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.
 
-* When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers.
+* When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.
 
-TLS trust expressions aims to enable a *multi-certificate deployment model*, where subscribers may be provisioned with multiple certificates and automatically select the correct one to use with each relying party. There are three parts to understanding this proposal:
+TLS trust expressions aims to remove this constraint, by enabling a *multi-certificate deployment model*. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for older and newer relying parties.
+
+There are three parts to understanding this proposal:
 
 1. The multi-certificate model itself
 2. A TLS extension for relying parties to succinctly communicate trusted CAs
