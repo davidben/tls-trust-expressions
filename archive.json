@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-02-29T01:15:48.229538+00:00",
+  "timestamp": "2024-03-03T01:19:50.975894+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -143,6 +143,22 @@
           "updatedAt": "2024-02-17T14:11:55Z"
         }
       ]
+    },
+    {
+      "number": 8,
+      "id": "I_kwDOKigz-s6A4l7W",
+      "title": "Rework introduction after explainer",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/8",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "I wrote the explainer document in part by taking the introduction text and wordsmithing it a bit. I think the version in the explainer is a bit clearer. Let's backport some of those clarity improvements into the draft itself.",
+      "createdAt": "2024-03-01T00:26:54Z",
+      "updatedAt": "2024-03-01T00:26:54Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -228,6 +244,48 @@
           "body": "",
           "createdAt": "2024-01-25T17:16:34Z",
           "updatedAt": "2024-01-25T17:16:34Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDOKigz-s5oVShz",
+      "title": "Add an informal explainer document",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/7",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-02-29T19:39:51Z",
+      "updatedAt": "2024-02-29T23:44:13Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "11cb5c005a38586963db5eb75f319877adc2ec07",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "explainer",
+      "headRefOid": "c964ac14a6337efc8080a07230a8d0ad43411fac",
+      "closedAt": "2024-02-29T23:44:11Z",
+      "mergedAt": "2024-02-29T23:44:11Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "3c9df037f7e5aa1b58a555c3998356364b2cea07"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5x1Uwm",
+          "commit": {
+            "abbreviatedOid": "a0ba6a2"
+          },
+          "author": "dadrian",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-02-29T20:24:26Z",
+          "updatedAt": "2024-02-29T20:24:26Z",
           "comments": []
         }
       ]
