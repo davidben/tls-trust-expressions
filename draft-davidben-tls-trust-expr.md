@@ -712,6 +712,14 @@ Subscribers in a single-certificate model are limited to CAs in the intersection
 
 The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certiifcate for each relying party.
 
+## Other Root Transitions
+
+The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a PKI may transition from classical roots to post-quantum ones. A CA operator may generate a postquantum root CA and, using the mechanism in {{acme-extension}}, issue from the classical and postquantum roots concurrently. The subscriber will then, transparently and with no configuration change, serve both. As in {{key-rotation}}, newer relying parties can then remove the classical roots, while older relying parties continue to function.
+
+This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.
+
+[[TODO: There's one missing piece, which is that some servers may attempt to parse the signature algorithms out of the certificate chain. See https://github.com/davidben/tls-trust-expressions/issues/9 ]]
+
 ## Intermediate Elision
 
 Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties.
