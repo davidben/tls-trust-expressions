@@ -1221,13 +1221,16 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-removing-cas" class="internal xref">Removing CAs</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.4">
-                <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="auto internal xref">9.4</a>.  <a href="#name-intermediate-elision" class="internal xref">Intermediate Elision</a></p>
+                <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="auto internal xref">9.4</a>.  <a href="#name-other-root-transitions" class="internal xref">Other Root Transitions</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.5">
-                <p id="section-toc.1-1.9.2.5.1"><a href="#section-9.5" class="auto internal xref">9.5</a>.  <a href="#name-conflicting-relying-party-r" class="internal xref">Conflicting Relying Party Requirements</a></p>
+                <p id="section-toc.1-1.9.2.5.1"><a href="#section-9.5" class="auto internal xref">9.5</a>.  <a href="#name-intermediate-elision" class="internal xref">Intermediate Elision</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.6">
-                <p id="section-toc.1-1.9.2.6.1"><a href="#section-9.6" class="auto internal xref">9.6</a>.  <a href="#name-backup-certificates" class="internal xref">Backup Certificates</a></p>
+                <p id="section-toc.1-1.9.2.6.1"><a href="#section-9.6" class="auto internal xref">9.6</a>.  <a href="#name-conflicting-relying-party-r" class="internal xref">Conflicting Relying Party Requirements</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.7">
+                <p id="section-toc.1-1.9.2.7.1"><a href="#section-9.7" class="auto internal xref">9.7</a>.  <a href="#name-backup-certificates" class="internal xref">Backup Certificates</a></p>
 </li>
             </ul>
 </li>
@@ -1829,7 +1832,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-issuing-certificates" class="section-name selfRef">Issuing Certificates</a>
       </h2>
 <p id="section-7-1">Subscribers SHOULD use an automated issuance process where the CA transparently provisions multiple certification paths, without changes to subscriber configuration. As relying party requirements evolve, the CA adjusts its output to ensure its subscribers continue to interoperate with all supported relying parties. This results in a more flexible and agile PKI that can better respond to security incidents and changes in requirements. (See <a href="#use-cases" class="auto internal xref">Section 9</a> for details.)<a href="#section-7-1" class="pilcrow">¶</a></p>
-<p id="section-7-2">Subscribers MAY additionally combine the outputs from multiple CAs. This may be used, for example, to maintain backup certificates as described in <a href="#backup-certificates" class="auto internal xref">Section 9.6</a>.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-2">Subscribers MAY additionally combine the outputs from multiple CAs. This may be used, for example, to maintain backup certificates as described in <a href="#backup-certificates" class="auto internal xref">Section 9.7</a>.<a href="#section-7-2" class="pilcrow">¶</a></p>
 <div id="acme-extension">
 <section id="section-7.1">
         <h3 id="name-acme-extension">
@@ -2095,34 +2098,44 @@ How to compute this set depends on the root program's label allocation scheme (<
 <p id="section-9.3-2">The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certiifcate for each relying party.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="intermediate-elision">
+<div id="other-root-transitions">
 <section id="section-9.4">
-        <h3 id="name-intermediate-elision">
-<a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-intermediate-elision" class="section-name selfRef">Intermediate Elision</a>
+        <h3 id="name-other-root-transitions">
+<a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-other-root-transitions" class="section-name selfRef">Other Root Transitions</a>
         </h3>
-<p id="section-9.4-1">Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
-<p id="section-9.4-2">This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate, which includes a public key, signature, and X.509 metadata. An average X.509 name in the Chrome Root Store <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> or Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> is around 100 bytes alone. Post-quantum signature algorithms will dramatically shift this tradeoff. Dilithium3 <span>[<a href="#Dilithium" class="cite xref">Dilithium</a>]</span>, for example, has a total public key and signature size of 5,245 bytes.<a href="#section-9.4-2" class="pilcrow">¶</a></p>
-<p id="section-9.4-3"><span>[<a href="#I-D.ietf-tls-cert-abridge" class="cite xref">I-D.ietf-tls-cert-abridge</a>]</span> proposes to predistribute known intermediate certificates to relying parties, as a compression scheme. A multi-certificate deployment model provides another way to achieve this effect. To relying parties, a predistributed intermediate certificate is functionally equivalent to a root certificate. PKIs use intermediate certificates because changing root certificates requires updating relying parties, but predistributed intermediates already presume updated relying parties.<a href="#section-9.4-3" class="pilcrow">¶</a></p>
-<p id="section-9.4-4">A CA operator could provide subscribers with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. The negotiation mechanism in <a href="#tls-certificate-negotiation" class="auto internal xref">Section 6</a> would then send the shorter path to up-to-date relying parties, and the longer path to older relying parties.<a href="#section-9.4-4" class="pilcrow">¶</a></p>
-<p id="section-9.4-5">This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived root may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.<a href="#section-9.4-5" class="pilcrow">¶</a></p>
+<p id="section-9.4-1">The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a PKI may transition from classical roots to post-quantum ones. A CA operator may generate a postquantum root CA and, using the mechanism in <a href="#acme-extension" class="auto internal xref">Section 7.1</a>, issue from the classical and postquantum roots concurrently. The subscriber will then, transparently and with no configuration change, serve both. As in <a href="#key-rotation" class="auto internal xref">Section 9.1</a>, newer relying parties can then remove the classical roots, while older relying parties continue to function.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
+<p id="section-9.4-2">This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.<a href="#section-9.4-2" class="pilcrow">¶</a></p>
+<p id="section-9.4-3">[[TODO: There's one missing piece, which is that some servers may attempt to parse the signature algorithms out of the certificate chain. See https://github.com/davidben/tls-trust-expressions/issues/9 ]]<a href="#section-9.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="intermediate-elision">
+<section id="section-9.5">
+        <h3 id="name-intermediate-elision">
+<a href="#section-9.5" class="section-number selfRef">9.5. </a><a href="#name-intermediate-elision" class="section-name selfRef">Intermediate Elision</a>
+        </h3>
+<p id="section-9.5-1">Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties.<a href="#section-9.5-1" class="pilcrow">¶</a></p>
+<p id="section-9.5-2">This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate, which includes a public key, signature, and X.509 metadata. An average X.509 name in the Chrome Root Store <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> or Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> is around 100 bytes alone. Post-quantum signature algorithms will dramatically shift this tradeoff. Dilithium3 <span>[<a href="#Dilithium" class="cite xref">Dilithium</a>]</span>, for example, has a total public key and signature size of 5,245 bytes.<a href="#section-9.5-2" class="pilcrow">¶</a></p>
+<p id="section-9.5-3"><span>[<a href="#I-D.ietf-tls-cert-abridge" class="cite xref">I-D.ietf-tls-cert-abridge</a>]</span> proposes to predistribute known intermediate certificates to relying parties, as a compression scheme. A multi-certificate deployment model provides another way to achieve this effect. To relying parties, a predistributed intermediate certificate is functionally equivalent to a root certificate. PKIs use intermediate certificates because changing root certificates requires updating relying parties, but predistributed intermediates already presume updated relying parties.<a href="#section-9.5-3" class="pilcrow">¶</a></p>
+<p id="section-9.5-4">A CA operator could provide subscribers with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. The negotiation mechanism in <a href="#tls-certificate-negotiation" class="auto internal xref">Section 6</a> would then send the shorter path to up-to-date relying parties, and the longer path to older relying parties.<a href="#section-9.5-4" class="pilcrow">¶</a></p>
+<p id="section-9.5-5">This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived root may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.<a href="#section-9.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conflicting-relying-party-requirements">
-<section id="section-9.5">
+<section id="section-9.6">
         <h3 id="name-conflicting-relying-party-r">
-<a href="#section-9.5" class="section-number selfRef">9.5. </a><a href="#name-conflicting-relying-party-r" class="section-name selfRef">Conflicting Relying Party Requirements</a>
+<a href="#section-9.6" class="section-number selfRef">9.6. </a><a href="#name-conflicting-relying-party-r" class="section-name selfRef">Conflicting Relying Party Requirements</a>
         </h3>
-<p id="section-9.5-1">A subscriber may need to support relying parties with different requirements. For example, in contexts where online revocation checks are expensive, unreliable, or privacy-sensitive, user security is best served by short-lived certificates. In other contexts, long-lived certificates may be more appropriate for, e.g., systems that are offline for long periods of time or have unreliable clocks.<a href="#section-9.5-1" class="pilcrow">¶</a></p>
-<p id="section-9.5-2">A single-certificate deployment model forces subscribers to find a single certificate that meets all requirements. User security then suffers in all contexts, as the PKI may not quite meet anyone's needs. In a multi-certificate deployment model, different contexts may use different trust anchors. A subscriber that supports multiple contexts would provision certificates for each, with certificate negotiation logic directing the right one to each relying party.<a href="#section-9.5-2" class="pilcrow">¶</a></p>
+<p id="section-9.6-1">A subscriber may need to support relying parties with different requirements. For example, in contexts where online revocation checks are expensive, unreliable, or privacy-sensitive, user security is best served by short-lived certificates. In other contexts, long-lived certificates may be more appropriate for, e.g., systems that are offline for long periods of time or have unreliable clocks.<a href="#section-9.6-1" class="pilcrow">¶</a></p>
+<p id="section-9.6-2">A single-certificate deployment model forces subscribers to find a single certificate that meets all requirements. User security then suffers in all contexts, as the PKI may not quite meet anyone's needs. In a multi-certificate deployment model, different contexts may use different trust anchors. A subscriber that supports multiple contexts would provision certificates for each, with certificate negotiation logic directing the right one to each relying party.<a href="#section-9.6-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="backup-certificates">
-<section id="section-9.6">
+<section id="section-9.7">
         <h3 id="name-backup-certificates">
-<a href="#section-9.6" class="section-number selfRef">9.6. </a><a href="#name-backup-certificates" class="section-name selfRef">Backup Certificates</a>
+<a href="#section-9.7" class="section-number selfRef">9.7. </a><a href="#name-backup-certificates" class="section-name selfRef">Backup Certificates</a>
         </h3>
-<p id="section-9.6-1">A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.<a href="#section-9.6-1" class="pilcrow">¶</a></p>
-<p id="section-9.6-2">In order to support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the the union of the certificate paths returned by each ACME server.<a href="#section-9.6-2" class="pilcrow">¶</a></p>
+<p id="section-9.7-1">A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.<a href="#section-9.7-1" class="pilcrow">¶</a></p>
+<p id="section-9.7-2">In order to support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the the union of the certificate paths returned by each ACME server.<a href="#section-9.7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
