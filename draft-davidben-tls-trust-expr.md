@@ -128,7 +128,7 @@ This constraint imposes costs on the ecosystem as PKIs evolve over time. The old
 
 * When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.
 
-This document aims to remove this constraint with a multi-certificate deployment model. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates different relying parties, including older and newer ones.
+This document aims to remove this constraint with a multi-certificate deployment model. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for different relying parties, including older and newer ones.
 
 This model requires the endpoints to somehow negotiate which certificate to use. {{Section 4.2.4 of RFC8446}} defines the `certificate_authorities` extension, but it is often impractical. Some trust stores are large, and the X.509 Name structure is inefficient. For example, as of August 2023, the Mozilla CA Certificate Program {{MOZILLA-ROOTS}} would encode 144 names totaling 14,457 bytes. Instead, this document defines a TLS extension and supporting mechanisms that allow relying parties and subscribers to succinctly communicate supported trust anchors to subscribers, using pre-shared information provisioned by root programs and CAs, respectively.
 
@@ -178,7 +178,7 @@ Trust store:
 : A collection of trust anchors managed by the root program.
 
 Certification path:
-: An ordered list of X.509 certificates starting the target certificate. Each certificate is issued by the next certificate, except for the last, which is issued by a trust anchor.
+: An ordered list of X.509 certificates starting the target certificate. Each certificate is issued by the next certificate, except the last, which is issued by a trust anchor.
 
 Trust store manifest:
 : A structure describing a series of versioned trust stores.
@@ -380,7 +380,7 @@ certchainwithproperties = stricttextualmsg eol stricttextualmsg
 
 The first element MUST be the encoded CertificatePropertyList.
 The second element MUST be an end-entity certificate.  Each following
-certificate MUST directly certify the one preceding it. The certificate that represents the trust anchor MUST be omitted from the path.
+certificate MUST directly certify the one preceding it. The certificate representing the trust anchor MUST be omitted from the path.
 
 CertificatePropertyLists are encoded using the "CERTIFICATE PROPERTIES" label. The encoded data is a serialized CertificatePropertyList, defined in {{certificate-properties}}.
 
@@ -664,7 +664,7 @@ A relying party which trusts trust anchors A1, A2, C1, and C2 might send a Trust
 
 * A1_new matches via its version 1 TrustStoreInclusion.
 
-* B1_old does not match. Although its version 0 TrustStoreInclusion has a `status` of `latest_version_at_issuance` and thus applies, `excluded_labels` exclude it.
+* B1_old does not match. Although its version 0 TrustStoreInclusion has a `status` of `latest_version_at_issuance` and thus applies, `excluded_labels` excludes it.
 
 * B1_new does not match. Its version 0 TrustStoreInclusion has a `status` of `previous_version` and does not apply. It has no version 1 TrustStoreInclusion.
 
@@ -710,7 +710,7 @@ In some contexts, it may be possible to use other fields to select the new CA. F
 
 Subscribers in a single-certificate model are limited to CAs in the intersection of their supported relying parties. As newer relying parties remove untrusted CAs over time,the intersection with older relying parties shrinks. Moreover, the subscriber may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For subscribers that serve many diverse relying parties, this is a disruptive and risky process.
 
-The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certiifcate for each relying party.
+The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certificate for each relying party.
 
 ## Other Root Transitions
 
@@ -730,7 +730,7 @@ This operational improvement comes at a bandwidth cost: the TLS handshake includ
 
 A CA operator could provide subscribers with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. The negotiation mechanism in {{tls-certificate-negotiation}} would then send the shorter path to up-to-date relying parties, and the longer path to older relying parties.
 
-This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived root may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.
+This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived roots may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.
 
 ## Conflicting Relying Party Requirements
 
@@ -742,7 +742,7 @@ A single-certificate deployment model forces subscribers to find a single certif
 
 A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.
 
-In order to support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the the union of the certificate paths returned by each ACME server.
+To support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the union of the certificate paths returned by each ACME server.
 
 # Privacy Considerations
 

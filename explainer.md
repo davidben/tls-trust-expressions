@@ -25,7 +25,7 @@ This constraint imposes costs on the ecosystem as PKIs evolve over time. The old
 
 * When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.
 
-TLS trust expressions aims to remove this constraint, by enabling a *multi-certificate deployment model*. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates different relying parties, including older and newer ones.
+TLS trust expressions aims to remove this constraint, by enabling a *multi-certificate deployment model*. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for different relying parties, including older and newer ones.
 
 There are three parts to understanding this proposal:
 
