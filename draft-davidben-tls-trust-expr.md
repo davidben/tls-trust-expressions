@@ -714,7 +714,7 @@ The multi-certificate model removes this constraint. If a subscriber's CA is dis
 
 ## Other Root Transitions
 
-The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a PKI may transition from classical roots to post-quantum ones. A CA operator may generate a postquantum root CA and, using the mechanism in {{acme-extension}}, issue from the classical and postquantum roots concurrently. The subscriber will then, transparently and with no configuration change, serve both. As in {{key-rotation}}, newer relying parties can then remove the classical roots, while older relying parties continue to function.
+The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a CA operator may generate a postquantum root CA and use the mechanism in {{acme-extension}} to issue from the classical and postquantum roots concurrently. The subscriber will then, transparently and with no configuration change, serve both. As in {{key-rotation}}, newer relying parties can then remove the classical roots, while older relying parties continue to function.
 
 This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.
 
