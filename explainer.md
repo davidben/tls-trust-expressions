@@ -15,11 +15,11 @@ This document is a high-level overview and [explainer](https://tag.w3.org/explai
 
 ## Introduction
 
-[TLS](https://www.rfc-editor.org/rfc/rfc8446) endpoints typically authenticate using [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280), which are assertions by a certification authority (CA) that associate some TLS key with some DNS name or other identifier. If the peer trusts the CA, it will accept this association. The authenticating party (usually the server) is known as the *subscriber* and the peer (usually the client) is the *relying party*.
+[TLS](https://www.rfc-editor.org/rfc/rfc8446) endpoints typically authenticate using [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280). These are used as assertions by a certification authority (CA) that associate some TLS key with some DNS name or other identifier. If the peer trusts the CA, it will accept this association. The authenticating party (usually the server) is known as the *subscriber* and the peer (usually the client) is the *relying party*.
 
 Today, subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. We call this a *single-certificate deployment model*. In this model, the single certificate must simultaneously satisfy all relying parties.
 
-This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, forcing subscribers to choose between compatibility with new clients, or breaking old clients. This translates to analogous costs for CAs and relying parties:
+This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, making it increasingly difficult for subscribers to support both. This translates to analogous costs for CAs and relying parties:
 
 * For a new CA to be usable by subscribers, it must be trusted by all relying parties. This is particularly challenging for older, unupdatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.
 
@@ -126,7 +126,7 @@ The multi-certificate model removes this constraint. If a subscriber's CA is dis
 
 ### Intermediate Elision
 
-Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. This means the long-lived root key is less exposed to attack. The short-lived intermediate key can be more easily replaced without changes to relying parties. This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate. Post-quantum algorithms will further inflate this cost. A single [Dilithium3](https://pq-crystals.org/dilithium/) intermediate certificate uses 5,245 bytes in cryptographic material (public key and signature) alone.
+Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties. This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate. Post-quantum algorithms will further inflate this cost. A single [Dilithium3](https://pq-crystals.org/dilithium/) intermediate certificate uses 5,245 bytes in cryptographic material (public key and signature) alone.
 
 The multi-certificate model reduces this cost. A CA operator could provide subscribers with two certificate paths: a longer path ending at a long-lived root and shorter path the other ending at a short-lived root. Relying parties would trust both the long-lived root and the most recent short-lived root. Up-to-date relying parties will match on the short-lived root and use less bandwidth. On mismatch, older relying parties will continue to work with the long-lived root. Subscribers are no longer limited to the lowest-common denominator.
 
