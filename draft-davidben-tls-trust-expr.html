@@ -11,11 +11,11 @@
 <meta content="
        This document defines TLS trust expressions, a mechanism for relying parties to succinctly convey trusted certification authorities to subscribers by referencing named and versioned trust stores. It also defines supporting mechanisms for subscribers to evaluate these trust expressions, and select one of several available certification paths to present. This enables a multi-certificate deployment model, for a more agile and flexible PKI that can better meet security requirements. 
     " name="description">
-<meta content="xml2rfc 3.19.4" name="generator">
+<meta content="xml2rfc 3.20.0" name="generator">
 <meta content="draft-davidben-tls-trust-expr-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.19.4
-    Python 3.11.6
+  xml2rfc 3.20.0
+    Python 3.11.8
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
@@ -1026,11 +1026,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS Trust Expressions</td>
-<td class="right">February 2024</td>
+<td class="right">March 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin, et al.</td>
-<td class="center">Expires 1 September 2024</td>
+<td class="center">Expires 5 September 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1043,12 +1043,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-davidben-tls-trust-expr-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-02-29" class="published">29 February 2024</time>
+<time datetime="2024-03-04" class="published">4 March 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-09-01">1 September 2024</time></dd>
+<dd class="expires"><time datetime="2024-09-05">5 September 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1106,7 +1106,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 1 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1283,21 +1283,20 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">TLS <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> endpoints typically authenticate using X.509 certificates <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>. These certificates are issued by a certification authority (CA) and associate the TLS public key with some application identifier, such as a DNS name. If the peer trusts the CA, it will accept this association. The authenticating party is known as the subscriber and the peer is the relying party.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. The certificate must then simultaneously meet requirements for all relying parties. This constraint imposes significant costs on CAs, subscribers, and relying parties:<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-1">TLS <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> endpoints typically authenticate using X.509 certificates <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>. These are used as assertions by a certification authority (CA) that associate some TLS key with some DNS name or other identifier. If the peer trusts the CA, it will accept this association. The authenticating party is known as the subscriber and the peer is the relying party.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. This certificate must then simultaneously meet requirements for all relying parties.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, making it increasingly difficult for subscribers to support both. This translates to analogous costs for CAs and relying parties:<a href="#section-1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-1-3.1">
-          <p id="section-1-3.1.1">It is difficult for newer CAs to enter the ecosystem if they are not trusted by all relying parties, including older ones. Existing CAs face similar challenges when rotating or deploying new keys.<a href="#section-1-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-1-4.1">
+          <p id="section-1-4.1.1">For a new CA to be usable by subscribers, it must be trusted by all relying parties. This is particularly challenging for older, unupdatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.<a href="#section-1-4.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-1-3.2">
-          <p id="section-1-3.2.1">Single-certificate deployments on subscribers are fragile, particularly in the face of distrusts or other changes to what a relying party accepts.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-1-3.3">
-          <p id="section-1-3.3.1">When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers.<a href="#section-1-3.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-1-4.2">
+          <p id="section-1-4.2.1">When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.<a href="#section-1-4.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-4">Deploying multiple certification paths would avoid these issues. However, relying parties and subscribers must then negotiate which to send in each connection. <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.4" class="relref">Section 4.2.4</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> defines the <code>certificate_authorities</code> extension, but it is often impractical. Some trust stores are large, and the X.509 Name structure is inefficient. For example, as of August 2023, the Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> would encode 144 names totaling 14,457 bytes.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">This document defines a TLS extension and supporting mechanisms that allow relying parties and subscribers to succinctly communicate supported trust anchors to subscribers, using pre-shared information provisioned by root programs and CAs, respectively. This enables a multi-certificate deployment model, which supports a more flexible, robust Public Key Infrastructure (PKI). <a href="#use-cases" class="auto internal xref">Section 9</a> discusses several deployment use cases that are directly improved by this model.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-5">This document aims to remove this constraint with a multi-certificate deployment model. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates different relying parties, including older and newer ones.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">This model requires the endpoints to somehow negotiate which certificate to use. <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.4" class="relref">Section 4.2.4</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> defines the <code>certificate_authorities</code> extension, but it is often impractical. Some trust stores are large, and the X.509 Name structure is inefficient. For example, as of August 2023, the Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> would encode 144 names totaling 14,457 bytes. Instead, this document defines a TLS extension and supporting mechanisms that allow relying parties and subscribers to succinctly communicate supported trust anchors to subscribers, using pre-shared information provisioned by root programs and CAs, respectively.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">Together, these mechanisms enable subscribers to deploy multiple certificates, which supports a more flexible, robust Public Key Infrastructure (PKI). <a href="#use-cases" class="auto internal xref">Section 9</a> discusses several deployment use cases that benefit from this model.<a href="#section-1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -2054,7 +2053,7 @@ How to compute this set depends on the root program's label allocation scheme (<
         <h3 id="name-key-rotation">
 <a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-key-rotation" class="section-name selfRef">Key Rotation</a>
         </h3>
-<p id="section-9.1-1">In most X.509 deployments a compromise of <em>any</em> root CA's private key would compromise the entire PKI. Despite this, X.509 deployments often do not rotate root keys. The oldest certificate in <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> and <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> was issued in 1998, 25 years old as of writing in 2023. A single-certificate deployment model makes rotating root keys challenging due to the need for that certificate to be trusted by a wide range of relying parties. Not all relying parties may be quickly updated with the new root CA, either due to being offline or simply lacking an update mechanism. This means subscribers cannot switch to serving the new root, which in turn means relying parties cannot distrust the old root to complete the transition.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
+<p id="section-9.1-1">In most X.509 deployments, a compromise of <em>any</em> root CA's private key compromises the entire PKI. Yet key rotation in PKIs is rare. In 2023, the oldest root in <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> and <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> was 25 years old, dating to 1998. Key rotation is challenging in a single-certificate deployment model. As long as any older relying party requires the old root, subscribers cannot switch to the new root, which in turn means relying parties cannot distrust the old root, leaving them vulnerable.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
 <p id="section-9.1-2">A multi-certificate deployment model avoids these transition problems. Key rotation may proceed as follows:<a href="#section-9.1-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-9.1-3">
 <li id="section-9.1-3.1">
@@ -2073,7 +2072,7 @@ How to compute this set depends on the root program's label allocation scheme (<
             <p id="section-9.1-3.5.1">Once subscribers have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator continues to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.<a href="#section-9.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-9.1-4">Moreover, this process can complete with no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
+<p id="section-9.1-4">This process requires no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="adding-cas">
@@ -2081,7 +2080,7 @@ How to compute this set depends on the root program's label allocation scheme (<
         <h3 id="name-adding-cas">
 <a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-adding-cas" class="section-name selfRef">Adding CAs</a>
         </h3>
-<p id="section-9.2-1">In the single-certificate X.509 model widely deployed today, subscribers cannot use TLS certificates issued from a new root CA until all supported relying parties have been updated to trust the new root CA. In practice, it can take several years for a new root CA to become trusted in browsers. Some relying parties, such as IoT devices, may never receive trust store updates at all.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+<p id="section-9.2-1">In the single-certificate model, subscribers cannot use TLS certificates issued from a new root CA until all supported relying parties have been updated to trust the new root CA. This can take years or more. Some relying parties, such as IoT devices, may never receive trust store updates at all.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
 <p id="section-9.2-2">As a result, it is very difficult for subscribers that serve a wide variety of relying parties to use a newly-trusted root CA. When trust stores diverge too far, subscribers often must partition their services into multiple TLS endpoints (i.e. different DNS names) and direct different relying parties to different endpoints. Subscribers sometimes resort to TLS fingerprinting, to detect particular relying parties. But, as this repurposes other TLS fields for unintended purposes, this is unreliable and usually requires writing custom service-specific logic.<a href="#section-9.2-2" class="pilcrow">¶</a></p>
 <p id="section-9.2-3">In a multi-certificate deployment model, subscribers can begin serving certificates from new root CAs without interrupting relying parties that depend on existing ones.<a href="#section-9.2-3" class="pilcrow">¶</a></p>
 <p id="section-9.2-4">In some contexts, it may be possible to use other fields to select the new CA. For example, post-quantum-capable clients may be detected with the <code>signature_algorithms</code> and <code>signature_algorithms_cert</code> extensions. However, this assumes all post-quantum CAs are added at the same time. A multi-certificate model avoids this problem and allows for a more gradual deployment of post-quantum CAs.<a href="#section-9.2-4" class="pilcrow">¶</a></p>
@@ -2092,10 +2091,8 @@ How to compute this set depends on the root program's label allocation scheme (<
         <h3 id="name-removing-cas">
 <a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-removing-cas" class="section-name selfRef">Removing CAs</a>
         </h3>
-<p id="section-9.3-1">To serve certificates that will validate in all supported relying parties, subscribers in a single-certificate model only serve certificates from CAs in the intersection of multiple relying party trust stores. As relying parties remove untrusted CAs over time, this intersection may shrink, reducing the set of CAs available to subscribers that can issue widely-trusted certificates. Two relying parties may each support many CAs, but may have no common CA in common.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
-<p id="section-9.3-2">This is exacerbated by relying parties that either have not or cannot take updates, and so cannot trust newer CAs. Moreover, as relying parties do not currently report their trust stores, the subscriber may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For subscribers that serve many diverse relying parties, switching CAs is a disruptive and risky process.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
-<p id="section-9.3-3">In a multi-certificate model, there is no need for subscribers to limit themselves to this intersection. In a multi-certificate model, a subscriber can obtain certificates from multiple CAs, such that each supported relying party is covered by some certificate in the set.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
-<p id="section-9.3-4">For example, suppose a subscriber uses certificates from some CA, CA1. However, some relying party no longer trusts CA1. The subscriber can obtain certificates from another CA that is trusted by that relying party, CA2, while continuing to also use CA1. The relying party that no longer trusts CA1 will be served the CA2's certificate, while relying parties that still trust CA1 can be served the original one.<a href="#section-9.3-4" class="pilcrow">¶</a></p>
+<p id="section-9.3-1">Subscribers in a single-certificate model are limited to CAs in the intersection of their supported relying parties. As newer relying parties remove untrusted CAs over time,the intersection with older relying parties shrinks. Moreover, the subscriber may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For subscribers that serve many diverse relying parties, this is a disruptive and risky process.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
+<p id="section-9.3-2">The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certiifcate for each relying party.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="intermediate-elision">
@@ -2103,8 +2100,8 @@ How to compute this set depends on the root program's label allocation scheme (<
         <h3 id="name-intermediate-elision">
 <a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-intermediate-elision" class="section-name selfRef">Intermediate Elision</a>
         </h3>
-<p id="section-9.4-1">In many PKIs today, root CAs issue certificates to intermediate CAs which, in turn, issue end-entity certificates. This gives some operational and security improvements over issuing end-entity certificates directly from a root CA. The root certificate's private key is less exposed to attack and it allows for different issuance and ownership models. While the intermediate CA often inherits all the authority of the root CA, it can be replaced without changes to relying parties. Thus it can be more easily revoked and/or have a shorter lifetime.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
-<p id="section-9.4-2">However, this comes at a size cost: the certification path, sent in the TLS handshake, includes an extra certificate. This is an extra public key and signature, as well as extra copies of X.509 metadata. (An average X.509 name in the Chrome Root Store <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> or Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> is around 100 bytes, despite largely being an opaque identifier in modern usage.) Post-quantum signature algorithms shift this tradeoff dramatically. Dilithium3 <span>[<a href="#Dilithium" class="cite xref">Dilithium</a>]</span>, for example, has a total public key and signature size of 5,245 bytes.<a href="#section-9.4-2" class="pilcrow">¶</a></p>
+<p id="section-9.4-1">Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
+<p id="section-9.4-2">This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate, which includes a public key, signature, and X.509 metadata. An average X.509 name in the Chrome Root Store <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> or Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> is around 100 bytes alone. Post-quantum signature algorithms will dramatically shift this tradeoff. Dilithium3 <span>[<a href="#Dilithium" class="cite xref">Dilithium</a>]</span>, for example, has a total public key and signature size of 5,245 bytes.<a href="#section-9.4-2" class="pilcrow">¶</a></p>
 <p id="section-9.4-3"><span>[<a href="#I-D.ietf-tls-cert-abridge" class="cite xref">I-D.ietf-tls-cert-abridge</a>]</span> proposes to predistribute known intermediate certificates to relying parties, as a compression scheme. A multi-certificate deployment model provides another way to achieve this effect. To relying parties, a predistributed intermediate certificate is functionally equivalent to a root certificate. PKIs use intermediate certificates because changing root certificates requires updating relying parties, but predistributed intermediates already presume updated relying parties.<a href="#section-9.4-3" class="pilcrow">¶</a></p>
 <p id="section-9.4-4">A CA operator could provide subscribers with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. The negotiation mechanism in <a href="#tls-certificate-negotiation" class="auto internal xref">Section 6</a> would then send the shorter path to up-to-date relying parties, and the longer path to older relying parties.<a href="#section-9.4-4" class="pilcrow">¶</a></p>
 <p id="section-9.4-5">This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived root may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.<a href="#section-9.4-5" class="pilcrow">¶</a></p>
@@ -2124,7 +2121,7 @@ How to compute this set depends on the root program's label allocation scheme (<
         <h3 id="name-backup-certificates">
 <a href="#section-9.6" class="section-number selfRef">9.6. </a><a href="#name-backup-certificates" class="section-name selfRef">Backup Certificates</a>
         </h3>
-<p id="section-9.6-1">A subscriber desiring to offer a robust service to relying parties in the face of a potential future CA compromise or distrust may obtain certification paths from multiple CAs. This provides redundancy in the event that some relying party no longer supports one of the two CAs. As long as the subscriber continues to have at least one trusted certification path, it will continue to be trusted by the relying parties.<a href="#section-9.6-1" class="pilcrow">¶</a></p>
+<p id="section-9.6-1">A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.<a href="#section-9.6-1" class="pilcrow">¶</a></p>
 <p id="section-9.6-2">In order to support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the the union of the certificate paths returned by each ACME server.<a href="#section-9.6-2" class="pilcrow">¶</a></p>
 </section>
 </div>
