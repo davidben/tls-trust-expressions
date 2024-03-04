@@ -150,7 +150,7 @@ Table of Contents
    deployment model.  Subscribers are instead provisioned with multiple
    certificates and automatically select the correct one to use with
    each relying party.  This allows a single subscriber to use different
-   certificates different relying parties, including older and newer
+   certificates for different relying parties, including older and newer
    ones.
 
    This model requires the endpoints to somehow negotiate which
@@ -236,8 +236,7 @@ Table of Contents
 
    Certification path:  An ordered list of X.509 certificates starting
       the target certificate.  Each certificate is issued by the next
-      certificate, except for the last, which is issued by a trust
-      anchor.
+      certificate, except the last, which is issued by a trust anchor.
 
    Trust store manifest:  A structure describing a series of versioned
       trust stores.
@@ -568,7 +567,7 @@ Table of Contents
    The first element MUST be the encoded CertificatePropertyList.  The
    second element MUST be an end-entity certificate.  Each following
    certificate MUST directly certify the one preceding it.  The
-   certificate that represents the trust anchor MUST be omitted from the
+   certificate representing the trust anchor MUST be omitted from the
    path.
 
    CertificatePropertyLists are encoded using the "CERTIFICATE
@@ -1048,7 +1047,7 @@ Table of Contents
 
    *  B1_old does not match.  Although its version 0 TrustStoreInclusion
       has a status of latest_version_at_issuance and thus applies,
-      excluded_labels exclude it.
+      excluded_labels excludes it.
 
    *  B1_new does not match.  Its version 0 TrustStoreInclusion has a
       status of previous_version and does not apply.  It has no version
@@ -1155,7 +1154,7 @@ Table of Contents
    addition to a newer one.  This removes the risk that some older
    relying party required that CA and was incompatible with the new one.
    The mechanisms in this document will select an appropriate
-   certiifcate for each relying party.
+   certificate for each relying party.
 
 9.4.  Other Root Transitions
 
@@ -1215,7 +1214,7 @@ Table of Contents
    need not be related.  For example, root CA public keys are not
    distributed in each TLS connection, so a post-quantum signature
    algorithm that optimizes for signature size may be preferable.  In
-   this model, both the long-lived and short-lived root may use such an
+   this model, both the long-lived and short-lived roots may use such an
    algorithm.  In a compression-based model, the same intermediate must
    optimize both its compressed and uncompressed size, so such an
    algorithm may not be suitable.
@@ -1244,9 +1243,9 @@ Table of Contents
    compromised and removed from newer relying parties, the TLS server
    software will transparently serve the other one.
 
-   In order to support this, TLS serving software SHOULD permit users to
-   configure multiple ACME endpoints and select from the the union of
-   the certificate paths returned by each ACME server.
+   To support this, TLS serving software SHOULD permit users to
+   configure multiple ACME endpoints and select from the union of the
+   certificate paths returned by each ACME server.
 
 10.  Privacy Considerations
 

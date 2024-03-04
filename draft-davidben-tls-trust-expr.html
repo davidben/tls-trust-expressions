@@ -1297,7 +1297,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
           <p id="section-1-4.2.1">When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.<a href="#section-1-4.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-5">This document aims to remove this constraint with a multi-certificate deployment model. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates different relying parties, including older and newer ones.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-5">This document aims to remove this constraint with a multi-certificate deployment model. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for different relying parties, including older and newer ones.<a href="#section-1-5" class="pilcrow">¶</a></p>
 <p id="section-1-6">This model requires the endpoints to somehow negotiate which certificate to use. <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.4" class="relref">Section 4.2.4</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> defines the <code>certificate_authorities</code> extension, but it is often impractical. Some trust stores are large, and the X.509 Name structure is inefficient. For example, as of August 2023, the Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> would encode 144 names totaling 14,457 bytes. Instead, this document defines a TLS extension and supporting mechanisms that allow relying parties and subscribers to succinctly communicate supported trust anchors to subscribers, using pre-shared information provisioned by root programs and CAs, respectively.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <p id="section-1-7">Together, these mechanisms enable subscribers to deploy multiple certificates, which supports a more flexible, robust Public Key Infrastructure (PKI). <a href="#use-cases" class="auto internal xref">Section 9</a> discusses several deployment use cases that benefit from this model.<a href="#section-1-7" class="pilcrow">¶</a></p>
 </section>
@@ -1365,7 +1365,7 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
           <dd class="break"></dd>
 <dt id="section-2.2-5.5">Certification path:</dt>
           <dd style="margin-left: 1.5em" id="section-2.2-5.6">
-            <p id="section-2.2-5.6.1">An ordered list of X.509 certificates starting the target certificate. Each certificate is issued by the next certificate, except for the last, which is issued by a trust anchor.<a href="#section-2.2-5.6.1" class="pilcrow">¶</a></p>
+            <p id="section-2.2-5.6.1">An ordered list of X.509 certificates starting the target certificate. Each certificate is issued by the next certificate, except the last, which is issued by a trust anchor.<a href="#section-2.2-5.6.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-2.2-5.7">Trust store manifest:</dt>
@@ -1658,7 +1658,7 @@ certchainwithproperties = stricttextualmsg eol stricttextualmsg
 </div>
 <p id="section-5.3-3">The first element MUST be the encoded CertificatePropertyList.
 The second element MUST be an end-entity certificate.  Each following
-certificate MUST directly certify the one preceding it. The certificate that represents the trust anchor MUST be omitted from the path.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+certificate MUST directly certify the one preceding it. The certificate representing the trust anchor MUST be omitted from the path.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
 <p id="section-5.3-4">CertificatePropertyLists are encoded using the "CERTIFICATE PROPERTIES" label. The encoded data is a serialized CertificatePropertyList, defined in <a href="#certificate-properties" class="auto internal xref">Section 5</a>.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
 <p id="section-5.3-5">Certificates are encoded as in <span><a href="https://rfc-editor.org/rfc/rfc7468#section-5.1" class="relref">Section 5.1</a> of [<a href="#RFC7468" class="cite xref">RFC7468</a>]</span>, except DER <span>[<a href="#X690" class="cite xref">X690</a>]</span> MUST be used.<a href="#section-5.3-5" class="pilcrow">¶</a></p>
 <p id="section-5.3-6">The following is an example file with a certification path containing an end-entity certificate and an intermediate certificate.<a href="#section-5.3-6" class="pilcrow">¶</a></p>
@@ -2030,7 +2030,7 @@ How to compute this set depends on the root program's label allocation scheme (<
           <p id="section-8-22.2.1">A1_new matches via its version 1 TrustStoreInclusion.<a href="#section-8-22.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-22.3">
-          <p id="section-8-22.3.1">B1_old does not match. Although its version 0 TrustStoreInclusion has a <code>status</code> of <code>latest_version_at_issuance</code> and thus applies, <code>excluded_labels</code> exclude it.<a href="#section-8-22.3.1" class="pilcrow">¶</a></p>
+          <p id="section-8-22.3.1">B1_old does not match. Although its version 0 TrustStoreInclusion has a <code>status</code> of <code>latest_version_at_issuance</code> and thus applies, <code>excluded_labels</code> excludes it.<a href="#section-8-22.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-22.4">
           <p id="section-8-22.4.1">B1_new does not match. Its version 0 TrustStoreInclusion has a <code>status</code> of <code>previous_version</code> and does not apply. It has no version 1 TrustStoreInclusion.<a href="#section-8-22.4.1" class="pilcrow">¶</a></p>
@@ -2095,7 +2095,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-removing-cas" class="section-name selfRef">Removing CAs</a>
         </h3>
 <p id="section-9.3-1">Subscribers in a single-certificate model are limited to CAs in the intersection of their supported relying parties. As newer relying parties remove untrusted CAs over time,the intersection with older relying parties shrinks. Moreover, the subscriber may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For subscribers that serve many diverse relying parties, this is a disruptive and risky process.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
-<p id="section-9.3-2">The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certiifcate for each relying party.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
+<p id="section-9.3-2">The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certificate for each relying party.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="other-root-transitions">
@@ -2117,7 +2117,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <p id="section-9.5-2">This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate, which includes a public key, signature, and X.509 metadata. An average X.509 name in the Chrome Root Store <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> or Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> is around 100 bytes alone. Post-quantum signature algorithms will dramatically shift this tradeoff. Dilithium3 <span>[<a href="#Dilithium" class="cite xref">Dilithium</a>]</span>, for example, has a total public key and signature size of 5,245 bytes.<a href="#section-9.5-2" class="pilcrow">¶</a></p>
 <p id="section-9.5-3"><span>[<a href="#I-D.ietf-tls-cert-abridge" class="cite xref">I-D.ietf-tls-cert-abridge</a>]</span> proposes to predistribute known intermediate certificates to relying parties, as a compression scheme. A multi-certificate deployment model provides another way to achieve this effect. To relying parties, a predistributed intermediate certificate is functionally equivalent to a root certificate. PKIs use intermediate certificates because changing root certificates requires updating relying parties, but predistributed intermediates already presume updated relying parties.<a href="#section-9.5-3" class="pilcrow">¶</a></p>
 <p id="section-9.5-4">A CA operator could provide subscribers with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. The negotiation mechanism in <a href="#tls-certificate-negotiation" class="auto internal xref">Section 6</a> would then send the shorter path to up-to-date relying parties, and the longer path to older relying parties.<a href="#section-9.5-4" class="pilcrow">¶</a></p>
-<p id="section-9.5-5">This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived root may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.<a href="#section-9.5-5" class="pilcrow">¶</a></p>
+<p id="section-9.5-5">This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived roots may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.<a href="#section-9.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conflicting-relying-party-requirements">
@@ -2135,7 +2135,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <a href="#section-9.7" class="section-number selfRef">9.7. </a><a href="#name-backup-certificates" class="section-name selfRef">Backup Certificates</a>
         </h3>
 <p id="section-9.7-1">A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.<a href="#section-9.7-1" class="pilcrow">¶</a></p>
-<p id="section-9.7-2">In order to support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the the union of the certificate paths returned by each ACME server.<a href="#section-9.7-2" class="pilcrow">¶</a></p>
+<p id="section-9.7-2">To support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the union of the certificate paths returned by each ACME server.<a href="#section-9.7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
