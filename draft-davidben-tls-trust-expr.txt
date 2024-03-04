@@ -98,9 +98,10 @@ Table of Contents
      9.1.  Key Rotation
      9.2.  Adding CAs
      9.3.  Removing CAs
-     9.4.  Intermediate Elision
-     9.5.  Conflicting Relying Party Requirements
-     9.6.  Backup Certificates
+     9.4.  Other Root Transitions
+     9.5.  Intermediate Elision
+     9.6.  Conflicting Relying Party Requirements
+     9.7.  Backup Certificates
    10. Privacy Considerations
    11. Security Considerations
    12. IANA Considerations
@@ -821,7 +822,7 @@ Table of Contents
 
    Subscribers MAY additionally combine the outputs from multiple CAs.
    This may be used, for example, to maintain backup certificates as
-   described in Section 9.6.
+   described in Section 9.7.
 
 7.1.  ACME Extension
 
@@ -1156,7 +1157,26 @@ Table of Contents
    The mechanisms in this document will select an appropriate
    certiifcate for each relying party.
 
-9.4.  Intermediate Elision
+9.4.  Other Root Transitions
+
+   The mechanisms in this document can aid PKI transitions beyond key
+   rotation.  For example, a PKI may transition from classical roots to
+   post-quantum ones.  A CA operator may generate a postquantum root CA
+   and, using the mechanism in Section 7.1, issue from the classical and
+   postquantum roots concurrently.  The subscriber will then,
+   transparently and with no configuration change, serve both.  As in
+   Section 9.1, newer relying parties can then remove the classical
+   roots, while older relying parties continue to function.
+
+   This same procedure may also be used to transition between newer,
+   more size-efficient signature algorithms, as they are developed.
+
+   [[TODO: There's one missing piece, which is that some servers may
+   attempt to parse the signature algorithms out of the certificate
+   chain.  See https://github.com/davidben/tls-trust-expressions/
+   issues/9 ]]
+
+9.5.  Intermediate Elision
 
    Today, root CAs typically issue shorter-lived intermediate
    certificates which, in turn, issue end-entity certificates.  The
@@ -1200,7 +1220,7 @@ Table of Contents
    optimize both its compressed and uncompressed size, so such an
    algorithm may not be suitable.
 
-9.5.  Conflicting Relying Party Requirements
+9.6.  Conflicting Relying Party Requirements
 
    A subscriber may need to support relying parties with different
    requirements.  For example, in contexts where online revocation
@@ -1217,7 +1237,7 @@ Table of Contents
    contexts would provision certificates for each, with certificate
    negotiation logic directing the right one to each relying party.
 
-9.6.  Backup Certificates
+9.7.  Backup Certificates
 
    A subscriber may obtain certificate paths from multiple CAs for
    redundancy in the face of future CA compromises.  If one CA is
