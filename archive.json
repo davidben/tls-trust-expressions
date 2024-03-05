@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-03-03T01:19:50.975894+00:00",
+  "timestamp": "2024-03-05T01:15:40.735089+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -149,14 +149,38 @@
       "id": "I_kwDOKigz-s6A4l7W",
       "title": "Rework introduction after explainer",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/8",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "I wrote the explainer document in part by taking the introduction text and wordsmithing it a bit. I think the version in the explainer is a bit clearer. Let's backport some of those clarity improvements into the draft itself.",
       "createdAt": "2024-03-01T00:26:54Z",
-      "updatedAt": "2024-03-01T00:26:54Z",
+      "updatedAt": "2024-03-04T23:17:39Z",
+      "closedAt": "2024-03-04T23:17:38Z",
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "This is done.",
+          "createdAt": "2024-03-04T23:17:38Z",
+          "updatedAt": "2024-03-04T23:17:38Z"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOKigz-s6BM3vN",
+      "title": "Allow CA signatures to be opaque to the subscriber",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/9",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Imagine we have a PKI and would like to transition the roots from one algorithm to another. This could be classical to post-quantum, or perhaps the current round of post-quantum algorithms to a future, more size-efficient one.\r\n\r\nThe subscribers keys will unavoidably require manual work by the subscriber. But everything beyond the subscriber key (what Merkle Tree Certificate's [BikeshedCertificate](https://davidben.github.io/merkle-tree-certs/draft-davidben-tls-merkle-tree-certs.html#name-certificate-format) calls the \"proof\") is purely a matter between the CA and relying party. The subscriber *does not need to process them*. It would be nice if CAs could transparently start issuing you a classical-rooted certificate and a PQ-rooted certificate, and then certificate negotiation automatically takes care of it.\r\n\r\nIn particular, though this doesn't get the EE keys, a world with PQ roots and mixed PQ and classical EE keys is actually still coherent because we have a PQ-secure signal[*] that the site is not yet ready to be PQ-secure. Separating the transitions will be useful. And, of course, when transitioning between PQ-old-and-big vs PQ-new-and-small, the mix is straightforwardly coherent.\r\n\r\nWe *almost* have the pieces of this, except for one problem: X.509 is a bad fit for TLS. TLS uses code points, while X.509 negotiations with (sometimes [comically unusable](https://www.rfc-editor.org/rfc/rfc4055.html)) AlgorithmIdentifiers. A TLS stack cannot map between them without recognizing the signature algorithm. This means CA signatures in X.509, unlike BikeshedCertificate, are *not* opaque to the subscriber. In particular, although very few folks implement it (without trust expressions, there are path-building problems), RFC 8446 technically [requires](https://www.rfc-editor.org/rfc/rfc8446#section-4.4.2.2) the subscriber check this before presenting a certificate.\r\n\r\nWe can fix this by adding a `signature_algorithms` certificate property, that contains the CA-extracted codepoints in TLS syntax. If the property is present, the subscriber's TLS software should check those against the ClientHello in lieu of trying to parse this messy data out of the certificate.\r\n\r\n[*] Well, sort of. The existence of a P-256 certificate does not imply the non-existence of an ML-DSA certificate. We may need a bit more pieces to make that transition state viable.",
+      "createdAt": "2024-03-04T19:56:37Z",
+      "updatedAt": "2024-03-04T19:56:37Z",
       "closedAt": null,
       "comments": []
     }
