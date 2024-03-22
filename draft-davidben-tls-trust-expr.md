@@ -828,9 +828,6 @@ Author:
 Change controller:
 : IETF
 
-
-## ACME Order Object Fields Updates
-
 ## CertificatePropertyType Registry
 
 [[TODO: Establish a CertificatePropertyType registry.]]
