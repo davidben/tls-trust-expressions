@@ -307,7 +307,7 @@ The entries in a CertificatePropertyList MUST be sorted numerically by `type` an
 
 This document defines a single property, `trust_stores`, which describes trust store inclusion. Future documents may define other properties for use with other mechanisms.
 
-Subscribers MUST ignore unrecognized properties with CertificatePropertyType values. If ignoring a property would cause such subscribers to misinterpret the structure, the document defining the CertificatePropertyType SHOULD include a mechanism for CAs to negotiate the new property with the subscriber in certificate management protocols such as ACME {{?RFC8555}}. For example, {{acme-extension}} defines a "trustExpressions" ACME order field.
+Subscribers MUST ignore unrecognized properties with CertificatePropertyType values. If ignoring a property would cause such subscribers to misinterpret the structure, the document defining the CertificatePropertyType SHOULD include a mechanism for CAs to negotiate the new property with the subscriber in certificate management protocols such as ACME {{?RFC8555}}.
 
 ## Trust Store Inclusion
 
@@ -521,11 +521,9 @@ Subscribers MAY additionally combine the outputs from multiple CAs. This may be 
 
 ## ACME Extension
 
-This section extends ACME {{!RFC8555}} to be able to issue certificate paths, each with an associated CertificatePropertyList by defining a new media type in {{media-type}}. It extends the ACME order object with a configurable boolean field, "trustExpressions".
+This section extends ACME {{!RFC8555}} to be able to issue certificate paths, each with an associated CertificatePropertyList by defining a new media type in {{media-type}}.
 
-First, ACME clients indicate they support certification paths selected by trust expressions by setting "trustExpressions" to "true" in the ACME newOrder request ({{Section 7.4 of !RFC8555}}). If the server accepts the request, it MUST reflect the field in the resulting order object.
-
-When an ACME server processes an order object with the "trustExpressions" field set to "true", it MAY issue multiple certification paths, each with an associated TrustStoreInclusionList, computed as in {{computing-trust-store-inclusions}}. These paths MAY share an end-entity certificate but end at different trust anchors, or they MAY be completely distinct. If the latter, the "trustExpressions" order field allows the ACME server to skip issuing unnecessary end-entity certificates for ACME clients that would be unable to use them. The ACME server encodes each certification path using the application/pem-certificate-chain-with-properties format, defined in {{media-type}}).  Note this format is required to form a complete certification path. The CA MUST return a result that may be verified by relying parties without path building {{?RFC4158}}.
+When an ACME server processes an order object, it MAY issue multiple certification paths, each with an associated TrustStoreInclusionList, computed as in {{computing-trust-store-inclusions}}. These paths MAY share an end-entity certificate but end at different trust anchors, or they MAY be completely distinct. The ACME server encodes each certification path using the application/pem-certificate-chain-with-properties format, defined in {{media-type}}).  Note this format is required to form a complete certification path. The CA MUST return a result that may be verified by relying parties without path building {{?RFC4158}}.
 
 The ACME server provides additional results to the client with the link relation header fields described in {{Section 7.4.2 of !RFC8555}}. When fetching certificates, the ACME client includes application/pem-certificate-chain-with-properties in its Accept header to indicate it supports the new format. Unlike the original mechanism described in {{RFC8555}}, these certification paths do not require heuristics to be used. Instead, the ACME client uses the associated TrustStoreInclusionLists to select a path as described in {{subscriber-behavior}}.
 
@@ -829,16 +827,6 @@ Author:
 
 Change controller:
 : IETF
-
-
-## ACME Order Object Fields Updates
-
-IANA is requested to create the following entry in the ACME Order Object Fields registry, defined by {{!RFC8555}}:
-
-| Field Name       | Field Type | Configurable | Reference  |
-|------------------|------------|--------------|------------|
-| trustExpressions | boolean    | true         | [this-RFC] |
-
 
 ## CertificatePropertyType Registry
 
