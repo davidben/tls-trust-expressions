@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-03-21T01:17:42.144056+00:00",
+  "timestamp": "2024-03-24T01:23:27.941267+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -183,6 +183,32 @@
       "updatedAt": "2024-03-04T19:56:37Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOKigz-s6DFL9f",
+      "title": "Remove trustExpressions request boolean",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/10",
+      "state": "CLOSED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Per feedback from @aarongable, it's probably better to omit the the trustExpressions boolean for now. It was intended to accommodate some more complex issuance cases, but it's probably better to resolve that in a separate document, since general multiple issuance may require much more complicated ACME bits anyway. Let's start with just the Accept HTTP request header and the MIME type and we can add more extensions later.",
+      "createdAt": "2024-03-21T05:46:14Z",
+      "updatedAt": "2024-03-22T21:50:57Z",
+      "closedAt": "2024-03-22T21:50:57Z",
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "This is now done.",
+          "createdAt": "2024-03-22T21:50:57Z",
+          "updatedAt": "2024-03-22T21:50:57Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -310,6 +336,68 @@
           "body": "",
           "createdAt": "2024-02-29T20:24:26Z",
           "updatedAt": "2024-02-29T20:24:26Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "id": "PR_kwDOKigz-s5qcjwg",
+      "title": "Remove the trustExpressions extension flag for ACME.",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/11",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This has always been an optimization, not a requirement for this to work. Some discussions with CA operators indicate this is probably unnecessary and we can remove it for now.",
+      "createdAt": "2024-03-22T05:03:26Z",
+      "updatedAt": "2024-03-22T21:50:38Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "abd930a6a0f9961398127ef04c47d3696486f2e8",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "e974e4cbb2e1f40ccf623f28028cf4fb58c1e336",
+      "closedAt": "2024-03-22T21:50:38Z",
+      "mergedAt": "2024-03-22T21:50:38Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "5e02af81a8fb58c90064794f0682a8154cafdd87"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s50fN9G",
+          "commit": {
+            "abbreviatedOid": "582e853"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-03-22T09:31:51Z",
+          "updatedAt": "2024-03-22T09:31:51Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "We can delete this section heading too.",
+              "createdAt": "2024-03-22T09:31:51Z",
+              "updatedAt": "2024-03-22T09:31:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s50fOB5",
+          "commit": {
+            "abbreviatedOid": "582e853"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "LGTM!",
+          "createdAt": "2024-03-22T09:32:00Z",
+          "updatedAt": "2024-03-22T09:32:00Z",
           "comments": []
         }
       ]
