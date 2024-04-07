@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-04-04T01:18:36.744885+00:00",
+  "timestamp": "2024-04-07T01:23:57.063948+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -209,6 +209,22 @@
           "updatedAt": "2024-03-22T21:50:57Z"
         }
       ]
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOKigz-s6EuBAN",
+      "title": "Decide how to allocate trust store names",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/12",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Merkle Tree certificates will have a similar problem in naming CAs. And honestly even for X.509 certificates, a shorter name would be valuable.\r\n\r\nGoofy as ASN.1 is, we're actually thinking OIDs right now. Specifically OIDs under the [Private Enterprise Number (PEN) arc](https://www.rfc-editor.org/rfc/rfc9371.html), probably represented as a DER-encoded `RELATIVE-OID` contents, excluding the tag and length, relative to the `1.3.6.1.4.1` prefix, avoid an unnecessary 5 bytes.\r\n\r\nThis is nice because:\r\n* Anyone can register them, so there's an easy answer for private PKIs\r\n* They're pretty compact; the largest PEN so far fits in 3 bytes, and then an organization should only need a couple more bytes past that, even if they've already been using their namespace. We're unlikely to ever allocate a 4-byte PEN.\r\n* While not directly useful for this draft, the hierarchical nature might be handy for MTCs, which have a two-layer thing going on\r\n* It seems perhaps handy for MTC CA names and trust stores to not collide. You could potentially use an MTC CA name as an implicit trust store. (Not yet thought through.)",
+      "createdAt": "2024-04-04T22:55:37Z",
+      "updatedAt": "2024-04-04T22:55:37Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
