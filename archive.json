@@ -1,0 +1,438 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2024-05-12T01:33:27.399857+00:00",
+  "repo": "davidben/tls-trust-expressions",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOKigz-s50ZUKW",
+      "title": "Allow pruning deactivated trust anchors?",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/1",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The document is currently written to be append-only, which is correct for X.509 and also shouldn't grow significantly. @bwesterb points out Merkle tree certs have different properties:\r\n\r\n1. MTC trust anchors are minted every hour\r\n2. MTC trust anchors naturally deactivate themselves\r\n\r\nProperty 1 means the manifest will grow over time and potentially get unwieldy. But property 2 implies an easy fix. Once an MTC trust anchor expires, there is no benefit to listing it in the manifest beyond historical interest. So we could potentially allow those to get trimmed. That will, in turn, allow trimming the old versions since they become empty. We have no way to express either of these, so we may want to add some allowance for this in the format.\r\n\r\nWe also don't necessarily need to do this here. Since the manifest document is consumed by just the root programs and CAs, who know what type of CA they are, we can always put this extra allowance in the MTC document. But it would be convenient if the changes slot nicely into the existing format, so we may want to look at this a bit.",
+      "createdAt": "2023-10-19T18:00:38Z",
+      "updatedAt": "2023-11-20T23:07:06Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "aarongable",
+          "authorAssociation": "NONE",
+          "body": "This was my first thought when I read the draft -- unlimited growth with no way to prune old versions which contain only expired anchors will be a footgun, whether it's for reasons we can forsee right now or not. I'm strongly in favor of allowing pruning.",
+          "createdAt": "2023-11-20T20:51:01Z",
+          "updatedAt": "2023-11-20T20:51:01Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Other than syntactic concerns (we'd need to start the counter later in the JSON document, or add a `version` key), I think the main consideration with pruning them is what happens to older RPs:\r\n\r\nA root program might stop really paying attention to old relying parties after, let's say, 1 year. (I'm making this number up.) E.g. If some Chrome hasn't taken software or component updates for so long, it's probably going to stay that way. Even if the private key of one of its CAs leaked online, if we cannot push code or config to those clients, we can't help them anyway.\r\n\r\nBut that says nothing about whether web servers care about serving those Chromes (and anyone else using the trust store version). That may happen for longer. Examples:\r\n\r\n* Maybe some old version of Chromium ended up in an old Electron that some popular apps are still using\r\n* Maybe this is on unupdated copy of WebView\r\n* Maybe this server is part of some enterprise deployment that has intentionally stayed on a very old Chrome\r\n* Maybe this server is just very popular and very risk-averse and doesn't want to stop serving those clients\r\n* Maybe this isn't Chromium at all, but and some other root program spun off, forked off of the Chrome list initially, and is still sending an old Chrome trust store name for compatibility while certs update their metadata.\r\n* Maybe this is some random IoT device that copied the root store as of some year and never updated it ever again\r\n\r\nCAs will need metadata about those old trust store versions for as long as they wish to serve subscribers that, in turn, which to serve these relying parties. In most of these cases, that schedule is completely detached from the root program that maintains the manifest.\r\n\r\nThis doesn't _really_ matter because the old versions are frozen and the CA can always just hold on to the old file before the root program stops trying to serve it. But I'm sure folks will mess this up, and it seems easier to not tempt fate if the growth isn't actually a problem. (Of course, if it is a problem, that's a whole different matter. I also wouldn't want to tempt fate if we think growth is fine and it turns out to be bad...)\r\n\r\nAside: There is arguably _a_ way to prune it as-is. It's just gross and terrible. :-) Just make a new trust store name. But this causes a minor bit of disruption at the transition point. (I think RPs would need to send trust expressions for both names for a spell.) Depending on how unforeseeable this unforeseen thing is, that can always been an option in a pinch. ",
+          "createdAt": "2023-11-20T23:04:49Z",
+          "updatedAt": "2023-11-20T23:07:06Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOKigz-s501GPP",
+      "title": "Tidy up who prepares trust expressions",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/3",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "We mostly want it to be the root program, but relying parties might end up tweaking things if, say, something is conditioned on software version. I was envisioning the root program sends down some private structure like \"also include these exclusions under these conditions\", etc., but that's very hard to describe.\r\n\r\nPerhaps a better separation is to say:\r\n* Root programs compute the compatibility exclusions\r\n* Better yet, stick them in the manifest so people can easily use them; root programs periodically recompute them to trim away stuff they don't need anymore\r\n* Relying parties take the mandatory ones from the manifest and then add in their own as needed. If that task is half done by the software vendor and half done on the client device, that's the application's business, but we describe it as the relying party doing it.\r\n\r\nThe problem is that computing exclusions is a little tricky. Maybe we need to mark which label is the singleton one, so that computing the label set is always possible? This does add quite a lot more moving parts though.",
+      "createdAt": "2023-10-24T21:07:21Z",
+      "updatedAt": "2023-10-24T21:07:21Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOKigz-s52V37W",
+      "title": "Limit to TLS 1.3 and up",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/4",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The certificate message extension doesn't work otherwise. Just add a sentence somewhere.",
+      "createdAt": "2023-11-09T11:42:20Z",
+      "updatedAt": "2023-11-09T11:42:20Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOKigz-s5_Y37F",
+      "title": "Does CertificatePropertyList confer any semantics on its own?",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/6",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "In prototyping some subscriber support, one thing came up: trust-expression-enabled credentials are different from normal credentials:\r\n\r\n* The credentials are expected to be gated on trust expressions, or some other kind of issuer negotiation. (You could imagine also checking the `certificate_authorities` extension, or other mechanisms.)\r\n* Due to this negotiation, the credentials are expected be exact certificate paths, with nothing extra or missing. In particular, this means it should be safe for the subscriber to check against the `signature_algorithms` and `signature_algorithms_cert` without worrying about stray MD2 self-signed roots.\r\n\r\nHowever, CertificatePropertyList is extensible, which is nice because it allows us to introduce other kinds of properties without changing the CA -> server software -> TLS library flow. It's basically a grab-bag of any kind of CA -> server software communication.\r\n\r\nBut this, combined with wanting to minimize how much layers in between need to inspect CertificatePropertyList puts us in a pickle: what does it mean if you get a CertificatePropertyList without any trust expression property? Maybe it's got some other property you don't understand. Does it still imply that it's still issuer-gated and a whole path?\r\n\r\nIf yes, the extensibility is less useful. There may well be use cases that don't want to be issuer-gated.\r\nIf no, we don't want the certificate to accidentally get interpreted as non-issuer-gated when it actually was issuer-gated by some other mechanism.\r\n\r\nIn writing this, I think I'm coming around to \"no\" being the right answer, but then...\r\n* Should the caller be required to call some \"this is an issuer-gated credential\" API? I.e. we use an out-of-band signal rather than relying on in-band signals that might disappear.\r\n* Do we have a general \"this is issuer-gated\" property and say everyone must understand this? That seems a bit weird.\r\n* Do we need to invent critical properties??? \ud83d\ude2d ",
+      "createdAt": "2024-02-15T19:01:39Z",
+      "updatedAt": "2024-02-17T14:11:56Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "What about:\r\n\r\n1. If there is a trust expression property, ignore other properties you don't understand.\r\n2. If there are no properties you understand, ignore the credential.\r\n\r\nNew properties can define different semantics as desired.",
+          "createdAt": "2024-02-16T18:12:13Z",
+          "updatedAt": "2024-02-16T18:12:13Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "What if, say, we moved SCT lists to a certificate property (could be a convenient way for the CA to deliver them and allow the server to negotiate which to send)? If you see only that property, do you ignore the credential?\r\n\r\nBob, Devon, and I talked a bit about this earlier and are currently leaning towards the first of the three options: CPLs are just a bag of data, and it's on the TLS library user to say \"this credential needs to match the issuer\" and \"I believe this credential is ubiquitous and a viable candidate for the default\".\r\n\r\nIt does make the API a bit more annoying, but that does ultimately translate to what probably the application's config file will be: a new directive for \"here are my negotiated certs\". (Or \"here are some ACME URLs to get negotiated certs\".) You need a new one mostly because the existing one has an implicit \"this is ubiquitous\" semantic.",
+          "createdAt": "2024-02-17T14:11:55Z",
+          "updatedAt": "2024-02-17T14:11:55Z"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "id": "I_kwDOKigz-s6A4l7W",
+      "title": "Rework introduction after explainer",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/8",
+      "state": "CLOSED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "I wrote the explainer document in part by taking the introduction text and wordsmithing it a bit. I think the version in the explainer is a bit clearer. Let's backport some of those clarity improvements into the draft itself.",
+      "createdAt": "2024-03-01T00:26:54Z",
+      "updatedAt": "2024-03-04T23:17:39Z",
+      "closedAt": "2024-03-04T23:17:38Z",
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "This is done.",
+          "createdAt": "2024-03-04T23:17:38Z",
+          "updatedAt": "2024-03-04T23:17:38Z"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOKigz-s6BM3vN",
+      "title": "Allow CA signatures to be opaque to the subscriber",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/9",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Imagine we have a PKI and would like to transition the roots from one algorithm to another. This could be classical to post-quantum, or perhaps the current round of post-quantum algorithms to a future, more size-efficient one.\r\n\r\nThe subscribers keys will unavoidably require manual work by the subscriber. But everything beyond the subscriber key (what Merkle Tree Certificate's [BikeshedCertificate](https://davidben.github.io/merkle-tree-certs/draft-davidben-tls-merkle-tree-certs.html#name-certificate-format) calls the \"proof\") is purely a matter between the CA and relying party. The subscriber *does not need to process them*. It would be nice if CAs could transparently start issuing you a classical-rooted certificate and a PQ-rooted certificate, and then certificate negotiation automatically takes care of it.\r\n\r\nIn particular, though this doesn't get the EE keys, a world with PQ roots and mixed PQ and classical EE keys is actually still coherent because we have a PQ-secure signal[*] that the site is not yet ready to be PQ-secure. Separating the transitions will be useful. And, of course, when transitioning between PQ-old-and-big vs PQ-new-and-small, the mix is straightforwardly coherent.\r\n\r\nWe *almost* have the pieces of this, except for one problem: X.509 is a bad fit for TLS. TLS uses code points, while X.509 negotiations with (sometimes [comically unusable](https://www.rfc-editor.org/rfc/rfc4055.html)) AlgorithmIdentifiers. A TLS stack cannot map between them without recognizing the signature algorithm. This means CA signatures in X.509, unlike BikeshedCertificate, are *not* opaque to the subscriber. In particular, although very few folks implement it (without trust expressions, there are path-building problems), RFC 8446 technically [requires](https://www.rfc-editor.org/rfc/rfc8446#section-4.4.2.2) the subscriber check this before presenting a certificate.\r\n\r\nWe can fix this by adding a `signature_algorithms` certificate property, that contains the CA-extracted codepoints in TLS syntax. If the property is present, the subscriber's TLS software should check those against the ClientHello in lieu of trying to parse this messy data out of the certificate.\r\n\r\n[*] Well, sort of. The existence of a P-256 certificate does not imply the non-existence of an ML-DSA certificate. We may need a bit more pieces to make that transition state viable.",
+      "createdAt": "2024-03-04T19:56:37Z",
+      "updatedAt": "2024-03-04T19:56:37Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOKigz-s6DFL9f",
+      "title": "Remove trustExpressions request boolean",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/10",
+      "state": "CLOSED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Per feedback from @aarongable, it's probably better to omit the the trustExpressions boolean for now. It was intended to accommodate some more complex issuance cases, but it's probably better to resolve that in a separate document, since general multiple issuance may require much more complicated ACME bits anyway. Let's start with just the Accept HTTP request header and the MIME type and we can add more extensions later.",
+      "createdAt": "2024-03-21T05:46:14Z",
+      "updatedAt": "2024-03-22T21:50:57Z",
+      "closedAt": "2024-03-22T21:50:57Z",
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "This is now done.",
+          "createdAt": "2024-03-22T21:50:57Z",
+          "updatedAt": "2024-03-22T21:50:57Z"
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOKigz-s6EuBAN",
+      "title": "Decide how to allocate trust store names",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/12",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Merkle Tree certificates will have a similar problem in naming CAs. And honestly even for X.509 certificates, a shorter name would be valuable.\r\n\r\nGoofy as ASN.1 is, we're actually thinking OIDs right now. Specifically OIDs under the [Private Enterprise Number (PEN) arc](https://www.rfc-editor.org/rfc/rfc9371.html), probably represented as a DER-encoded `RELATIVE-OID` contents, excluding the tag and length, relative to the `1.3.6.1.4.1` prefix, avoid an unnecessary 5 bytes.\r\n\r\nThis is nice because:\r\n* Anyone can register them, so there's an easy answer for private PKIs\r\n* They're pretty compact; the largest PEN so far fits in 3 bytes, and then an organization should only need a couple more bytes past that, even if they've already been using their namespace. We're unlikely to ever allocate a 4-byte PEN.\r\n* While not directly useful for this draft, the hierarchical nature might be handy for MTCs, which have a two-layer thing going on\r\n* It seems perhaps handy for MTC CA names and trust stores to not collide. You could potentially use an MTC CA name as an implicit trust store. (Not yet thought through.)",
+      "createdAt": "2024-04-04T22:55:37Z",
+      "updatedAt": "2024-04-04T22:55:37Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 13,
+      "id": "I_kwDOKigz-s6HzX5p",
+      "title": "How do trust expressions and sctNotAfter removals work?",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/13",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "I suspect there is a way to express this with the draft as-is, since you just need newly-issued certificates to stop being associated with newer versions of the trust store, but filing this so we remember to think about this.",
+      "createdAt": "2024-05-03T20:38:17Z",
+      "updatedAt": "2024-05-03T20:38:28Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 2,
+      "id": "PR_kwDOKigz-s5dapOK",
+      "title": "Slightly tweak the intro",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/2",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Rereading it, that sentence was a little long and hard to parse. Also the third bullet is kinda redundant with it, so remove it. That also cleans things up because we talk about costs to CAs, subscribers, and RPs, and then have one bullet for each in order.",
+      "createdAt": "2023-10-20T19:46:17Z",
+      "updatedAt": "2023-10-21T02:07:31Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "bcf0fea1e62016c8e1dd4a981fa1a52db2b36a42",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "intro-tweak",
+      "headRefOid": "f5726eb7b712a70bda58e0677790b198c98bf4b0",
+      "closedAt": "2023-10-20T23:26:37Z",
+      "mergedAt": "2023-10-20T23:26:37Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "0c61ee50d9ee04897ab093ef27ffa43be9827ee0"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5kyVR6",
+          "commit": {
+            "abbreviatedOid": "f5726eb"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-20T21:21:12Z",
+          "updatedAt": "2023-10-20T21:21:12Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOKigz-s5lAEZA",
+      "title": "Rework the privacy considerations section",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/5",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-01-24T21:53:12Z",
+      "updatedAt": "2024-01-25T17:17:05Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "a00613b25482bd0d7a3ab418fe8bf9f38691559e",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "privacy-considerations",
+      "headRefOid": "87ac048c5aa7d001c1585ab44440e62685d0ca99",
+      "closedAt": "2024-01-25T17:17:00Z",
+      "mergedAt": "2024-01-25T17:17:00Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "e7dcbf6c5d3d70636ecf9507c94a1f61b2b3869b"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5t7Uqv",
+          "commit": {
+            "abbreviatedOid": "87ac048"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-25T17:16:34Z",
+          "updatedAt": "2024-01-25T17:16:34Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDOKigz-s5oVShz",
+      "title": "Add an informal explainer document",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/7",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-02-29T19:39:51Z",
+      "updatedAt": "2024-02-29T23:44:13Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "11cb5c005a38586963db5eb75f319877adc2ec07",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "explainer",
+      "headRefOid": "c964ac14a6337efc8080a07230a8d0ad43411fac",
+      "closedAt": "2024-02-29T23:44:11Z",
+      "mergedAt": "2024-02-29T23:44:11Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "3c9df037f7e5aa1b58a555c3998356364b2cea07"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5x1Uwm",
+          "commit": {
+            "abbreviatedOid": "a0ba6a2"
+          },
+          "author": "dadrian",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-02-29T20:24:26Z",
+          "updatedAt": "2024-02-29T20:24:26Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "id": "PR_kwDOKigz-s5qcjwg",
+      "title": "Remove the trustExpressions extension flag for ACME.",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/11",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This has always been an optimization, not a requirement for this to work. Some discussions with CA operators indicate this is probably unnecessary and we can remove it for now.",
+      "createdAt": "2024-03-22T05:03:26Z",
+      "updatedAt": "2024-03-22T21:50:38Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "abd930a6a0f9961398127ef04c47d3696486f2e8",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "e974e4cbb2e1f40ccf623f28028cf4fb58c1e336",
+      "closedAt": "2024-03-22T21:50:38Z",
+      "mergedAt": "2024-03-22T21:50:38Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "5e02af81a8fb58c90064794f0682a8154cafdd87"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s50fN9G",
+          "commit": {
+            "abbreviatedOid": "582e853"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-03-22T09:31:51Z",
+          "updatedAt": "2024-03-22T09:31:51Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "We can delete this section heading too.",
+              "createdAt": "2024-03-22T09:31:51Z",
+              "updatedAt": "2024-03-22T09:31:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s50fOB5",
+          "commit": {
+            "abbreviatedOid": "582e853"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "LGTM!",
+          "createdAt": "2024-03-22T09:32:00Z",
+          "updatedAt": "2024-03-22T09:32:00Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
+}
