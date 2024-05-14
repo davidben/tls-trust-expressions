@@ -11,17 +11,17 @@
 <meta content="
        This document defines TLS trust expressions, a mechanism for relying parties to succinctly convey trusted certification authorities to subscribers by referencing named and versioned trust stores. It also defines supporting mechanisms for subscribers to evaluate these trust expressions, and select one of several available certification paths to present. This enables a multi-certificate deployment model, for a more agile and flexible PKI that can better meet security requirements. 
     " name="description">
-<meta content="xml2rfc 3.20.0" name="generator">
+<meta content="xml2rfc 3.21.0" name="generator">
 <meta content="draft-davidben-tls-trust-expr-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.20.0
-    Python 3.11.8
+  xml2rfc 3.21.0
+    Python 3.11.9
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
     Jinja2 3.1.2
     lxml 4.9.3
-    platformdirs 4.2.0
+    platformdirs 4.2.1
     pycountry 22.3.5
     PyYAML 6.0.1
     requests 2.31.0
@@ -1026,11 +1026,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS Trust Expressions</td>
-<td class="right">March 2024</td>
+<td class="right">May 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin, et al.</td>
-<td class="center">Expires 5 September 2024</td>
+<td class="center">Expires 15 November 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1043,12 +1043,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-davidben-tls-trust-expr-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-03-04" class="published">4 March 2024</time>
+<time datetime="2024-05-14" class="published">14 May 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-09-05">5 September 2024</time></dd>
+<dd class="expires"><time datetime="2024-11-15">15 November 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1106,7 +1106,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 5 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 November 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1250,10 +1250,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-media-type-updates" class="internal xref">Media Type Updates</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.3">
-                <p id="section-toc.1-1.12.2.3.1"><a href="#section-12.3" class="auto internal xref">12.3</a>.  <a href="#name-acme-order-object-fields-up" class="internal xref">ACME Order Object Fields Updates</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.4">
-                <p id="section-toc.1-1.12.2.4.1"><a href="#section-12.4" class="auto internal xref">12.4</a>.  <a href="#name-certificatepropertytype-reg" class="internal xref">CertificatePropertyType Registry</a></p>
+                <p id="section-toc.1-1.12.2.3.1"><a href="#section-12.3" class="auto internal xref">12.3</a>.  <a href="#name-certificatepropertytype-reg" class="internal xref">CertificatePropertyType Registry</a></p>
 </li>
             </ul>
 </li>
@@ -1561,7 +1558,7 @@ CertificateProperty CertificatePropertyList&lt;0..2^16-1&gt;;
 </div>
 <p id="section-5-5">The entries in a CertificatePropertyList MUST be sorted numerically by <code>type</code> and MUST NOT contain values with a duplicate <code>type</code>. Inputs that do not satisfy these invariants are syntax errors and MUST be rejected by parsers.<a href="#section-5-5" class="pilcrow">¶</a></p>
 <p id="section-5-6">This document defines a single property, <code>trust_stores</code>, which describes trust store inclusion. Future documents may define other properties for use with other mechanisms.<a href="#section-5-6" class="pilcrow">¶</a></p>
-<p id="section-5-7">Subscribers MUST ignore unrecognized properties with CertificatePropertyType values. If ignoring a property would cause such subscribers to misinterpret the structure, the document defining the CertificatePropertyType SHOULD include a mechanism for CAs to negotiate the new property with the subscriber in certificate management protocols such as ACME <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>. For example, <a href="#acme-extension" class="auto internal xref">Section 7.1</a> defines a "trustExpressions" ACME order field.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<p id="section-5-7">Subscribers MUST ignore unrecognized properties with CertificatePropertyType values. If ignoring a property would cause such subscribers to misinterpret the structure, the document defining the CertificatePropertyType SHOULD include a mechanism for CAs to negotiate the new property with the subscriber in certificate management protocols such as ACME <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>.<a href="#section-5-7" class="pilcrow">¶</a></p>
 <div id="trust-store-inclusion">
 <section id="section-5.1">
         <h3 id="name-trust-store-inclusion">
@@ -1838,11 +1835,10 @@ How to compute this set depends on the root program's label allocation scheme (<
         <h3 id="name-acme-extension">
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-acme-extension" class="section-name selfRef">ACME Extension</a>
         </h3>
-<p id="section-7.1-1">This section extends ACME <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span> to be able to issue certificate paths, each with an associated CertificatePropertyList by defining a new media type in <a href="#media-type" class="auto internal xref">Section 5.3</a>. It extends the ACME order object with a configurable boolean field, "trustExpressions".<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1-2">First, ACME clients indicate they support certification paths selected by trust expressions by setting "trustExpressions" to "true" in the ACME newOrder request (<span><a href="https://rfc-editor.org/rfc/rfc8555#section-7.4" class="relref">Section 7.4</a> of [<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>). If the server accepts the request, it MUST reflect the field in the resulting order object.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
-<p id="section-7.1-3">When an ACME server processes an order object with the "trustExpressions" field set to "true", it MAY issue multiple certification paths, each with an associated TrustStoreInclusionList, computed as in <a href="#computing-trust-store-inclusions" class="auto internal xref">Section 5.2</a>. These paths MAY share an end-entity certificate but end at different trust anchors, or they MAY be completely distinct. If the latter, the "trustExpressions" order field allows the ACME server to skip issuing unnecessary end-entity certificates for ACME clients that would be unable to use them. The ACME server encodes each certification path using the application/pem-certificate-chain-with-properties format, defined in <a href="#media-type" class="auto internal xref">Section 5.3</a>).  Note this format is required to form a complete certification path. The CA MUST return a result that may be verified by relying parties without path building <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
-<p id="section-7.1-4">The ACME server provides additional results to the client with the link relation header fields described in <span><a href="https://rfc-editor.org/rfc/rfc8555#section-7.4.2" class="relref">Section 7.4.2</a> of [<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>. When fetching certificates, the ACME client includes application/pem-certificate-chain-with-properties in its Accept header to indicate it supports the new format. Unlike the original mechanism described in <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>, these certification paths do not require heuristics to be used. Instead, the ACME client uses the associated TrustStoreInclusionLists to select a path as described in <a href="#subscriber-behavior" class="auto internal xref">Section 6.4</a>.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
-<p id="section-7.1-5">When the ACME client wishes to renew any of the certification paths issued in this order, it repeats this process to renew each path concurrently. Thus this extension is suitable when the CA is willing to issue and renew all paths together. It may not be appropriate if the paths have significantly different processing times or lifetimes. Future enhancements to ACME may be defined to address these cases, e.g. by allowing the ACME client to make independent orders.<a href="#section-7.1-5" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">This section extends ACME <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span> to be able to issue certificate paths, each with an associated CertificatePropertyList by defining a new media type in <a href="#media-type" class="auto internal xref">Section 5.3</a>.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">When an ACME server processes an order object, it MAY issue multiple certification paths, each with an associated TrustStoreInclusionList, computed as in <a href="#computing-trust-store-inclusions" class="auto internal xref">Section 5.2</a>. These paths MAY share an end-entity certificate but end at different trust anchors, or they MAY be completely distinct. The ACME server encodes each certification path using the application/pem-certificate-chain-with-properties format, defined in <a href="#media-type" class="auto internal xref">Section 5.3</a>).  Note this format is required to form a complete certification path. The CA MUST return a result that may be verified by relying parties without path building <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">The ACME server provides additional results to the client with the link relation header fields described in <span><a href="https://rfc-editor.org/rfc/rfc8555#section-7.4.2" class="relref">Section 7.4.2</a> of [<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>. When fetching certificates, the ACME client includes application/pem-certificate-chain-with-properties in its Accept header to indicate it supports the new format. Unlike the original mechanism described in <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>, these certification paths do not require heuristics to be used. Instead, the ACME client uses the associated TrustStoreInclusionLists to select a path as described in <a href="#subscriber-behavior" class="auto internal xref">Section 6.4</a>.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<p id="section-7.1-4">When the ACME client wishes to renew any of the certification paths issued in this order, it repeats this process to renew each path concurrently. Thus this extension is suitable when the CA is willing to issue and renew all paths together. It may not be appropriate if the paths have significantly different processing times or lifetimes. Future enhancements to ACME may be defined to address these cases, e.g. by allowing the ACME client to make independent orders.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2307,39 +2303,12 @@ How to compute this set depends on the root program's label allocation scheme (<
 </dl>
 </section>
 </div>
-<div id="acme-order-object-fields-updates">
-<section id="section-12.3">
-        <h3 id="name-acme-order-object-fields-up">
-<a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-acme-order-object-fields-up" class="section-name selfRef">ACME Order Object Fields Updates</a>
-        </h3>
-<p id="section-12.3-1">IANA is requested to create the following entry in the ACME Order Object Fields registry, defined by <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>:<a href="#section-12.3-1" class="pilcrow">¶</a></p>
-<table class="center" id="table-2">
-          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
-<thead>
-            <tr>
-              <th class="text-left" rowspan="1" colspan="1">Field Name</th>
-              <th class="text-left" rowspan="1" colspan="1">Field Type</th>
-              <th class="text-left" rowspan="1" colspan="1">Configurable</th>
-              <th class="text-left" rowspan="1" colspan="1">Reference</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">trustExpressions</td>
-              <td class="text-left" rowspan="1" colspan="1">boolean</td>
-              <td class="text-left" rowspan="1" colspan="1">true</td>
-              <td class="text-left" rowspan="1" colspan="1">[this-RFC]</td>
-            </tr>
-          </tbody>
-        </table>
-</section>
-</div>
 <div id="certificatepropertytype-registry">
-<section id="section-12.4">
+<section id="section-12.3">
         <h3 id="name-certificatepropertytype-reg">
-<a href="#section-12.4" class="section-number selfRef">12.4. </a><a href="#name-certificatepropertytype-reg" class="section-name selfRef">CertificatePropertyType Registry</a>
+<a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-certificatepropertytype-reg" class="section-name selfRef">CertificatePropertyType Registry</a>
         </h3>
-<p id="section-12.4-1">[[TODO: Establish a CertificatePropertyType registry.]]<a href="#section-12.4-1" class="pilcrow">¶</a></p>
+<p id="section-12.3-1">[[TODO: Establish a CertificatePropertyType registry.]]<a href="#section-12.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2437,7 +2406,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-cert-abridge">[I-D.ietf-tls-cert-abridge]</dt>
         <dd>
-<span class="refAuthor">Jackson, D.</span>, <span class="refTitle">"Abridged Compression for WebPKI Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-cert-abridge-00</span>, <time datetime="2023-09-06" class="refDate">6 September 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-00">https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-00</a>&gt;</span>. </dd>
+<span class="refAuthor">Jackson, D.</span>, <span class="refTitle">"Abridged Compression for WebPKI Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-cert-abridge-01</span>, <time datetime="2024-03-16" class="refDate">16 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-01">https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-01</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="MOZILLA-ROOTS">[MOZILLA-ROOTS]</dt>
         <dd>
