@@ -233,10 +233,10 @@ While this is often good practice, it only addresses very limited scenarios:
   services, it is difficult to separate them after the fact.
 
 * This strategy is only viable for clients where the DNS name is not
-  user-visible. For example, either `payment-terminal-type-1.apis.example.com` or
-  `www.example.com` would work equally well for a payment terminal's API
-  endpoint, but DNS names and URLs are deeply integrated into the user interface
-  in a web browser.
+  user-visible. While a payment terminal's API endpoint is largely internal,
+  users directly see and interact with the URLs and DNS names used for
+  browser-facing web services. It would not be viable to use different DNS names
+  for, say, older and newer browsers.
 
 ## References and Acknowledgements
 
