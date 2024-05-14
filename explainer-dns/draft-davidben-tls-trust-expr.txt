@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 5 September 2024                                     Google LLC
-                                                            4 March 2024
+Expires: 15 November 2024                                     Google LLC
+                                                             14 May 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 September 2024.
+   This Internet-Draft will expire on 15 November 2024.
 
 Copyright Notice
 
@@ -107,8 +107,7 @@ Table of Contents
    12. IANA Considerations
      12.1.  TLS ExtensionType Updates
      12.2.  Media Type Updates
-     12.3.  ACME Order Object Fields Updates
-     12.4.  CertificatePropertyType Registry
+     12.3.  CertificatePropertyType Registry
    13. References
      13.1.  Normative References
      13.2.  Informative References
@@ -462,8 +461,7 @@ Table of Contents
    such subscribers to misinterpret the structure, the document defining
    the CertificatePropertyType SHOULD include a mechanism for CAs to
    negotiate the new property with the subscriber in certificate
-   management protocols such as ACME [RFC8555].  For example,
-   Section 7.1 defines a "trustExpressions" ACME order field.
+   management protocols such as ACME [RFC8555].
 
 5.1.  Trust Store Inclusion
 
@@ -827,28 +825,17 @@ Table of Contents
 
    This section extends ACME [RFC8555] to be able to issue certificate
    paths, each with an associated CertificatePropertyList by defining a
-   new media type in Section 5.3.  It extends the ACME order object with
-   a configurable boolean field, "trustExpressions".
+   new media type in Section 5.3.
 
-   First, ACME clients indicate they support certification paths
-   selected by trust expressions by setting "trustExpressions" to "true"
-   in the ACME newOrder request (Section 7.4 of [RFC8555]).  If the
-   server accepts the request, it MUST reflect the field in the
-   resulting order object.
-
-   When an ACME server processes an order object with the
-   "trustExpressions" field set to "true", it MAY issue multiple
+   When an ACME server processes an order object, it MAY issue multiple
    certification paths, each with an associated TrustStoreInclusionList,
    computed as in Section 5.2.  These paths MAY share an end-entity
    certificate but end at different trust anchors, or they MAY be
-   completely distinct.  If the latter, the "trustExpressions" order
-   field allows the ACME server to skip issuing unnecessary end-entity
-   certificates for ACME clients that would be unable to use them.  The
-   ACME server encodes each certification path using the application/
-   pem-certificate-chain-with-properties format, defined in
-   Section 5.3).  Note this format is required to form a complete
-   certification path.  The CA MUST return a result that may be verified
-   by relying parties without path building [RFC4158].
+   completely distinct.  The ACME server encodes each certification path
+   using the application/pem-certificate-chain-with-properties format,
+   defined in Section 5.3).  Note this format is required to form a
+   complete certification path.  The CA MUST return a result that may be
+   verified by relying parties without path building [RFC4158].
 
    The ACME server provides additional results to the client with the
    link relation header fields described in Section 7.4.2 of [RFC8555].
@@ -1370,20 +1357,7 @@ Table of Contents
 
    Change controller:  IETF
 
-12.3.  ACME Order Object Fields Updates
-
-   IANA is requested to create the following entry in the ACME Order
-   Object Fields registry, defined by [RFC8555]:
-
-       +==================+============+==============+============+
-       | Field Name       | Field Type | Configurable | Reference  |
-       +==================+============+==============+============+
-       | trustExpressions | boolean    | true         | [this-RFC] |
-       +------------------+------------+--------------+------------+
-
-                                  Table 2
-
-12.4.  CertificatePropertyType Registry
+12.3.  CertificatePropertyType Registry
 
    [[TODO: Establish a CertificatePropertyType registry.]]
 
@@ -1487,9 +1461,9 @@ Table of Contents
    [I-D.ietf-tls-cert-abridge]
               Jackson, D., "Abridged Compression for WebPKI
               Certificates", Work in Progress, Internet-Draft, draft-
-              ietf-tls-cert-abridge-00, 6 September 2023,
+              ietf-tls-cert-abridge-01, 16 March 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              cert-abridge-00>.
+              cert-abridge-01>.
 
    [MOZILLA-ROOTS]
               Mozilla, "Mozilla Included CA Certificate List", 30 August
