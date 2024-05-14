@@ -217,6 +217,27 @@ heuristics based on what they observe in the ecosystem.
 TLS Trust Expressions avoids this ambiguity, and thus can be evaluated
 automatically in TLS software.
 
+### Client-specific DNS Names
+
+In some circumstances, it is possible to separate traffic by deploying services
+for different clients at different DNS names. For example, a payment processor
+might use a different subdomain for payment terminals from its browser-facing
+web services. Using separate endpoints allows the operator to separately
+configure the certificate and other TLS settings based on the needs of the two
+client populations.
+
+While this is often good practice, it only addresses very limited scenarios:
+
+* The site operator needs to set this up ahead of time. Once, say, payment
+  terminals have already been deployed using the same endpoint as browser-facing
+  services, it is difficult to separate them after the fact.
+
+* This strategy is only viable for clients where the DNS name is not
+  user-visible. For example, either `payment-terminal-type-1.apis.example.com` or
+  `www.example.com` would work equally well for a payment terminal's API
+  endpoint, but DNS names and URLs are deeply integrated into the user interface
+  in a web browser.
+
 ## References and Acknowledgements
 
 The authors thank Nick Harper, Sophie Schmieg, and Emily Stark for many valuable discussions and insights which led to this design, as well as review of early iterations of the draft specification.
