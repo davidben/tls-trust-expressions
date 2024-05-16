@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-14T01:22:03.616328+00:00",
+  "timestamp": "2024-05-16T01:22:35.341537+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -430,6 +430,48 @@
           "body": "LGTM!",
           "createdAt": "2024-03-22T09:32:00Z",
           "updatedAt": "2024-03-22T09:32:00Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "id": "PR_kwDOKigz-s5vcRlU",
+      "title": "Add a brief discussion about using DNS names to the explainer",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/14",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-05-14T19:12:50Z",
+      "updatedAt": "2024-05-14T19:52:07Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "5e02af81a8fb58c90064794f0682a8154cafdd87",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "explainer-dns",
+      "headRefOid": "484b35167f6945c287b7781d82a835761a729ab5",
+      "closedAt": "2024-05-14T19:52:04Z",
+      "mergedAt": "2024-05-14T19:52:04Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "6038f10f4fa16dd9c1fad1b92eeee71a4ff4f489"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s56kEGQ",
+          "commit": {
+            "abbreviatedOid": "484b351"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-05-14T19:50:49Z",
+          "updatedAt": "2024-05-14T19:50:49Z",
           "comments": []
         }
       ]
