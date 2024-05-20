@@ -238,6 +238,70 @@ While this is often good practice, it only addresses very limited scenarios:
   browser-facing web services. It would not be viable to use different DNS names
   for, say, older and newer browsers.
 
+### Global Timestamp or Version
+
+Rather than trust-store-specific version numbers, one could imagine a
+Web-PKI-only solution, where the client sends a trust store timestamp or,
+equivalently, a global trust store version number, without reference to
+different trust stores.
+
+In addition to being Web-PKI-specific, this approach already does not match the
+reality of the Web PKI today. A global timestamp or version number presumes
+that all root programs make the same changes in, if not the same time, the
+same order. However, the root programs which make up the Web PKI do not
+coordinate on decisions. Different root programs may make different
+decisions at different times, for a variety of reasons, ranging from:
+
+* Different prioritization and resourcing decisions
+* New CA applications being processed at different times
+* Different decisions on how to remediate untrustworthy CAs
+* Different judgements on what policies best meet their respective users' needs
+
+For example, some root programs adopted a
+[Certificate Transparency](https://www.rfc-editor.org/rfc/rfc6962.html)
+requirement in as early as 2018, while others have not, as of writing in 2024.
+
+This mismatch has direct consequences for the post-quantum transition. As many
+post-quantum CAs will likely come online in a short time, it is implausible
+that every root program will qualify the same CAs in the order. Until the
+whole process converges, it will not be possibly for early adopters to deploy
+post-quantum authentication. This is especially problematic given the
+challenges posed by large post-quantum signatures. It will take experimentation
+and iteration to design a good solution.
+
+Additionally, such a solution would also still require most of the machinery in
+this draft, so that server software can be correctly configured with
+certificates across different generations of trust store. Populations which
+*are* sufficiently coordinated for a global version number can simply use a
+shared trust store with TLS trust expressions.
+
+### Signature Algorithm Negotiation
+
+TLS already defines the `signature_algorithms` and `signature_algorithms_cert`
+extensions, which allow servers to select certificates by supported algorithms.
+While this does allow differentiating classical and post-quantum clients, it
+only works once.
+
+Ultimately, knowing that a client can verify, say, ML-DSA signatures, does not
+imply that the client trusts a *particular* ML-DSA key. Relying solely on these
+extensions for a post-quantum transition presumes that all post-quantum CAs are
+added at the same time and fixed. That is, it repeats the root ubiquity
+problem, but worse:
+
+The RSA roots in the Web PKI developed slowly over time, during a period where
+the Web and HTTPS were not as large as they are now. There were fewer root
+programs, fewer websites, so it was less crucial for the ecosystem to be robust.
+Once things settled, they largely ossified, with security improvements to the
+PKI becoming much more challenging. Indeed, the previous algorithm transition,
+ECDSA, in the PKI has already faced challenges. ECDSA support in clients is now
+common, yet servers often must deploy mixed RSA/ECDSA chains for compatibility.
+
+While a partial ECDSA transition merely wastes bandwidth, post-quantum will
+require a full transition to be secure. But the Web and HTTPS is now even larger
+and more important than when we began the ECDSA transition.
+`signature_algorithms` and `signature_algorithms_cert` are not robust enough on
+their own for a smooth post-quantum transition.
+
 ## References and Acknowledgements
 
 The authors thank Nick Harper, Sophie Schmieg, and Emily Stark for many valuable discussions and insights which led to this design, as well as review of early iterations of the draft specification.
