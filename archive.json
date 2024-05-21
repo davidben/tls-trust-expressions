@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-19T01:33:30.120036+00:00",
+  "timestamp": "2024-05-21T01:22:41.051732+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -473,6 +473,53 @@
           "createdAt": "2024-05-14T19:50:49Z",
           "updatedAt": "2024-05-14T19:50:49Z",
           "comments": []
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "id": "PR_kwDOKigz-s5wAn1a",
+      "title": "Add a couple more sections to the explainer",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/15",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-05-20T22:44:26Z",
+      "updatedAt": "2024-05-20T22:57:32Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "6038f10f4fa16dd9c1fad1b92eeee71a4ff4f489",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "explainer-updates",
+      "headRefOid": "44398262575ef30d08a66155e5c1717de062e08d",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s57Noew",
+          "commit": {
+            "abbreviatedOid": "4439826"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-20T22:57:19Z",
+          "updatedAt": "2024-05-20T22:57:32Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "It might be helpful to slightly expand on this point with something to the effect of:\r\n\r\nWebsites that need to function in both CT-enforcing and non-CT-enforcing user agents are required to include several additional SCT signatures with their certificates, regardless of whether they were needed. With the significant leap in size from ECDSA to current PQC algorithms, this becomes a significant challenge that some user agents may opt to require SCT omission, rather than tacitly ignoring them.",
+              "createdAt": "2024-05-20T22:57:19Z",
+              "updatedAt": "2024-05-20T22:57:32Z"
+            }
+          ]
         }
       ]
     }
