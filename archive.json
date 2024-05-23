@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-21T01:22:41.051732+00:00",
+  "timestamp": "2024-05-23T01:22:34.728097+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -481,24 +481,26 @@
       "id": "PR_kwDOKigz-s5wAn1a",
       "title": "Add a couple more sections to the explainer",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/15",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2024-05-20T22:44:26Z",
-      "updatedAt": "2024-05-20T22:57:32Z",
+      "updatedAt": "2024-05-21T22:03:19Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "6038f10f4fa16dd9c1fad1b92eeee71a4ff4f489",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "explainer-updates",
       "headRefOid": "44398262575ef30d08a66155e5c1717de062e08d",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-05-21T22:03:16Z",
+      "mergedAt": "2024-05-21T22:03:16Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "3837d23bd8d0d6d50b78fdde218d8deb5c6ba03e"
+      },
       "comments": [],
       "reviews": [
         {
@@ -520,6 +522,59 @@
               "updatedAt": "2024-05-20T22:57:32Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s57WeBL",
+          "commit": {
+            "abbreviatedOid": "4439826"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-21T19:41:01Z",
+          "updatedAt": "2024-05-21T19:41:01Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "Hmm. I guess I was viewing this as a brief illustration of how they diverge today (beyond the obvious one of slightly different trusted CAs), with the impact to PQC the next paragraph. Talking about this here doesn't quite flow, but maybe there's another way to organize it?\r\n\r\nThe cost of sending stuff that only some clients care about is roughly covered in the section about cross-signing, though I think that needs a bit more text. SCTs are also an example of this, but maybe less directly to the point since we haven't really discussed CT in the context of trust expressions much yet.\r\n\r\nCould also just delete this paragraph if it's mostly confusing.",
+              "createdAt": "2024-05-21T19:41:01Z",
+              "updatedAt": "2024-05-21T19:41:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s57XPTp",
+          "commit": {
+            "abbreviatedOid": "4439826"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-21T21:48:49Z",
+          "updatedAt": "2024-05-21T21:48:49Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "Yeah, that's fair about it being better suited in another section, but I think it's worth expanding upon somewhere, especially in light of PQC sig sizes adding the risk that relying parties would overlook their presence as they do today. I'm good with the changes.",
+              "createdAt": "2024-05-21T21:48:49Z",
+              "updatedAt": "2024-05-21T21:48:49Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s57XPoE",
+          "commit": {
+            "abbreviatedOid": "4439826"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-05-21T21:50:02Z",
+          "updatedAt": "2024-05-21T21:50:02Z",
+          "comments": []
         }
       ]
     }
