@@ -437,7 +437,7 @@ When the `trust_expressions` extension is sent in a Certificate message, the ext
 
 In this case, the `certificate_list` flexibility described in {{Section 4.4.2 of !RFC8446}} no longer applies. The `certificate_list` MUST contain a complete certification path, correctly ordered and with no extraneous certificates. That is, each certificate MUST certify the one immediately preceding it, and the trust anchor MUST certify the final certificate.
 
-If a relying party receives this extension in the Certificate message, it SHOULD NOT use path building {{!RFC4158}} to validate the result.
+If a relying party receives this extension in the Certificate message, it MAY choose to disable path building {{!RFC4158}} and validate the peer's certificate list as pre-built certification path. Doing so avoids the unpredictable behavior of path-building, and helps ensure CAs and subscribers do not inadvertently provision incorrect paths.
 
 ## Evaluating Trust Expressions
 
