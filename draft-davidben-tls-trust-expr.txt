@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 22 November 2024                                     Google LLC
-                                                             21 May 2024
+Expires: 25 November 2024                                     Google LLC
+                                                             24 May 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 November 2024.
+   This Internet-Draft will expire on 25 November 2024.
 
 Copyright Notice
 
@@ -104,6 +104,9 @@ Table of Contents
      9.7.  Backup Certificates
    10. Privacy Considerations
    11. Security Considerations
+     11.1.  Relying Party Policies and Agility
+     11.2.  Incorrect Selection Metadata
+     11.3.  Serving Multiple Certificates
    12. IANA Considerations
      12.1.  TLS ExtensionType Updates
      12.2.  Media Type Updates
@@ -1273,6 +1276,8 @@ Table of Contents
 
 11.  Security Considerations
 
+11.1.  Relying Party Policies and Agility
+
    The certificate negotiation mechanism described in this document
    facilitates which certification path is served to relying parties,
    but has no impact on the relying party's trust preferences
@@ -1287,6 +1292,21 @@ Table of Contents
    deployed without needing to risk incompatibility or breakage for
    others.
 
+   For example, agility reduces pressures on relying parties to
+   sacrifice user security for compatibility.  Suppose a subscriber
+   currently uses some CA, but a relying party deems trusting that CA to
+   pose an unacceptable security risk to its users.  In a single-
+   certificate deployment, those subscribers may be unwilling to adopt a
+   CA trusted by the relying party, as switching CAs risks compatibility
+   problems elsewhere.  The relying party then faces compatibility
+   pressure add this CA, sacrificing user security.  However, in a
+   multi-certificate deployment, the subscriber can use its existing CA
+   _in addition to_ another CA trusted by relying party B.  This allows
+   the ecosystem to improve interoperability, while still meeting
+   relying party B's user-security goals.
+
+11.2.  Incorrect Selection Metadata
+
    If either the subscriber's TrustStoreInclusionList or the relying
    party's TrustExpressionList are incorrect, the matching algorithm
    described in Section 6.4 may incorrectly identify an untrusted
@@ -1295,6 +1315,36 @@ Table of Contents
    service.  These structures are provisioned by the CA and root
    program, respectively, who are already expected to provide accurate
    information.
+
+11.3.  Serving Multiple Certificates
+
+   In a multi-certificate deployment, subscribers have a collection of
+   certificates available to satisfy relying parties with potentially
+   different security policies.  It is possible that some of these
+   policies will only be satisifed by certificates from less trustworthy
+   CAs, such as if the relying party is out of date but still important
+   for the subscriber to support.  If a certificate asserts the correct
+   information about the subscriber (TLS key, DNS names, etc.), the
+   subscriber can safely present it, even if the CA is otherwise
+   untrustworthy.  In particular, doing so does not allow the CA decrypt
+   or intercept the connection.
+
+   However, the subscriber presenting a certificate is not an
+   endorsement of the CA.  The subscriber's role is to present a
+   certificate which will convince the relying party of the correct
+   subscriber information.  Subscribers do not vet CAs for
+   trustworthiness, only the correctness of their specific, configured
+   certificates and the CA's ability to meet the subscriber's
+   requirements, such as availability, compatibility, and performance.
+   It is the responsibility of the relying party, and its corresponding
+   root program, to determine the set of trusted CAs.  Trusting a CA
+   means trusting _all_ certificates issued by that CA, so it is not
+   enough to observe subscribers serving correct certificates.  An
+   untrustworthy CA may sign one correct certificate, but still have
+   signed other incorrect certificates that can attack the relying
+   party.  Root program management is a complex, security-critical
+   process, the full considerations of which are outside the scope of
+   this document.
 
 12.  IANA Considerations
 
