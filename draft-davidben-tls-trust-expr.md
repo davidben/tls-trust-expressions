@@ -758,11 +758,23 @@ Both of these cases match the preexisting behavior in PKIs that do not use trust
 
 # Security Considerations
 
+## Relying Party Policies and Agility
+
 The certificate negotiation mechanism described in this document facilitates which certification path is served to relying parties, but has no impact on the relying party's trust preferences themselves.
 
 As a result, this allows for a more flexible and agile PKI, which can better mitigate security risks to users. {{use-cases}} discusses some scenarios which benefit from the multi-certificate deployment this document enables. In general, robust certificate negotiation helps subscribers navigate differences in relying party requirements. This means security improvements for one set of relying parties can be deployed without needing to risk incompatibility or breakage for others.
 
+For example, agility reduces pressures on relying parties to sacrifice user security for compatibility. Suppose a subscriber currently uses some CA, but a relying party deems trusting that CA to pose an unacceptable security risk to its users. In a single-certificate deployment, those subscribers may be unwilling to adopt a CA trusted by the relying party, as switching CAs risks compatibility problems elsewhere. The relying party then faces compatibility pressure add this CA, sacrificing user security. However, in a multi-certificate deployment, the subscriber can use its existing CA _in addition to_ another CA trusted by relying party B. This allows the ecosystem to improve interoperability, while still meeting relying party B's user-security goals.
+
+## Incorrect Selection Metadata
+
 If either the subscriber's TrustStoreInclusionList or the relying party's TrustExpressionList are incorrect, the matching algorithm described in {{subscriber-behavior}} may incorrectly identify an untrusted certification path. This mechanism will not result in that path being trusted, but does present the possibility of a denial of service. These structures are provisioned by the CA and root program, respectively, who are already expected to provide accurate information.
+
+## Serving Multiple Certificates
+
+In a multi-certificate deployment, subscribers have a collection of certificates available to satisfy relying parties with potentially different security policies. It is possible that some of these policies will only be satisifed by certificates from less trustworthy CAs, such as if the relying party is out of date but still important for the subscriber to support. If a certificate asserts the correct information about the subscriber (TLS key, DNS names, etc.), the subscriber can safely present it, even if the CA is otherwise untrustworthy. In particular, doing so does not allow the CA decrypt or intercept the connection.
+
+However, the subscriber presenting a certificate is not an endorsement of the CA. The subscriber's role is to present a certificate which will convince the relying party of the correct subscriber information. Subscribers do not vet CAs for trustworthiness, only the correctness of their specific, configured certificates and the CA's ability to meet the subscriber's requirements, such as availability, compatibility, and performance. It is the responsibility of the relying party, and its corresponding root program, to determine the set of trusted CAs. Trusting a CA means trusting _all_ certificates issued by that CA, so it is not enough to observe subscribers serving correct certificates. An untrustworthy CA may sign one correct certificate, but still have signed other incorrect certificates that can attack the relying party. Root program management is a complex, security-critical process, the full considerations of which are outside the scope of this document.
 
 # IANA Considerations
 
