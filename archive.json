@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-23T01:22:34.728097+00:00",
+  "timestamp": "2024-05-26T01:34:47.977638+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -239,6 +239,56 @@
       "body": "I suspect there is a way to express this with the draft as-is, since you just need newly-issued certificates to stop being associated with newer versions of the trust store, but filing this so we remember to think about this.",
       "createdAt": "2024-05-03T20:38:17Z",
       "updatedAt": "2024-05-03T20:38:28Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 17,
+      "id": "I_kwDOKigz-s6KDjrS",
+      "title": "Write up design considerations section",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/17",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien"
+      ],
+      "labels": [],
+      "body": "We ought to document the design rationale somewhere. Some things we could discuss:\r\n\r\n* All the complications around how we need to handle version skew\r\n* Growth of manifest list over time \r\n* Growth of TrustStoreInclusion metadata overtime",
+      "createdAt": "2024-05-24T20:13:56Z",
+      "updatedAt": "2024-05-24T20:13:56Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 18,
+      "id": "I_kwDOKigz-s6KDt-7",
+      "title": "\"SHOULD NOT use path building\" is a bit strong",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/18",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Let's downgrade to MAY and then explain why you might want to. Namely:\r\n* More predictable behavior\r\n* Encourage servers to behave correctly",
+      "createdAt": "2024-05-24T20:46:18Z",
+      "updatedAt": "2024-05-24T20:46:18Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 19,
+      "id": "I_kwDOKigz-s6KD0kl",
+      "title": "Tidy up subscriber selection algorithm",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/19",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "I think we're a bit too prescriptive in the subscriber behavior section:\r\nhttps://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-subscriber-behavior\r\n\r\nSpecifically, it's written as if you first look for a TE-based match, then you consider other stuff like CA. Instead, I think the right model is:\r\n\r\n* Here is how you use TE to get a positive signal of trust anchor match. TE might tell you \"yes, it matches\" or \"unknown\"\r\n* The `certificate_authorities` extension can also give you a similar signal.\r\n* Other extensions might be defined later to similarly handle trust negotiation\r\n* If any such extension says \"yes, it matches\", you have a trust anchor match. Otherwise it's unknown whether the server trusts the path.\r\n\r\nFrom there, the subscriber has free reign to decide how it selects a credential based on this \"trust anchor match\" signal. One possible scheme (but not the only one) is:\r\n\r\n* Subscriber maintains a list of credentials, in preference order, e.g. sorted by size or speed of signing key\r\n* Some credentials require a trust anchor match, presumably the ones at the front of the queue\r\n* Other credentials skip this check because they're fallback credentials, presumably the ones at the end of the queue\r\n* Pick the first credential that matches",
+      "createdAt": "2024-05-24T21:05:20Z",
+      "updatedAt": "2024-05-24T21:05:20Z",
       "closedAt": null,
       "comments": []
     }
@@ -577,6 +627,74 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 16,
+      "id": "PR_kwDOKigz-s5wZz5r",
+      "title": "Discuss the implications of serving certificates from some CA",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/16",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "From IETF discussion, it seems there is some confusion about the nature of PKI-based authentication, the implications of serving a correct certificate from an untrustworthy CA, and the roles and goals of subscribers and relying parties in this interaction. There also appears to be some concern of actors using this kind of confusion to convince confused root program operators of inadvisable actions, as well as some discussion amplifying this confusion.\r\n\r\nSpell this out in Security Considerations, in hopes of reducing all this confusion.\r\n\r\nAlso spell out how agility reduces what would otherwise be a strong compatibility vs security conflict. This implication seems to also have been non-obvious to folks.",
+      "createdAt": "2024-05-24T03:26:26Z",
+      "updatedAt": "2024-05-24T15:39:37Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "3837d23bd8d0d6d50b78fdde218d8deb5c6ba03e",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "pki-roles",
+      "headRefOid": "c213d203b457b28d7045297d74cde00a738c3330",
+      "closedAt": "2024-05-24T15:39:34Z",
+      "mergedAt": "2024-05-24T15:39:34Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "b3d7b31a968b739ab15bb8e809106d46d083600d"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s570J-_",
+          "commit": {
+            "abbreviatedOid": "c213d20"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-05-24T15:38:19Z",
+          "updatedAt": "2024-05-24T15:38:19Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "id": "PR_kwDOKigz-s5wg6Fk",
+      "title": "Soften the SHOULD for disabling path building in the RP",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/20",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #18.",
+      "createdAt": "2024-05-24T21:54:40Z",
+      "updatedAt": "2024-05-24T21:54:40Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "b3d7b31a968b739ab15bb8e809106d46d083600d",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "path-building-should-may",
+      "headRefOid": "e56f3c4aa353c0b7cbcbe5f192a1349c17fcca88",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
