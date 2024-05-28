@@ -441,39 +441,49 @@ If a relying party receives this extension in the Certificate message, it SHOULD
 
 ## Evaluating Trust Expressions
 
-Given a certification path with a `trust_store` certificate property ({{trust-store-inclusion}}), a subscriber can evaluate a TrustExpressionList to determine whether the certification path matches.
+Given a certification path and a TrustExpressionList from the relying party, the subscriber runs the following procedure to determine if the relying party is claiming support for the path's trust anchor. If so, the TrustExpressionList is said to match the certification path:
 
-A TrustExpression is said to match a TrustStoreInclusionList if there is at least one TrustStoreInclusion in the TrustStoreInclusionList such that all of the following are true:
+1. If the certification path does not have an associated `trust_store` certificate property ({{trust-store-inclusion}}), containing a TrustStoreInclusionList, terminate this procedure and return false. The certification path does not match the TrustExpressionList.
 
-* The `name` fields of two structures' `trust_store` fields are equal.
+2. If the certification path has expired, terminate this procedure and return false. Expired certification paths are expected to be rejected by the relying party and may also have stale TrustStoreInclusionLists.
 
-* Either the `version` fields of the two structures' `trust_store` fields are equal, or the TrustStoreInclusion's `status` is `latest_version_at_issuance` and the `version` field of TrustExpression's `trust_store` is greater than that of the TrustStoreInclusion's `trust_store`.
+3. Otherwise, for each TrustExpression in the relying party's TrustExpressionList:
 
-* There is no value in common between the TrustStoreInclusion's `labels` field and the TrustExpression's `excluded_labels` field.
+   1. Find the TrustExpression's corresponding TrustStoreInclusion in the TrustStoreInclusionList, if any. The corresponding TrustStoreInclusion is the one where both of the following are true:
 
-The invariants in {{trust-store-inclusion}} imply that at most one TrustStoreInclusion will satisfy the first two properties. Implementations may evaluate this efficiently by performing a binary search over the TrustStoreInclusionList, and then checking the third property.
+      * The `name` fields of two structures' `trust_store` fields are equal.
 
-A TrustExpressionList is said to match a TrustStoreInclusionList if any TrustExpression in the TrustExpressionList matches the TrustStoreInclusionList.
+      * Either the `version` fields of the two structures' `trust_store` fields are equal, or the TrustStoreInclusion's `status` is `latest_version_at_issuance` and the `version` field of TrustExpression's `trust_store` is greater than that of the TrustStoreInclusion's `trust_store`.
 
-When a TrustStoreInclusion's `status` is `latest_version_at_issuance`, the above criteria predicts that trust anchors in the latest version will continue to be present in later versions. This allows relying parties using later trust store versions to continue to interoperate with certification paths that predate the later version. If this prediction is incorrect and the trust anchor has been removed from the later version, {{constructing-trust-expressions}} requires that the TrustExpression include appropriate `excluded_labels` values to mitigate this.
+      The invariants in {{trust-store-inclusion}} imply that at most one TrustStoreInclusion will satisfy this. Implementations may evaluate this efficiently by performing a binary search over the TrustStoreInclusionList.
+
+   2. If there was no corresponding TrustStoreInclusion, continue to the next TrustExpression.
+
+   3. Otherwise, check for common values between the TrustStoreInclusion's `labels` field and the TrustExpression's `excluded_labels` field. If there are no common values, terminate this procedure and return true. The certification path matches the TrustExpressionList. Otherwise, continue to the next TrustExpression.
+
+4. If no match was found in the TrustExpressionList, return false. The certification path does not match the TrustExpressionList.
+
+When a TrustStoreInclusion's `status` is `latest_version_at_issuance`, the above procedure predicts that trust anchors in the latest version will continue to be present in later versions. This allows relying parties using later trust store versions to continue to interoperate with certification paths that predate the later version. If this prediction is incorrect and the trust anchor has been removed from the later version, {{constructing-trust-expressions}} requires that the TrustExpression include appropriate `excluded_labels` values to mitigate this.
 
 ## Subscriber Behavior
 
-Subscribers using this negotiation scheme are configured with a list of certification paths, with corresponding CertificatePropertyList ({{certificate-properties}}) structures, in some preference order. When responding to a ClientHello (as a server) or CertificateRequest (as a client) containing the `trust_expressions` extension, the subscriber collects all candidate certification paths such that all of the following are true:
+Subscribers using this negotiation scheme are configured with a list of candidate certification paths, with corresponding CertificatePropertyList ({{certificate-properties}}) structures. As a server (respectively, client) responding to a ClientHello (respectively, CertificateRequest), the subscriber selects the best candidate path, incorporating the matching algorithm described in {{evaluating-trust-expressions}}, and other criteria defined in TLS.
 
-* The certification path has not expired.
+If the subscriber selected a certification path which matched via trust expressions, it MUST include an empty `trust_expressions` extension in the first CertificateEntry.
 
-* The CertificatePropertyList has a `trust_store` property with a TrustStoreInclusionList.
+This document does not prescribe a precise selection procedure and configuration, but the following is an example implementation strategy:
 
-* The matching algorithm described in {{evaluating-trust-expressions}} returns true.
+The TLS implementation allows the application to configure a list of candidate credentials, each with certification path, private key, and optional CertificatePropertyList, in preference order. This order may reflect a preference to, e.g., minimize message size, or more performant private keys. When selecting a credential, the TLS implementation iterates over each candidate in preference order and checks:
 
-* The certification path is suitable for use based on other TLS criteria. For example, the TLS `signature_algorithms` ({{Section 4.2.3 of RFC8446}}) extension constrains the types of keys which may be used.
+1. Either the matching algorithm described in {{evaluating-trust-expressions}} returns true, or some other TLS extension, such as the `certificate_authorities` extension, indicates the relying party supports the trust anchor.
 
-* The certification path satisfies any other application-specific constraints which may apply. For example, TLS servers often select certificates based on the `server_name` ({{Section 3 of ?RFC6066}}) extension.
+2. The certification path is suitable for use based on other TLS criteria. For example, the TLS `signature_algorithms` ({{Section 4.2.3 of RFC8446}}) extension constrains the types of keys which may be used.
 
-Once all candidate paths are determined, the subscriber picks one to present to the relying party. The subscriber MUST include an empty `trust_expressions` extension in the first CertificateEntry. If multiple candidates match, the subscriber picks its most preferred option. For example, it may try to minimize message size, or prefer options with more performant private keys.
+3. The certification path satisfies any other application-specific constraints which may apply. For example, TLS servers often select certificates based on the `server_name` ({{Section 3 of ?RFC6066}}) extension.
 
-If no candidates match, or if the peer did not send a `trust_expressions` extension, the subscriber falls back to preexisting behavior outside the scope of this document, without including a `trust_expressions` extension. For example, the subscriber may have a default certificate configured, or select a certificate using the `certificate_authorities` extension.
+The TLS implementation selects the first credential which satisfies all of its selection criteria. If no credentials match, the TLS implementation may return a `handshake_failure` alert, or consider a configured fallback set of credentials, which skip the first check above. These fallback credentials may be a separate credential list, or appended to the same list with an option to control the matching criteria.
+
+Fallback credentials allow the subscriber to retain support for relying parties that do not implement trust expressions. As they are be selected without trust anchor negotiation, the subscriber must find a sufficiently ubiquitous trust anchor, if one exists. However, unlike existing PKIs that do not use trust expressions, only relying parties without trust expressions need to be considered in this ubiquity determination. Updated relying parties may continue to evolve without restricting fallback credential selection.
 
 ## Constructing Trust Expressions
 
