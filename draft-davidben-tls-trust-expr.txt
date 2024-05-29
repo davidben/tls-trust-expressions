@@ -1344,11 +1344,11 @@ Table of Contents
    root program, to determine the set of trusted CAs.  Trusting a CA
    means trusting _all_ certificates issued by that CA, so it is not
    enough to observe subscribers serving correct certificates.  An
-   untrustworthy CA may sign one correct certificate, but still have
-   signed other incorrect certificates that can attack the relying
-   party.  Root program management is a complex, security-critical
-   process, the full considerations of which are outside the scope of
-   this document.
+   untrustworthy CA may sign one correct certificate, but also sign
+   incorrect certificates, possibly in the future, that can attack the
+   relying party.  Root program management is a complex, security-
+   critical process, the full considerations of which are outside the
+   scope of this document.
 
 12.  IANA Considerations
 
