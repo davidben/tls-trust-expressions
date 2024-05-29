@@ -404,7 +404,7 @@ The IANA registration for this media type is described in {{media-type-updates}}
 
 # TLS Certificate Negotiation
 
-This section defines the `trust_expressions` extension, which is sent in the ClientHello, CertificateRequest, and Certificate messages.
+This section defines the `trust_expressions` extension, which is sent in the ClientHello, CertificateRequest, and Certificate messages in TLS 1.3 or later.
 
 ## Trust Expressions
 
