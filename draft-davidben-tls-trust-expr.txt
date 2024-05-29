@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 25 November 2024                                     Google LLC
-                                                             24 May 2024
+Expires: 30 November 2024                                     Google LLC
+                                                             29 May 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 November 2024.
+   This Internet-Draft will expire on 30 November 2024.
 
 Copyright Notice
 
@@ -652,8 +652,11 @@ Table of Contents
    certify the final certificate.
 
    If a relying party receives this extension in the Certificate
-   message, it SHOULD NOT use path building [RFC4158] to validate the
-   result.
+   message, it MAY choose to disable path building [RFC4158] and
+   validate the peer's certificate list as pre-built certification path.
+   Doing so avoids the unpredictable behavior of path-building, and
+   helps ensure CAs and subscribers do not inadvertently provision
+   incorrect paths.
 
 6.3.  Evaluating Trust Expressions
 
