@@ -1030,7 +1030,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin, et al.</td>
-<td class="center">Expires 30 November 2024</td>
+<td class="center">Expires 1 December 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1043,12 +1043,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-davidben-tls-trust-expr-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-05-29" class="published">29 May 2024</time>
+<time datetime="2024-05-30" class="published">30 May 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-11-30">30 November 2024</time></dd>
+<dd class="expires"><time datetime="2024-12-01">1 December 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1106,7 +1106,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 30 November 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 1 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1734,22 +1734,43 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
         <h3 id="name-evaluating-trust-expression">
 <a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-evaluating-trust-expression" class="section-name selfRef">Evaluating Trust Expressions</a>
         </h3>
-<p id="section-6.3-1">Given a certification path with a <code>trust_store</code> certificate property (<a href="#trust-store-inclusion" class="auto internal xref">Section 5.1</a>), a subscriber can evaluate a TrustExpressionList to determine whether the certification path matches.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
-<p id="section-6.3-2">A TrustExpression is said to match a TrustStoreInclusionList if there is at least one TrustStoreInclusion in the TrustStoreInclusionList such that all of the following are true:<a href="#section-6.3-2" class="pilcrow">¶</a></p>
+<p id="section-6.3-1">Given a certification path and a TrustExpressionList from the relying party, the subscriber runs the following procedure to determine if the relying party is claiming support for the path's trust anchor. If so, the TrustExpressionList is said to match the certification path:<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.3-2">
+<li id="section-6.3-2.1">
+            <p id="section-6.3-2.1.1">If the certification path does not have an associated <code>trust_store</code> certificate property (<a href="#trust-store-inclusion" class="auto internal xref">Section 5.1</a>), containing a TrustStoreInclusionList, terminate this procedure and return false. The certification path does not match the TrustExpressionList.<a href="#section-6.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.2">
+            <p id="section-6.3-2.2.1">If the certification path has expired, terminate this procedure and return false. Expired certification paths are expected to be rejected by the relying party and may also have stale TrustStoreInclusionLists.<a href="#section-6.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.3">
+            <p id="section-6.3-2.3.1">Otherwise, for each TrustExpression in the relying party's TrustExpressionList:<a href="#section-6.3-2.3.1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.3-2.3.2">
+<li id="section-6.3-2.3.2.1">
+                <p id="section-6.3-2.3.2.1.1">Find the TrustExpression's corresponding TrustStoreInclusion in the TrustStoreInclusionList, if any. The corresponding TrustStoreInclusion is the one where both of the following are true:<a href="#section-6.3-2.3.2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.3-3.1">
-            <p id="section-6.3-3.1.1">The <code>name</code> fields of two structures' <code>trust_store</code> fields are equal.<a href="#section-6.3-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6.3-2.3.2.1.2.1">
+                    <p id="section-6.3-2.3.2.1.2.1.1">The <code>name</code> fields of two structures' <code>trust_store</code> fields are equal.<a href="#section-6.3-2.3.2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.3-3.2">
-            <p id="section-6.3-3.2.1">Either the <code>version</code> fields of the two structures' <code>trust_store</code> fields are equal, or the TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code> and the <code>version</code> field of TrustExpression's <code>trust_store</code> is greater than that of the TrustStoreInclusion's <code>trust_store</code>.<a href="#section-6.3-3.2.1" class="pilcrow">¶</a></p>
+                  <li class="normal" id="section-6.3-2.3.2.1.2.2">
+                    <p id="section-6.3-2.3.2.1.2.2.1">Either the <code>version</code> fields of the two structures' <code>trust_store</code> fields are equal, or the TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code> and the <code>version</code> field of TrustExpression's <code>trust_store</code> is greater than that of the TrustStoreInclusion's <code>trust_store</code>.<a href="#section-6.3-2.3.2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.3-3.3">
-            <p id="section-6.3-3.3.1">There is no value in common between the TrustStoreInclusion's <code>labels</code> field and the TrustExpression's <code>excluded_labels</code> field.<a href="#section-6.3-3.3.1" class="pilcrow">¶</a></p>
+                </ul>
+<p id="section-6.3-2.3.2.1.3">
+The invariants in <a href="#trust-store-inclusion" class="auto internal xref">Section 5.1</a> imply that at most one TrustStoreInclusion will satisfy this. Implementations may evaluate this efficiently by performing a binary search over the TrustStoreInclusionList.<a href="#section-6.3-2.3.2.1.3" class="pilcrow">¶</a></p>
 </li>
-        </ul>
-<p id="section-6.3-4">The invariants in <a href="#trust-store-inclusion" class="auto internal xref">Section 5.1</a> imply that at most one TrustStoreInclusion will satisfy the first two properties. Implementations may evaluate this efficiently by performing a binary search over the TrustStoreInclusionList, and then checking the third property.<a href="#section-6.3-4" class="pilcrow">¶</a></p>
-<p id="section-6.3-5">A TrustExpressionList is said to match a TrustStoreInclusionList if any TrustExpression in the TrustExpressionList matches the TrustStoreInclusionList.<a href="#section-6.3-5" class="pilcrow">¶</a></p>
-<p id="section-6.3-6">When a TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code>, the above criteria predicts that trust anchors in the latest version will continue to be present in later versions. This allows relying parties using later trust store versions to continue to interoperate with certification paths that predate the later version. If this prediction is incorrect and the trust anchor has been removed from the later version, <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a> requires that the TrustExpression include appropriate <code>excluded_labels</code> values to mitigate this.<a href="#section-6.3-6" class="pilcrow">¶</a></p>
+              <li id="section-6.3-2.3.2.2">
+                <p id="section-6.3-2.3.2.2.1">If there was no corresponding TrustStoreInclusion, continue to the next TrustExpression.<a href="#section-6.3-2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-6.3-2.3.2.3">
+                <p id="section-6.3-2.3.2.3.1">Otherwise, check for common values between the TrustStoreInclusion's <code>labels</code> field and the TrustExpression's <code>excluded_labels</code> field. If there are no common values, terminate this procedure and return true. The certification path matches the TrustExpressionList. Otherwise, continue to the next TrustExpression.<a href="#section-6.3-2.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ol>
+</li>
+          <li id="section-6.3-2.4">
+            <p id="section-6.3-2.4.1">If no match was found in the TrustExpressionList, return false. The certification path does not match the TrustExpressionList.<a href="#section-6.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-6.3-3">When a TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code>, the above procedure predicts that trust anchors in the latest version will continue to be present in later versions. This allows relying parties using later trust store versions to continue to interoperate with certification paths that predate the later version. If this prediction is incorrect and the trust anchor has been removed from the later version, <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a> requires that the TrustExpression include appropriate <code>excluded_labels</code> values to mitigate this.<a href="#section-6.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="subscriber-behavior">
@@ -1757,26 +1778,23 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
         <h3 id="name-subscriber-behavior">
 <a href="#section-6.4" class="section-number selfRef">6.4. </a><a href="#name-subscriber-behavior" class="section-name selfRef">Subscriber Behavior</a>
         </h3>
-<p id="section-6.4-1">Subscribers using this negotiation scheme are configured with a list of certification paths, with corresponding CertificatePropertyList (<a href="#certificate-properties" class="auto internal xref">Section 5</a>) structures, in some preference order. When responding to a ClientHello (as a server) or CertificateRequest (as a client) containing the <code>trust_expressions</code> extension, the subscriber collects all candidate certification paths such that all of the following are true:<a href="#section-6.4-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-6.4-2.1">
-            <p id="section-6.4-2.1.1">The certification path has not expired.<a href="#section-6.4-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-6.4-1">Subscribers using this negotiation scheme are configured with a list of candidate certification paths, with corresponding CertificatePropertyList (<a href="#certificate-properties" class="auto internal xref">Section 5</a>) structures. As a server (respectively, client) responding to a ClientHello (respectively, CertificateRequest), the subscriber selects the best candidate path, incorporating the matching algorithm described in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a>, and other criteria defined in TLS.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.4-2">If the subscriber selected a certification path which matched via trust expressions, it MUST include an empty <code>trust_expressions</code> extension in the first CertificateEntry.<a href="#section-6.4-2" class="pilcrow">¶</a></p>
+<p id="section-6.4-3">This document does not prescribe a precise selection procedure and configuration, but the following is an example implementation strategy:<a href="#section-6.4-3" class="pilcrow">¶</a></p>
+<p id="section-6.4-4">The TLS implementation allows the application to configure a list of candidate credentials, each with certification path, private key, and optional CertificatePropertyList, in preference order. This order may reflect a preference to, e.g., minimize message size, or more performant private keys. When selecting a credential, the TLS implementation iterates over each candidate in preference order and checks:<a href="#section-6.4-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.4-5">
+<li id="section-6.4-5.1">
+            <p id="section-6.4-5.1.1">Either the matching algorithm described in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a> returns true, or some other TLS extension, such as the <code>certificate_authorities</code> extension, indicates the relying party supports the trust anchor.<a href="#section-6.4-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.4-2.2">
-            <p id="section-6.4-2.2.1">The CertificatePropertyList has a <code>trust_store</code> property with a TrustStoreInclusionList.<a href="#section-6.4-2.2.1" class="pilcrow">¶</a></p>
+          <li id="section-6.4-5.2">
+            <p id="section-6.4-5.2.1">The certification path is suitable for use based on other TLS criteria. For example, the TLS <code>signature_algorithms</code> (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.3" class="relref">Section 4.2.3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>) extension constrains the types of keys which may be used.<a href="#section-6.4-5.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.4-2.3">
-            <p id="section-6.4-2.3.1">The matching algorithm described in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a> returns true.<a href="#section-6.4-2.3.1" class="pilcrow">¶</a></p>
+          <li id="section-6.4-5.3">
+            <p id="section-6.4-5.3.1">The certification path satisfies any other application-specific constraints which may apply. For example, TLS servers often select certificates based on the <code>server_name</code> (<span><a href="https://rfc-editor.org/rfc/rfc6066#section-3" class="relref">Section 3</a> of [<a href="#RFC6066" class="cite xref">RFC6066</a>]</span>) extension.<a href="#section-6.4-5.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.4-2.4">
-            <p id="section-6.4-2.4.1">The certification path is suitable for use based on other TLS criteria. For example, the TLS <code>signature_algorithms</code> (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.3" class="relref">Section 4.2.3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>) extension constrains the types of keys which may be used.<a href="#section-6.4-2.4.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-6.4-2.5">
-            <p id="section-6.4-2.5.1">The certification path satisfies any other application-specific constraints which may apply. For example, TLS servers often select certificates based on the <code>server_name</code> (<span><a href="https://rfc-editor.org/rfc/rfc6066#section-3" class="relref">Section 3</a> of [<a href="#RFC6066" class="cite xref">RFC6066</a>]</span>) extension.<a href="#section-6.4-2.5.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-6.4-3">Once all candidate paths are determined, the subscriber picks one to present to the relying party. The subscriber MUST include an empty <code>trust_expressions</code> extension in the first CertificateEntry. If multiple candidates match, the subscriber picks its most preferred option. For example, it may try to minimize message size, or prefer options with more performant private keys.<a href="#section-6.4-3" class="pilcrow">¶</a></p>
-<p id="section-6.4-4">If no candidates match, or if the peer did not send a <code>trust_expressions</code> extension, the subscriber falls back to preexisting behavior outside the scope of this document, without including a <code>trust_expressions</code> extension. For example, the subscriber may have a default certificate configured, or select a certificate using the <code>certificate_authorities</code> extension.<a href="#section-6.4-4" class="pilcrow">¶</a></p>
+        </ol>
+<p id="section-6.4-6">The TLS implementation selects the first credential which satisfies all of its selection criteria. If no credentials match, the TLS implementation may return a <code>handshake_failure</code> alert, or consider a configured fallback set of credentials, which skip the first check above. These fallback credentials may be a separate credential list, or appended to the same list with an option to control the matching criteria.<a href="#section-6.4-6" class="pilcrow">¶</a></p>
+<p id="section-6.4-7">Fallback credentials allow the subscriber to retain support for relying parties that do not implement trust expressions. As they are be selected without trust anchor negotiation, the subscriber must find a sufficiently ubiquitous trust anchor, if one exists. However, unlike existing PKIs that do not use trust expressions, only relying parties without trust expressions need to be considered in this ubiquity determination. Updated relying parties may continue to evolve without restricting fallback credential selection.<a href="#section-6.4-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="constructing-trust-expressions">
