@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-28T01:23:31.162209+00:00",
+  "timestamp": "2024-05-30T01:24:09.698369+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -102,15 +102,15 @@
       "id": "I_kwDOKigz-s52V37W",
       "title": "Limit to TLS 1.3 and up",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/4",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The certificate message extension doesn't work otherwise. Just add a sentence somewhere.",
       "createdAt": "2023-11-09T11:42:20Z",
-      "updatedAt": "2023-11-09T11:42:20Z",
-      "closedAt": null,
+      "updatedAt": "2024-05-29T16:04:02Z",
+      "closedAt": "2024-05-29T16:04:02Z",
       "comments": []
     },
     {
@@ -125,7 +125,7 @@
       "labels": [],
       "body": "In prototyping some subscriber support, one thing came up: trust-expression-enabled credentials are different from normal credentials:\r\n\r\n* The credentials are expected to be gated on trust expressions, or some other kind of issuer negotiation. (You could imagine also checking the `certificate_authorities` extension, or other mechanisms.)\r\n* Due to this negotiation, the credentials are expected be exact certificate paths, with nothing extra or missing. In particular, this means it should be safe for the subscriber to check against the `signature_algorithms` and `signature_algorithms_cert` without worrying about stray MD2 self-signed roots.\r\n\r\nHowever, CertificatePropertyList is extensible, which is nice because it allows us to introduce other kinds of properties without changing the CA -> server software -> TLS library flow. It's basically a grab-bag of any kind of CA -> server software communication.\r\n\r\nBut this, combined with wanting to minimize how much layers in between need to inspect CertificatePropertyList puts us in a pickle: what does it mean if you get a CertificatePropertyList without any trust expression property? Maybe it's got some other property you don't understand. Does it still imply that it's still issuer-gated and a whole path?\r\n\r\nIf yes, the extensibility is less useful. There may well be use cases that don't want to be issuer-gated.\r\nIf no, we don't want the certificate to accidentally get interpreted as non-issuer-gated when it actually was issuer-gated by some other mechanism.\r\n\r\nIn writing this, I think I'm coming around to \"no\" being the right answer, but then...\r\n* Should the caller be required to call some \"this is an issuer-gated credential\" API? I.e. we use an out-of-band signal rather than relying on in-band signals that might disappear.\r\n* Do we have a general \"this is issuer-gated\" property and say everyone must understand this? That seems a bit weird.\r\n* Do we need to invent critical properties??? \ud83d\ude2d ",
       "createdAt": "2024-02-15T19:01:39Z",
-      "updatedAt": "2024-02-17T14:11:56Z",
+      "updatedAt": "2024-05-29T12:44:50Z",
       "closedAt": null,
       "comments": [
         {
@@ -141,6 +141,13 @@
           "body": "What if, say, we moved SCT lists to a certificate property (could be a convenient way for the CA to deliver them and allow the server to negotiate which to send)? If you see only that property, do you ignore the credential?\r\n\r\nBob, Devon, and I talked a bit about this earlier and are currently leaning towards the first of the three options: CPLs are just a bag of data, and it's on the TLS library user to say \"this credential needs to match the issuer\" and \"I believe this credential is ubiquitous and a viable candidate for the default\".\r\n\r\nIt does make the API a bit more annoying, but that does ultimately translate to what probably the application's config file will be: a new directive for \"here are my negotiated certs\". (Or \"here are some ACME URLs to get negotiated certs\".) You need a new one mostly because the existing one has an implicit \"this is ubiquitous\" semantic.",
           "createdAt": "2024-02-17T14:11:55Z",
           "updatedAt": "2024-02-17T14:11:55Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Forgot this was open, but I think we've mostly settled on the interpretation above. https://github.com/davidben/tls-trust-expressions/pull/21 makes this a bit more explicit too in its example. Leaving this open just because we probably do need some text on the implications for the ACME bits.",
+          "createdAt": "2024-05-29T12:44:49Z",
+          "updatedAt": "2024-05-29T12:44:49Z"
         }
       ]
     },
@@ -265,15 +272,15 @@
       "id": "I_kwDOKigz-s6KDt-7",
       "title": "\"SHOULD NOT use path building\" is a bit strong",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/18",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Let's downgrade to MAY and then explain why you might want to. Namely:\r\n* More predictable behavior\r\n* Encourage servers to behave correctly",
       "createdAt": "2024-05-24T20:46:18Z",
-      "updatedAt": "2024-05-24T20:46:18Z",
-      "closedAt": null,
+      "updatedAt": "2024-05-29T16:03:34Z",
+      "closedAt": "2024-05-29T16:03:34Z",
       "comments": []
     },
     {
@@ -288,9 +295,55 @@
       "labels": [],
       "body": "I think we're a bit too prescriptive in the subscriber behavior section:\r\nhttps://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-subscriber-behavior\r\n\r\nSpecifically, it's written as if you first look for a TE-based match, then you consider other stuff like CA. Instead, I think the right model is:\r\n\r\n* Here is how you use TE to get a positive signal of trust anchor match. TE might tell you \"yes, it matches\" or \"unknown\"\r\n* The `certificate_authorities` extension can also give you a similar signal.\r\n* Other extensions might be defined later to similarly handle trust negotiation\r\n* If any such extension says \"yes, it matches\", you have a trust anchor match. Otherwise it's unknown whether the server trusts the path.\r\n\r\nFrom there, the subscriber has free reign to decide how it selects a credential based on this \"trust anchor match\" signal. One possible scheme (but not the only one) is:\r\n\r\n* Subscriber maintains a list of credentials, in preference order, e.g. sorted by size or speed of signing key\r\n* Some credentials require a trust anchor match, presumably the ones at the front of the queue\r\n* Other credentials skip this check because they're fallback credentials, presumably the ones at the end of the queue\r\n* Pick the first credential that matches",
       "createdAt": "2024-05-24T21:05:20Z",
-      "updatedAt": "2024-05-24T21:05:20Z",
+      "updatedAt": "2024-05-29T13:02:42Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "martinschmatz",
+          "authorAssociation": "NONE",
+          "body": "Just FYI: I was playing around with the idea to pack the information intended to be transported in the proposed new `trust_expressions` extension in \"fake\" root certs which can be sent to the subscriber using the _existing_ `certificate_authorities` extension \"which SHOULD be used by the receiving endpoint to guide certificate selection\" as per [RFC](https://datatracker.ietf.org/doc/html/rfc8446#section-4.2.4) (read: The server is free how to use the information). \r\n\r\nIt is easy to create a self signed \"root cert\" with some base64 encoded information in CN etc fields to help the subscriber in the selection of the certificate chain to use for authentication. ",
+          "createdAt": "2024-05-29T12:23:18Z",
+          "updatedAt": "2024-05-29T12:23:18Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Hi @martinschmatz, thanks for the comment. As this has nothing to do with this issue, I've filed https://github.com/davidben/tls-trust-expressions/issues/23 so we can move the discussion there.",
+          "createdAt": "2024-05-29T12:39:45Z",
+          "updatedAt": "2024-05-29T12:39:45Z"
+        },
+        {
+          "author": "martinschmatz",
+          "authorAssociation": "NONE",
+          "body": "Sure @davidben - I added it here because it might be that the first two bullets above could merge, thereby avoiding the hassle to convince people to change the TLSv1.3 RFC. \r\n\r\nJoining #23 ",
+          "createdAt": "2024-05-29T13:02:41Z",
+          "updatedAt": "2024-05-29T13:02:41Z"
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "id": "I_kwDOKigz-s6KeZWJ",
+      "title": "Packing trust_expressions into certificate_authorities",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/23",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@martinschmatz wrote the following on https://github.com/davidben/tls-trust-expressions/issues/19#issuecomment-2137282741\r\n\r\n> Just FYI: I was playing around with the idea to pack the information intended to be transported in the proposed new `trust_expressions` extension in \"fake\" root certs which can be sent to the subscriber using the _existing_ `certificate_authorities` extension \"which SHOULD be used by the receiving endpoint to guide certificate selection\" as per [RFC](https://datatracker.ietf.org/doc/html/rfc8446#section-4.2.4) (read: The server is free how to use the information). \r\n>\r\n> It is easy to create a self signed \"root cert\" with some base64 encoded information in CN etc fields to help the subscriber in the selection of the certificate chain to use for authentication. \r\n\r\nMoving this to a separate issue as issue #19 is about something completely unrelated.\r\n\r\n@martinschmatz, could you perhaps expand on this? I don't see what benefit it would have, but some of the details don't make sense to me, so perhaps I am misunderstanding.\r\n\r\nFirst, the `certificate_authorities` extension doesn't carry certificates but names. So there wouldn't be a root certificate in the first place. Base64 encoding also sounds like unnecessarily wasteful (keep in mind we want a compact scheme), though one could use a new OCTET-STRING-carrying attribute. That would still be wasteful with the rest of the ASN.1 structure, but much less so.\r\n\r\nSecond, even though RFC 8446 does not prescribe a precise way to use the information, no one implements a trust expressions matching algorithm with it today. They'll all do some variation of checking for a matching issuer among the relying party's list, because those are the semantics of the field. The allowance is because there are lots of ways to do that and integrate it with other processes.\r\n\r\nIf we were to imbue an existing field with new semantics, we're going to need a code change in the TLS stack anyway. (And, to reduce server operator burden, I think it's important that the matching algorithm be in the TLS stack, at least long-term.) At that point, there is no cost to using a new extension, so we may as well define an extension with the right semantics.\r\n\r\nFinally, there is a real cost to jamming new semantics into existing fields. In addition to the wasteful encoding, this risks weird behaviors when existing software interprets the field according to its existing semantics.",
+      "createdAt": "2024-05-29T12:39:09Z",
+      "updatedAt": "2024-05-29T16:32:36Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinschmatz",
+          "authorAssociation": "NONE",
+          "body": "While I value your effort towards better [crypto-]agility, I'm concerned that it'll take many years for those features to reach OS dist packages. I most certainly support your view that a server should have several cert chains available and adaptively select one pending information received by the client during TLS handshake. \r\n\r\nI therefore played around with a [much] simpler approach by sneaking information into the `certificate_authorities` extension. This explicitly not with the desire to increase agility, but to nevertheless help in the selection of the several available cert chains.\r\n\r\nAs a super simplified example, let's assume a \"fake\" root cert is built like this: \r\n```\r\nSIGALG_default=prime256v1\r\nopenssl ecparam -genkey \\\r\n                -name $SIGALG_default \\\r\n                -noout \\\r\n                -out CA_default.key \\\r\n&& \\\r\nopenssl req \\\r\n                -config /etc/pki/tls/openssl.cnf \\\r\n                -key CA_default.key \\\r\n                -subj '/ST=I want purely QSC cert chain/L=Please use Germany as geo/CN=I want sec level 5' \\\r\n                -new \\\r\n                -x509 \\\r\n                -days 7300 \\\r\n                -extensions v3_ca \\\r\n                -out CA_default.crt\r\n```\r\n\r\nThe `-subj` line is the place where cert-chain-selection-hints are added. As you can see, I expect a reasonably small, highly pragmatic set of selection parameters\r\n- Legacy, QSC, Hybrid sigalgs\r\n- The geo will give a good hint about mandated algs \r\n- The security level is key for interactions with gov\r\n- Potentially some very few more \r\n\r\nFew comments to the above: \r\n- 'cost' is small: The above adds 110 Bytes to a `ClientHello` in the `certificate_authorities` extension and can be further reduced quite a bit by anyway preferred \"code points\" (`-subj '/ST=0x2345/L=Ox4444/CN=0x0005'` adds 57 bytes only) \r\n- Per request specification of `signature_algorithms` extension can not be expected to be easily supported by the gazillion of client apps, while a general description of what the client expects will not necessarily change between requests.\r\n- Implicitly, I'm expecting a gradual, but at least initially slow growth of CAs to support Q-safe root certs. Clients will then have two cert bundles, one legacy and one Q-safe. And it'll be the clients responsibility to have the 'usual suspects' CA for the features the client is asking in its cert bundle.\r\n- Yes, servers must implement code changes, but the clients not. \r\n\r\nAs for the specific use of \"fake root certs\" for the `certificate_authorities` extension in the TE context: In the mean time, I have the suspicion that the entries in your `trust_expressions` extensions might quite likely exceed (?) the max number of characters for the x509 fields transported via `certificate_authorities` extension. It would therefore not be a valid option for TE. \r\n",
+          "createdAt": "2024-05-29T16:31:37Z",
+          "updatedAt": "2024-05-29T16:32:36Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -675,26 +728,225 @@
       "id": "PR_kwDOKigz-s5wg6Fk",
       "title": "Soften the SHOULD for disabling path building in the RP",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/20",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Closes #18.",
       "createdAt": "2024-05-24T21:54:40Z",
-      "updatedAt": "2024-05-24T21:54:40Z",
+      "updatedAt": "2024-05-29T16:03:36Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "b3d7b31a968b739ab15bb8e809106d46d083600d",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "path-building-should-may",
       "headRefOid": "e56f3c4aa353c0b7cbcbe5f192a1349c17fcca88",
+      "closedAt": "2024-05-29T16:03:33Z",
+      "mergedAt": "2024-05-29T16:03:33Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "315dcb3998a901cfcb2e47a341064dc5bcd243fb"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s58Uttf",
+          "commit": {
+            "abbreviatedOid": "e56f3c4"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-05-29T15:50:34Z",
+          "updatedAt": "2024-05-29T15:50:34Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "id": "PR_kwDOKigz-s5wy3Pz",
+      "title": "Rewrite subscriber behavior sections",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/21",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #19. The changes made here are:\r\n\r\n1. Don't prescribe an exact selection algorithm. Only prescribe the matching procedure.\r\n\r\n2. Move the expiry check into the matching procedure, because it's part of the process. (Version skew depends on this.)\r\n\r\n3. Although we don't prescribe it, give an example selection algorithm that also incorporates certificate_authorities, in response to feedback. This example is also structured differently, because it more closely aligns with how we anticipate implementing it.",
+      "createdAt": "2024-05-28T17:48:51Z",
+      "updatedAt": "2024-05-29T17:19:21Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "b3d7b31a968b739ab15bb8e809106d46d083600d",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "selection-algorithm",
+      "headRefOid": "717ae7b9ade420e00c6950134b97ed0ff65a6ef6",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s58Ummy",
+          "commit": {
+            "abbreviatedOid": "717ae7b"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2024-05-29T15:38:33Z",
+          "updatedAt": "2024-05-29T15:43:14Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "I don't think we want to do this here.  If for (reasons) my certificates have expired, today, I still serve up the expired certificate rather than effectively, failing. It is then up to the relying party to decide what to do with an expired certificate and this changes that dynamic. \r\n\r\nI think an expired path is *still* a match.  If there is *more than one* match and one is expired and one is not, then absolutely, choose the non-expired one to serve. ",
+              "createdAt": "2024-05-29T15:38:33Z",
+              "updatedAt": "2024-05-29T15:43:15Z"
+            },
+            {
+              "originalPosition": 11,
+              "body": "Consider a future PQ world with PQ clients, and a default classical cert - it's worse behaviour to serve up the classical cert because the PQ cert  that matched the expression was expired, than to just serve up the expired cert we know matches because it's the best we have. ",
+              "createdAt": "2024-05-29T15:41:46Z",
+              "updatedAt": "2024-05-29T15:43:15Z"
+            },
+            {
+              "originalPosition": 44,
+              "body": "I think here is the place to be opinionated over serving non-expired and smallest size paths first. ",
+              "createdAt": "2024-05-29T15:43:06Z",
+              "updatedAt": "2024-05-29T15:43:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s58VG6v",
+          "commit": {
+            "abbreviatedOid": "717ae7b"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-29T16:35:22Z",
+          "updatedAt": "2024-05-29T16:35:23Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "The problem is that, if expired, all the version skew machinery we've put in no longer works. The relying party only needs to send `excluded_labels` up to when the old certificates expire. If we say that expired certificates may match, then the relying party can never retire `excluded_labels` and then removals leave persistent scar tissue.",
+              "createdAt": "2024-05-29T16:35:22Z",
+              "updatedAt": "2024-05-29T16:35:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s58Vco6",
+          "commit": {
+            "abbreviatedOid": "717ae7b"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-29T17:19:21Z",
+          "updatedAt": "2024-05-29T17:19:21Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "although I suspect that may come down to picking the newer of the smallest... ",
+              "createdAt": "2024-05-29T17:19:21Z",
+              "updatedAt": "2024-05-29T17:19:21Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOKigz-s5wziv2",
+      "title": "Clarify that the bad certificates may come in the future too",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/22",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-05-28T19:56:31Z",
+      "updatedAt": "2024-05-29T16:04:15Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "b3d7b31a968b739ab15bb8e809106d46d083600d",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "also-future-signing",
+      "headRefOid": "66bddbce24cf6f060498d93a3f9a959caec620e5",
+      "closedAt": "2024-05-29T16:04:12Z",
+      "mergedAt": "2024-05-29T16:04:12Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "80147015906458dfb7d10980d1a1141ac31e1b6a"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s58Uj9n",
+          "commit": {
+            "abbreviatedOid": "66bddbc"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-05-29T15:33:51Z",
+          "updatedAt": "2024-05-29T15:33:51Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "id": "PR_kwDOKigz-s5w4aZh",
+      "title": "Say this is for TLS 1.3 or later",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/24",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #4",
+      "createdAt": "2024-05-29T12:48:08Z",
+      "updatedAt": "2024-05-29T16:04:04Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "b3d7b31a968b739ab15bb8e809106d46d083600d",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "tls13",
+      "headRefOid": "fb05ddd54b443071681e761c108de05c0076ffd9",
+      "closedAt": "2024-05-29T16:04:01Z",
+      "mergedAt": "2024-05-29T16:04:01Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "17e316cc387c2ccfc5844ec68676cf7e89f9c9d7"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s58Ujl4",
+          "commit": {
+            "abbreviatedOid": "fb05ddd"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-05-29T15:33:12Z",
+          "updatedAt": "2024-05-29T15:33:12Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
