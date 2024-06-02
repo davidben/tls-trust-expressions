@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-30T01:24:09.698369+00:00",
+  "timestamp": "2024-06-02T01:35:20.731737+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -288,15 +288,15 @@
       "id": "I_kwDOKigz-s6KD0kl",
       "title": "Tidy up subscriber selection algorithm",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/19",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "I think we're a bit too prescriptive in the subscriber behavior section:\r\nhttps://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-subscriber-behavior\r\n\r\nSpecifically, it's written as if you first look for a TE-based match, then you consider other stuff like CA. Instead, I think the right model is:\r\n\r\n* Here is how you use TE to get a positive signal of trust anchor match. TE might tell you \"yes, it matches\" or \"unknown\"\r\n* The `certificate_authorities` extension can also give you a similar signal.\r\n* Other extensions might be defined later to similarly handle trust negotiation\r\n* If any such extension says \"yes, it matches\", you have a trust anchor match. Otherwise it's unknown whether the server trusts the path.\r\n\r\nFrom there, the subscriber has free reign to decide how it selects a credential based on this \"trust anchor match\" signal. One possible scheme (but not the only one) is:\r\n\r\n* Subscriber maintains a list of credentials, in preference order, e.g. sorted by size or speed of signing key\r\n* Some credentials require a trust anchor match, presumably the ones at the front of the queue\r\n* Other credentials skip this check because they're fallback credentials, presumably the ones at the end of the queue\r\n* Pick the first credential that matches",
       "createdAt": "2024-05-24T21:05:20Z",
-      "updatedAt": "2024-05-29T13:02:42Z",
-      "closedAt": null,
+      "updatedAt": "2024-05-30T17:29:18Z",
+      "closedAt": "2024-05-30T17:29:18Z",
       "comments": [
         {
           "author": "martinschmatz",
@@ -344,6 +344,38 @@
           "updatedAt": "2024-05-29T16:32:36Z"
         }
       ]
+    },
+    {
+      "number": 25,
+      "id": "I_kwDOKigz-s6Kp5ZT",
+      "title": "A server supporting trust expressions needs to have accurate time. ",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/25",
+      "state": "OPEN",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "While possibly not an unusual requirement in 2024, Today, a server serving a certificate does not need to know the time, the only time that matters is the client's notion of time to evaluate the validity of the certificate. \r\n\r\nWe need to call out that (in absence of other things) the server's time causing trust expresions to not choose a certificate it believes is expired could result in the default certificate being sent to a client that would otherwise have been presented with an expired certificate, and be allowed to possibly decide based on it's own notion of time that it was fine, (or that it did not care)\r\n\r\nI *think* this change is kind of \"ok\" but it is certainly a change compared to today. \r\n\r\n",
+      "createdAt": "2024-05-30T17:48:50Z",
+      "updatedAt": "2024-05-30T17:48:50Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 26,
+      "id": "I_kwDOKigz-s6Kp9m5",
+      "title": "A client does not get a chance to evaluate a non-matching certificate of a trust expression. ",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/26",
+      "state": "OPEN",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "\r\nHow important this is we are unsure, but if a client sending a trust expression sends a non matching trust expression that\r\nthe server does not choose (because for example, the server has a distrusted root, time, etc) The client does not then get\r\nto look at what the server would have sent, but instead sees the (possibly very legacy) fallback certificate. \r\n\r\nAs an example, we could have a client that trusts entirely a new set of roots (PQ?) and then instead of being offered a choice\r\nof an \"older less trusted or expired\" PQ cert that it might choose to work with, It instead gets a fallback certifiate with classical algorithms it does not even support. \r\n\r\n",
+      "createdAt": "2024-05-30T18:00:37Z",
+      "updatedAt": "2024-05-30T18:00:37Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -770,25 +802,35 @@
       "id": "PR_kwDOKigz-s5wy3Pz",
       "title": "Rewrite subscriber behavior sections",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/21",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Fixes #19. The changes made here are:\r\n\r\n1. Don't prescribe an exact selection algorithm. Only prescribe the matching procedure.\r\n\r\n2. Move the expiry check into the matching procedure, because it's part of the process. (Version skew depends on this.)\r\n\r\n3. Although we don't prescribe it, give an example selection algorithm that also incorporates certificate_authorities, in response to feedback. This example is also structured differently, because it more closely aligns with how we anticipate implementing it.",
       "createdAt": "2024-05-28T17:48:51Z",
-      "updatedAt": "2024-05-29T17:19:21Z",
+      "updatedAt": "2024-05-30T18:02:17Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "b3d7b31a968b739ab15bb8e809106d46d083600d",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "selection-algorithm",
       "headRefOid": "717ae7b9ade420e00c6950134b97ed0ff65a6ef6",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
+      "closedAt": "2024-05-30T17:29:17Z",
+      "mergedAt": "2024-05-30T17:29:17Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "a6949a24b24679dafcc848c7aef2400fcc036126"
+      },
+      "comments": [
+        {
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "body": "https://github.com/davidben/tls-trust-expressions/issues/25\r\nand\r\nhttps://github.com/davidben/tls-trust-expressions/issues/26\r\nfell out of this.\r\n",
+          "createdAt": "2024-05-30T18:02:16Z",
+          "updatedAt": "2024-05-30T18:02:16Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOKigz-s58Ummy",
@@ -859,6 +901,26 @@
               "body": "although I suspect that may come down to picking the newer of the smallest... ",
               "createdAt": "2024-05-29T17:19:21Z",
               "updatedAt": "2024-05-29T17:19:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s58gUyu",
+          "commit": {
+            "abbreviatedOid": "717ae7b"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-30T16:51:25Z",
+          "updatedAt": "2024-05-30T16:51:25Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "After conversation offline, I'm maybe kinda ok with this, as long as we call out the new dependency on the server having accurate time, which I think we need to note, as well as the differences here that we would noa serve the default cert in this case instead of the expired one in some situations. ",
+              "createdAt": "2024-05-30T16:51:25Z",
+              "updatedAt": "2024-05-30T16:51:25Z"
             }
           ]
         }
@@ -944,6 +1006,66 @@
           "body": "",
           "createdAt": "2024-05-29T15:33:12Z",
           "updatedAt": "2024-05-29T15:33:12Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "id": "PR_kwDOKigz-s5xEU2Q",
+      "title": "Add explainer sections for server software and cert provisioning changes we expect. ",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/27",
+      "state": "OPEN",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-05-30T23:45:58Z",
+      "updatedAt": "2024-05-31T19:47:14Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "a6949a24b24679dafcc848c7aef2400fcc036126",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "34fb1236905eaf50454d9cac1fcd9947b2a65cb9",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s58q2ML",
+          "commit": {
+            "abbreviatedOid": "34fb123"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-31T19:46:44Z",
+          "updatedAt": "2024-05-31T19:46:44Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "Nit, just to match the casing of the other sections.\r\n```suggestion\r\n## Server Software Changes\r\n```",
+              "createdAt": "2024-05-31T19:46:44Z",
+              "updatedAt": "2024-05-31T19:46:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s58q2Xp",
+          "commit": {
+            "abbreviatedOid": "34fb123"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "LGTM, although I'm a little confused why GitHub seems to think a bunch of other commits are part of your PR. Wonder if you need to rebase or something?",
+          "createdAt": "2024-05-31T19:47:14Z",
+          "updatedAt": "2024-05-31T19:47:14Z",
           "comments": []
         }
       ]
