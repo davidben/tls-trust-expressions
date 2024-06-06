@@ -148,6 +148,24 @@ A single-certificate deployment model forces subscribers to find a single certif
 
 A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.
 
+## Server Software Changes
+
+Server software will need to be modified to support Trust Expressions. We expect this to look something like:
+
+Servers are configured to obtain multiple certificate paths with associated metadata for clients that do present a trust expression, possibly from more than one CA. The CA maintains relationships with root programs, so it can populate this metadata. Ideally, these come from some form of automated certificate distribution mechanism, such as ACME, so that the server operator only needs to specify, e.g., an ACME URL and the rest occurs automatically.
+With a collection of certificate paths and associated metadata, the server software automatically selects one to send. It matches the client’s trust expressions with the metadata to determine if the client trusts it, along with other TLS criteria such as ECDSA vs RSA. If there are multiple matches, server software chooses based on their own criteria (such as the size of matching path, performance characteristics, etc.).
+To handle the cases in which a trust expression is unrecognised or none is presented, servers should behave as they do today, either by serving a single certificate to all clients, or relying on fingerprinting signals to choose among a set of credentials (e.g. ECDSA vs. RSA based on inferred client support). The existing behaviour remains unchanged.
+
+## Certificate Provisioning
+
+The server software changes above take, as input, a collection of certificate paths with associated metadata. In principle, these may come from any source, even manual configuration. However, Trust Expressions is designed with automation in mind, with the aim of reducing server operator burden.
+
+When using an automated issuance protocol, such as ACME, we intend that the issuance protocol be extended so that a single ACME endpoint can return *multiple* certificate paths for the server's requested key and identity. As CAs already maintain relationships with root programs, they are well-positioned to update the kinds of certificates they provision in response to PKI changes. Automation allows subscribers to benefit from this without manual reconfiguration.
+
+For ACME, the draft currently proposes a minimal change to existing mechanisms, where a new MIME type provides the metadata alongside each certificate path, and the [existing alternate certificate mechanism](https://www.rfc-editor.org/rfc/rfc8555.html#section-7.4.2) allows provisioning multiple alternate certificates in response to one request.
+
+Where an individual ACME server does not cover all that some server operator needs, the server operator can also combine the outputs of multiple ACME servers, with the server software automatically selecting from the combined set.
+
 ## Considered Alternatives
 
 ### TLS `certificate_authorities` Extension
