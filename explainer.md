@@ -148,7 +148,7 @@ A single-certificate deployment model forces subscribers to find a single certif
 
 A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.
 
-## Server software changes
+## Server Software Changes
 
 Server software will need to be modified to support Trust Expressions. We expect this to look something like:
 
