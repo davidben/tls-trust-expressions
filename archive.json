@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-06T01:24:44.439970+00:00",
+  "timestamp": "2024-06-09T01:38:17.696782+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -1015,24 +1015,26 @@
       "id": "PR_kwDOKigz-s5xEU2Q",
       "title": "Add explainer sections for server software and cert provisioning changes we expect. ",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/27",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "bob-beck",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2024-05-30T23:45:58Z",
-      "updatedAt": "2024-05-31T19:47:14Z",
+      "updatedAt": "2024-06-06T21:37:12Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "a6949a24b24679dafcc848c7aef2400fcc036126",
       "headRepository": "bob-beck/tls-trust-expressions",
       "headRefName": "main",
-      "headRefOid": "34fb1236905eaf50454d9cac1fcd9947b2a65cb9",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "b12e05dbbbf46cd922dd831e2a0e0575f64f4399",
+      "closedAt": "2024-06-06T21:37:12Z",
+      "mergedAt": "2024-06-06T21:37:11Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "04d8bcc23638aa8603d4aedb18eb160d449ac2f8"
+      },
       "comments": [],
       "reviews": [
         {
