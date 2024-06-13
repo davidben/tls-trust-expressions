@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-11T01:26:43.952696+00:00",
+  "timestamp": "2024-06-13T01:25:46.291869+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -374,6 +374,22 @@
       "body": "\r\nHow important this is we are unsure, but if a client sending a trust expression sends a non matching trust expression that\r\nthe server does not choose (because for example, the server has a distrusted root, time, etc) The client does not then get\r\nto look at what the server would have sent, but instead sees the (possibly very legacy) fallback certificate. \r\n\r\nAs an example, we could have a client that trusts entirely a new set of roots (PQ?) and then instead of being offered a choice\r\nof an \"older less trusted or expired\" PQ cert that it might choose to work with, It instead gets a fallback certifiate with classical algorithms it does not even support. \r\n\r\n",
       "createdAt": "2024-05-30T18:00:37Z",
       "updatedAt": "2024-05-30T18:00:37Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 28,
+      "id": "I_kwDOKigz-s6L4uGB",
+      "title": "Single-certificate and multi-certificate terms are a bit confusing",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/28",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Without trust anchor negotiation, people sometimes do deploy multiple certificates today. It's not enough to avoid preventing PKI evolution, but it means the terminology is a little bit confusing.",
+      "createdAt": "2024-06-11T17:06:14Z",
+      "updatedAt": "2024-06-11T17:06:14Z",
       "closedAt": null,
       "comments": []
     }
@@ -1069,6 +1085,74 @@
           "createdAt": "2024-05-31T19:47:14Z",
           "updatedAt": "2024-05-31T19:47:14Z",
           "comments": []
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "id": "PR_kwDOKigz-s5yJ0Jw",
+      "title": "Add a discussion of server operator burden to the explainer",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/29",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Possibly some of this should graduate to the draft too.",
+      "createdAt": "2024-06-11T19:59:25Z",
+      "updatedAt": "2024-06-12T18:13:16Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "04d8bcc23638aa8603d4aedb18eb160d449ac2f8",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "server-operator-burden",
+      "headRefOid": "8d0a31634e37cf9ae57af6750d361f3fe784e8b4",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s59_Uny",
+          "commit": {
+            "abbreviatedOid": "8d0a316"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2024-06-12T18:06:40Z",
+          "updatedAt": "2024-06-12T18:13:16Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "Since we're not spending much time on this topic, I think we should also point out the technical limitations. Fingerprinting is relatively unreliable because it's an inferred signal and collecting intermediates requires constant curation to remain relevant. Maybe something like:\r\n\"they are impractical for a more diverse set of HTTPS servers and are limited in both the types of signals available and the reliability of those signals.\"\r\n",
+              "createdAt": "2024-06-12T18:06:40Z",
+              "updatedAt": "2024-06-12T18:13:16Z"
+            },
+            {
+              "originalPosition": 36,
+              "body": "Possibly \"shift work from server operators to CAs and root programs\" to make the shift more explicit",
+              "createdAt": "2024-06-12T18:08:42Z",
+              "updatedAt": "2024-06-12T18:13:16Z"
+            },
+            {
+              "originalPosition": 45,
+              "body": "What does certificate profile mean here? In PKI terms, this usually refers to the issuance template for a given certificate, but I think this is referring to changes in trust for a given certificate?",
+              "createdAt": "2024-06-12T18:11:52Z",
+              "updatedAt": "2024-06-12T18:13:16Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "This last point is worth including, but the text leans further into a narrow example than I would have expected from the title. Is there a broader point here we can focus on? I don't have a strong suggestion here, but there seems to be an opportunity to make a stronger point here.",
+              "createdAt": "2024-06-12T18:12:46Z",
+              "updatedAt": "2024-06-12T18:13:16Z"
+            }
+          ]
         }
       ]
     }
