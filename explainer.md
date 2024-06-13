@@ -127,18 +127,22 @@ This means:
   base. It cannot be generalized and automated. In contrast, a mechanism that
   directly negotiates the selection critera can be implemented in the TLS
   library, with HTTPS software and server operators only providing the inputs.
+  See "Considered Alternatives" for further discussion of the implications of
+  imprecise strategies.
 
-* **Shift work to CAs and root programs.** CAs are well-positioned to react to
-  changes in root program requirements. They mint the certificates and
-  maintain relationships with both server operators and the root programs whose
-  requirements they follow. User security improvements are dramatically easier
-  to deploy when only CAs and root programs need to act.
+* **Shift work from server operators to CAs and root programs.** CAs are
+  well-positioned to react to changes in root program requirements. They mint
+  the certificates and maintain relationships with both server operators and the
+  root programs whose requirements they follow. User security improvements are
+  dramatically easier to deploy when only CAs and root programs need to act.
 
-* **Minimize risky decisions during incident response.** Root program
-  requirements naturally change over time, such as responding to a compromised
-  CA. Failing to do this puts user security at risk. However, from the server
-  operator's perspective, a change to their certificate profile risks breaking
-  *other* clients. Robust certificate negotiation relieves this tension.
+* **Minimize additional risk during incident response.** As root program
+  requirements change over time, servers may need to change in response, e.g.
+  migrating to a new CA when an old one is distrusted. Such changes, however,
+  are inherently risky to the server operator, because an old client may be
+  depending on the old configuration. This makes incident response much riskier
+  and more difficult for the ecosystem. Robust certificate negotiation relieves
+  this tension.
 
 ## Overview
 
