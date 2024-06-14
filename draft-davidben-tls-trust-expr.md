@@ -40,13 +40,21 @@ author:
 normative:
   POSIX: DOI.10.1109/IEEESTD.2018.8277153
 
-  X690:
-       title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
-       date: 2002
+  X680:
+       title: "Information technology - Abstract Syntax Notation One (ASN.1): Specification of basic notation"
+       date: 2021
        author:
          org: ITU-T
        seriesinfo:
-         ISO/IEC: 8825-1:2002
+         ISO/IEC: 8824-1:2021
+
+  X690:
+       title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
+       date: 2021
+       author:
+         org: ITU-T
+       seriesinfo:
+         ISO/IEC: 8825-1:2021
 
 informative:
 
@@ -216,14 +224,12 @@ By providing accurate trust anchor negotiation, this process avoids the need for
 
 This section defines a trust store manifest, which is a structure published by the root program to some well-known location. These manifests are used to compute certificate properties for the subscriber ({{certificate-properties}}) and trust expressions for the relying party ({{tls-certificate-negotiation}}).
 
-Trust store manifests are identified by a short, unique trust store name and define a list of trust store versions. A trust store version contains a set of trust anchors, and is identified by a name (from the manifest) and a version number.
-
-[[TODO: Trust store names need to be unique, or at least unique among relying parties and subscribers that talk to each other, but also short. How do we allocate them? Registry? Just pick values? OIDs?]]
+Trust store manifests are identified by a short, unique trust store identifier and define a list of trust store versions. A trust store version contains a set of trust anchors, and is identified by an identifier (from the manifest) and a version number.
 
 A trust store manifest is a JSON object {{!RFC8259}} containing:
 
-`name`:
-: A string containing a short, unique name that identifies the collection of trust stores
+`id`:
+: A string containing a a trust store identifier in text form, as described in {{trust-store-ids}}.
 
 `max_age`:
 : A non-negative integer containing the number of seconds that this document may be cached.
@@ -247,7 +253,7 @@ A trust store manifest is a JSON object {{!RFC8259}} containing:
   `entries`:
   : A non-empty array describing the contents of this version of the trust store. These are known as trust store entries. Each element is an object containing:
 
-    `id`:
+    `trust_anchor`:
     : A string containing the name of some member of the `trust_anchors` object.
 
     `labels`:
@@ -261,6 +267,12 @@ Versions in `versions` are identified by their zero-indexed position in the arra
 Recipients MUST ignore JSON object members with unrecognized names in each of the objects defined above. Future documents MAY extend these formats with new names. {{cddl-schema}} contains a CDDL {{?RFC8610}} describing the above structure.
 
 When updating a trust store manifest, root programs append a new object to the `versions` array to represent the new trust store version. When the new object references a trust anchor, the root program uses the existing members of `trust_anchors`, or adds new members as required. Updates MUST NOT modify or remove existing entries in the `versions` array.
+
+## Trust Store Identifiers {#trust-store-ids}
+
+To simplify allocation, trust store identifiers use object identifiers (OIDs) {{X680}} based on Private Enterprise Numbers (PENs) {{!RFC9371}}. An organization may define a trust store by allocating some OID under its PEN. For example, an organization with PEN 32473 might allocate a trust store identified by the OID `1.3.6.1.4.1.32473.1`.
+
+For compactness, this document uses relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. In the text form, these are written in dotted decimal notation, such as `32473.1`. In a binary protocol, such as TLS, this is encoded as the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of {{X690}}. For example, the binary encoding of `32473.1` would be the four-octet sequence `{0x81, 0xfd, 0x59, 0x01}`.
 
 ## Trust Store Entry Expiration {#expiration}
 
@@ -320,7 +332,7 @@ enum {
 } TrustStoreStatus;
 
 struct {
-    opaque name<1..2^8-1>;
+    opaque id<1..2^8-1>;
     uint24 version;
 } TrustStore;
 
@@ -335,15 +347,15 @@ TrustStoreInclusion TrustStoreInclusionList<1..2^16-1>;
 
 Each TrustStoreInclusion describes a trust store version which contains this certification path's trust anchor. `trust_store` specifies a version of the trust store, and `labels` specifies the trust anchor's labels within that trust store.
 
-If `status` is `latest_version_at_issuance`, `trust_store` was the latest trust store of its name at the time the certificate was issued. In this case, the trust expression evaluation algorithm ({{evaluating-trust-expressions}}) predicts this information additionally applies to all versions greater than `trust_store`'s `version`, up to the expiration of the certification path.
+If `status` is `latest_version_at_issuance`, `trust_store` was the latest version at the time the certificate was issued. In this case, the trust expression evaluation algorithm ({{evaluating-trust-expressions}}) predicts this information additionally applies to all versions greater than `trust_store`'s `version`, up to the expiration of the certification path.
 
 A TrustStoreInclusionList MUST satisfy the following invariants:
 
 * Each TrustStoreInclusion has a unique `trust_store` value.
 
-* The TrustStoreInclusion structures are sorted, first by length of `trust_store`'s `name`, then by `trust_store`'s `name` lexicographically, then by `trust_store`'s `version`.
+* The TrustStoreInclusion structures are sorted, first by length of `trust_store`'s `id`, then by `trust_store`'s `id` lexicographically, then by `trust_store`'s `version`.
 
-* If `status` is `latest_version_at_issuance` in some TrustStoreInclusion, no `trust_store` with the same `name` but higher `version` appears in the list.
+* If `status` is `latest_version_at_issuance` in some TrustStoreInclusion, no `trust_store` with the same `id` but higher `version` appears in the list.
 
 ## Computing Trust Store Inclusions
 
@@ -354,11 +366,11 @@ Each CA regularly fetches trust store manifests from root programs in which it p
 2. For each trust store version in the cached manifest's `versions`:
 
    {: type="a"}
-   1. Look for a trust store entry whose `id`, when indexed into `trust_anchors`, matches the certification path's trust anchor.
+   1. Look for a trust store entry whose `trust_anchor` field, when indexed into `trust_anchors`, matches the certification path's trust anchor.
 
    2. If found, output a TrustStoreInclusion structure:
 
-      * Set `trust_store` to the manifest's `name`, encoded in UTF-8 {{!RFC3629}}, and the version's version number.
+      * Set `trust_store` to the manifest's `id`, encoded in binary form as described in {{trust-store-ids}}, and the version's version number.
       * Set `status` to `latest_version_at_issuance` if the trust store version is currently the latest version. Otherwise, set it to `previous_version`.
 
       * Set `labels` to the trust store entry's `labels`.
@@ -423,7 +435,7 @@ TrustExpression TrustExpressionList<1..2^16-1>;
 
 A TrustExpressionList is an unordered set of TrustExpression objects. When a relying party sends a TrustExpressionList, it indicates support for all trust anchors specified by any TrustExpression contained in the list. A TrustExpression specifies a list of trust anchors in two parts:
 
-First, `trust_store` specifies a trust store by name and version (see {{trust-store-manifests}}). Any trust anchors contained in the specified trust store are included.
+First, `trust_store` specifies a trust store by ID and version (see {{trust-store-manifests}}). Any trust anchors contained in the specified trust store are included.
 
 Second, `excluded_labels` specifies a set of labels, each of which identify one or more trust anchors in a trust store manifest. Any trust anchors identified by any label in `excluded_labels` are excluded. {{constructing-trust-expressions}} discusses this set in more detail.
 
@@ -451,7 +463,7 @@ Given a certification path and a TrustExpressionList from the relying party, the
 
    1. Find the TrustExpression's corresponding TrustStoreInclusion in the TrustStoreInclusionList, if any. The corresponding TrustStoreInclusion is the one where both of the following are true:
 
-      * The `name` fields of two structures' `trust_store` fields are equal.
+      * The `id` fields of two structures' `trust_store` fields are equal.
 
       * Either the `version` fields of the two structures' `trust_store` fields are equal, or the TrustStoreInclusion's `status` is `latest_version_at_issuance` and the `version` field of TrustExpression's `trust_store` is greater than that of the TrustStoreInclusion's `trust_store`.
 
@@ -498,14 +510,14 @@ For each referenced trust store version, the following procedure constructs a tr
 2. For each trust store entry in the trust store version:
 
    {: type="a"}
-   1. If the trust store entry's `id` references a trust anchor that is in the desired subset, add it to `include_entries`.
+   1. If the trust store entry's `trust_anchor` references a trust anchor that is in the desired subset, add it to `include_entries`.
 
    2. Otherwise, add it to `exclude_entries`.
 
 3. For all trust store entries in trust store versions before the specified version:
 
    {: type="a"}
-   1. If the current time is before the entry's expiration time ({{expiration}}) and if the entry's `id` references a trust anchor that is not in the desired subset, add the entry to `exclude_entries`.
+   1. If the current time is before the entry's expiration time ({{expiration}}) and if the entry's `trust_anchor` references a trust anchor that is not in the desired subset, add the entry to `exclude_entries`.
 
 4. Compute a set of labels, `excluded_labels` such that:
 
@@ -547,7 +559,7 @@ On January 1st, 2023, the root program includes A1, A2, B1, and B2. It allocates
 
 ~~~
 {
-  "name": "example",
+  "id": "32473.1",
   "max_age": 864000,
   "trust_anchors": {
     "A1": {"type": "x509", "data": "..."},
@@ -575,14 +587,14 @@ On January 1st, 2023, the root program includes A1, A2, B1, and B2. It allocates
 
 A certification path, A1_old, issued by A1, would have a TrustStoreInclusion:
 
-* `trust_store.name` is "example"
+* `trust_store.id` is "32473.1"
 * `trust_store.version` is 0
 * `status` is `latest_version_at_issuance`
 * `labels` is 0, 100
 
 A certification path, B1_old, issued by B1, would have a TrustStoreInclusion:
 
-* `trust_store.name` is "example"
+* `trust_store.id` is "32473.1"
 * `trust_store.version` is 0
 * `status` is `latest_version_at_issuance`
 * `labels` is 2, 101
@@ -593,7 +605,7 @@ On February 1st, 2023, the root program added CAs C1 and C2 but removed CAs B1 a
 
 ~~~
 {
-  "name": "example",
+  "id": "32473.1",
   "max_age": 864000,
   "trust_anchors": {
     "A1": {"type": "x509", "data": "..."},
@@ -636,28 +648,28 @@ On February 1st, 2023, the root program added CAs C1 and C2 but removed CAs B1 a
 
 A certification path, A1_new, newly issued by A1, would have two TrustStoreInclusions. The first:
 
-* `trust_store.name` is "example"
+* `trust_store.id` is "32473.1"
 * `trust_store.version` is 0
 * `status` is `previous_version`
 * `labels` is 0, 100
 
 And the second:
 
-* `trust_store.name` is "example"
+* `trust_store.id` is "32473.1"
 * `trust_store.version` is 1
 * `status` is `latest_version_at_issuance`
 * `labels` is 0, 100, 200
 
 A certification path, B1_new, newly issued by B1, would have a TrustStoreInclusion:
 
-* `trust_store.name` is "example"
+* `trust_store.id` is "32473.1"
 * `trust_store.version` is 0
 * `status` is `previous_version`
 * `labels` contains 2, 101
 
 A certification path, C1_new, newly issued by C1, would have a TrustStoreInclusion:
 
-* `trust_store.name` is "example"
+* `trust_store.id` is "32473.1"
 * `trust_store.version` is 1
 * `status` is `previous_version`
 * `labels` contains 2, 101, 200
@@ -867,7 +879,7 @@ trust-anchor = {
 }
 
 trust-store-entry = {
-    id: text,
+    trust_anchor: text,
     labels: [+ uint],
     max_lifetime: uint,
     * text => any,
@@ -880,7 +892,7 @@ trust-store-version = {
 }
 
 trust-store-manifest = {
-    name: text,
+    id: text,
     max_age: uint,
     trust_anchors: {+ text => trust-anchor},
     versions: [+ trust-store-version],
