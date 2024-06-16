@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-13T01:25:46.291869+00:00",
+  "timestamp": "2024-06-16T01:38:25.747750+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -1103,13 +1103,13 @@
       "labels": [],
       "body": "Possibly some of this should graduate to the draft too.",
       "createdAt": "2024-06-11T19:59:25Z",
-      "updatedAt": "2024-06-12T18:13:16Z",
+      "updatedAt": "2024-06-13T21:12:26Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "04d8bcc23638aa8603d4aedb18eb160d449ac2f8",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "server-operator-burden",
-      "headRefOid": "8d0a31634e37cf9ae57af6750d361f3fe784e8b4",
+      "headRefOid": "bd10f57d5c66b36820bed5293a74d6096363dc71",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -1151,6 +1151,189 @@
               "body": "This last point is worth including, but the text leans further into a narrow example than I would have expected from the title. Is there a broader point here we can focus on? I don't have a strong suggestion here, but there seems to be an opportunity to make a stronger point here.",
               "createdAt": "2024-06-12T18:12:46Z",
               "updatedAt": "2024-06-12T18:13:16Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-LCww",
+          "commit": {
+            "abbreviatedOid": "8d0a316"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-13T20:16:16Z",
+          "updatedAt": "2024-06-13T21:12:26Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "We do spend time on the topic, just elsewhere in the document. I can add a \"see elsewhere\" sentence.",
+              "createdAt": "2024-06-13T20:16:16Z",
+              "updatedAt": "2024-06-13T21:12:27Z"
+            },
+            {
+              "originalPosition": 45,
+              "body": "This is talking about server operators (\"from the server operator's perspective\"), so it refers to a change to the kind of certificates they serve. I don't want to say a change in the exact certificates, because that happens routinely. Rephrased to avoid the phrase.",
+              "createdAt": "2024-06-13T20:16:46Z",
+              "updatedAt": "2024-06-13T21:12:27Z"
+            },
+            {
+              "originalPosition": 36,
+              "body": "Done.",
+              "createdAt": "2024-06-13T20:16:57Z",
+              "updatedAt": "2024-06-13T21:12:27Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "I tried to generalize this but honestly it made it even harder to follow. This already tells a pretty general story; any time server operators are required to make some change, we should reduce any unnecessary risks that they have to take on. But I think it's important to talk about compromised CA as the motivating example because that's what makes it about incident response.\r\n\r\nRephrased it a bit to make it clear the CA compromise is just an example.",
+              "createdAt": "2024-06-13T20:23:33Z",
+              "updatedAt": "2024-06-13T21:12:27Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "id": "PR_kwDOKigz-s5yboQk",
+      "title": "Use PENs to allocate trust store names",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/30",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "This gives a concrete allocation scheme, is compact, and also aligns well with some plans we have around Merkle Tree Certificates.",
+      "createdAt": "2024-06-14T03:35:45Z",
+      "updatedAt": "2024-06-14T18:01:51Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "04d8bcc23638aa8603d4aedb18eb160d449ac2f8",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "oid",
+      "headRefOid": "8d04679c4194afcd34a8ad5d8919b11d9cfd6c1b",
+      "closedAt": "2024-06-14T18:01:45Z",
+      "mergedAt": "2024-06-14T18:01:45Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "d20509e10cec37724981594c38725ab61957eaa4"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5-Sadl",
+          "commit": {
+            "abbreviatedOid": "8d04679"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-14T16:20:31Z",
+          "updatedAt": "2024-06-14T16:20:32Z",
+          "comments": [
+            {
+              "originalPosition": 48,
+              "body": "in text form as desribed in {{trust-store-ids}}}",
+              "createdAt": "2024-06-14T16:20:31Z",
+              "updatedAt": "2024-06-14T16:20:32Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-SbOf",
+          "commit": {
+            "abbreviatedOid": "8d04679"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-14T16:22:20Z",
+          "updatedAt": "2024-06-14T16:22:20Z",
+          "comments": [
+            {
+              "originalPosition": 102,
+              "body": "s/binary/der/",
+              "createdAt": "2024-06-14T16:22:20Z",
+              "updatedAt": "2024-06-14T16:22:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-SbdD",
+          "commit": {
+            "abbreviatedOid": "8d04679"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-06-14T16:22:53Z",
+          "updatedAt": "2024-06-14T16:22:53Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-S1Dt",
+          "commit": {
+            "abbreviatedOid": "8d04679"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-14T16:51:20Z",
+          "updatedAt": "2024-06-14T16:51:20Z",
+          "comments": [
+            {
+              "originalPosition": 48,
+              "body": "Oh, this isn't an OID. Those are used to name the trust stores. This is an index into the `trust_anchors` object. (That part of the design also maybe needs work, but we're not doing anything with it just yet.)",
+              "createdAt": "2024-06-14T16:51:20Z",
+              "updatedAt": "2024-06-14T16:51:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-S1bT",
+          "commit": {
+            "abbreviatedOid": "8d04679"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-14T16:52:22Z",
+          "updatedAt": "2024-06-14T16:52:22Z",
+          "comments": [
+            {
+              "originalPosition": 102,
+              "body": "trust-store-ids refers to it as \"binary\". I didn't want to say DER because then we have to clarify whether the tag and length are included. (They're not.) So trust-store-ids defines it once by name and we reference it.",
+              "createdAt": "2024-06-14T16:52:22Z",
+              "updatedAt": "2024-06-14T16:52:34Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-TN83",
+          "commit": {
+            "abbreviatedOid": "8d04679"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-14T17:58:25Z",
+          "updatedAt": "2024-06-14T17:58:25Z",
+          "comments": [
+            {
+              "originalPosition": 102,
+              "body": "Yeah, let's not create more of the dreaded 20 octets fun. ",
+              "createdAt": "2024-06-14T17:58:25Z",
+              "updatedAt": "2024-06-14T17:58:25Z"
             }
           ]
         }
