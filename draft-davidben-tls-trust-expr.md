@@ -772,6 +772,8 @@ Thus, this mechanism SHOULD NOT be used to advertise trust anchors or distrusts 
 
 For example, a web browser may support both a common set of trust anchors configured by a root program, along with user-specified additions and removals. Applying the above guidance with a typical browser's desired anonymity set, the trust expression would reflect only the common trust anchors for any web browsers using the same trust expression. User-specified modifications may reveal identifying information about the user.
 
+This guidance limits the benefits of trust anchor agility in two ways:
+
 * If a subscriber relies on a user-specified addition, the procedure in {{subscriber-behavior}} will fallback to preexisting behavior, such as selecting a default certificate. The subscriber then relies on the default certificate matching the relying party.
 
 * If a subscriber has a certificate issued by a CA distrusted by the user, the procedure in {{subscriber-behavior}} may select a distrusted certificate. In that case, the connection will fail, even if the subscriber has another certificate available.
