@@ -671,8 +671,8 @@ A certification path, C1_new, newly issued by C1, would have a TrustStoreInclusi
 
 * `trust_store.id` is "32473.1"
 * `trust_store.version` is 1
-* `status` is `previous_version`
-* `labels` contains 2, 101, 200
+* `status` is `latest_version_at_issuance`
+* `labels` contains 4, 102, 200
 
 A relying party which trusts trust anchors A1, A2, B1, and B2 might send a TrustExpression referencing trust store "example", version 0, with empty `excluded_labels`. This would match A1_old, A1_new, B1_old, and B1_new by the corresponding TrustStoreInclusion. It would not match C1_old or C1_new.
 
