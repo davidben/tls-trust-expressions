@@ -96,6 +96,54 @@ become [much more expensive](https://pq-crystals.org/dilithium/). The
 flexibility will also simplify the post-quantum transition itself, as different
 post-quantum CAs may be added at different times.
 
+### Minimizing Server Operator Burden
+
+In reasoning through PKI deployment strategies, one of our primary goals is to
+minimize server operator burden. Where possible, permit server operators to make
+simpler, high-level decisions (e.g. which ACME endpoint(s) cover the clients
+they need), with automation handling the rest.
+
+This is important because there are many HTTPS servers on the web, operated by
+different parties. While some strategies, such as fingerprinting or manually
+collecting an optimal set of intermediates, can be done by a small number of
+large hosting providers, they are impractical for a more diverse set of HTTPS
+servers. Avoiding this overhead helps both support the current server diversity
+and to maintain it going forward.
+
+This means:
+
+* **Prefer fewer mechanisms with broad coverage, over more mechanisms that cover
+  individual scenarios.** While one cannot solve every problem at once, broad
+  coverage minimizes software updates needed. If one mechanism addresses
+  multiple similar PKI scenarios, it can be implemented in server software once,
+  then used whenever each of these scenarios arise. In contrast, inventing a
+  bespoke mechanism for each kind of PKI transition resets the protocol
+  deployment clock each time.
+
+* **Prefer unambiguous, systematic server decisions.** While an individual
+  deployment might observe that, e.g., all of their newer clients support some
+  CA, or use more complex fingerprinting mechanisms, this requires server
+  operators to make risk assessments about imprecise properties of their client
+  base. It cannot be generalized and automated. In contrast, a mechanism that
+  directly negotiates the selection critera can be implemented in the TLS
+  library, with HTTPS software and server operators only providing the inputs.
+  See "Considered Alternatives" for further discussion of the implications of
+  imprecise strategies.
+
+* **Shift work from server operators to CAs and root programs.** CAs are
+  well-positioned to react to changes in root program requirements. They mint
+  the certificates and maintain relationships with both server operators and the
+  root programs whose requirements they follow. User security improvements are
+  dramatically easier to deploy when only CAs and root programs need to act.
+
+* **Minimize additional risk during incident response.** As root program
+  requirements change over time, servers may need to change in response, e.g.
+  migrating to a new CA when an old one is distrusted. Such changes, however,
+  are inherently risky to the server operator, because an old client may be
+  depending on the old configuration. This makes incident response much riskier
+  and more difficult for the ecosystem. Robust certificate negotiation relieves
+  this tension.
+
 ## Overview
 
 See the [draft specification](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-overview) for an overview of the protocol.
