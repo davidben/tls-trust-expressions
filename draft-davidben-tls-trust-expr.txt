@@ -1315,12 +1315,19 @@ Table of Contents
    relying parties alongside trust store updates.
 
    For example, a web browser may support both a common set of trust
-   anchors configured by the browser vendor, along with user-specified
-   additions and removals.  The common trust anchors would reveal, at
-   most, which browser is used, while the user-specified modifications
-   may reveal identifying information about the user.  The trust
-   expression SHOULD reflect only the common trust anchors.  This limits
-   the benefits of trust anchor agility in two ways:
+   anchors configured by a root program, along with user-specified
+   additions and removals.  Applying the above guidance with a typical
+   browser's desired anonymity set, the trust expression would reflect
+   only the common trust anchors and not the user-specified
+   modifications.  The user-specified modifications may reveal
+   identifying information about the user, while the common trust
+   anchors would reveal at most, e.g., which version of which browser is
+   used, or even less information if multiple browsers share a root
+   program or the trust anchors were unchanged across multiple versions
+   of the browser.
+
+   This guidance limits the benefits of trust anchor agility in two
+   ways:
 
    *  If a subscriber relies on a user-specified addition, the procedure
       in Section 6.4 will fallback to preexisting behavior, such as
