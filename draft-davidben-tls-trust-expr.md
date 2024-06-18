@@ -770,7 +770,9 @@ The negotiation mechanism described in this document is analogous to the `certif
 
 Thus, this mechanism SHOULD NOT be used to advertise trust anchors or distrusts which are unique to an individual user. Rather, trust expressions SHOULD be computed based only on the trust anchors common to the relying party's anonymity set ({{Section 3.3 of !RFC6973}}). Additionally, multiple trust expressions may evaluate to the same trust anchor list, so relying parties in the same anonymity set SHOULD send the same trust expression. To achieve this, trust expressions SHOULD be assembled by the root program and configured in relying parties alongside trust store updates.
 
-For example, a web browser may support both a common set of trust anchors configured by the browser vendor, along with user-specified additions and removals. The common trust anchors would reveal, at most, which browser is used, while the user-specified modifications may reveal identifying information about the user. The trust expression SHOULD reflect only the common trust anchors. This limits the benefits of trust anchor agility in two ways:
+For example, a web browser may support both a common set of trust anchors configured by a root program, along with user-specified additions and removals. Applying the above guidance with a typical browser's desired anonymity set, the trust expression would reflect only the common trust anchors and not the user-specified modifications. The user-specified modifications may reveal identifying information about the user, while the common trust anchors would reveal at most, e.g., which version of which browser is used, or even less information if multiple browsers share a root program or the trust anchors were unchanged across multiple versions of the browser.
+
+This guidance limits the benefits of trust anchor agility in two ways:
 
 * If a subscriber relies on a user-specified addition, the procedure in {{subscriber-behavior}} will fallback to preexisting behavior, such as selecting a default certificate. The subscriber then relies on the default certificate matching the relying party.
 
