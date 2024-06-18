@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-16T01:38:25.747750+00:00",
+  "timestamp": "2024-06-18T01:32:51.762912+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -1093,7 +1093,7 @@
       "id": "PR_kwDOKigz-s5yJ0Jw",
       "title": "Add a discussion of server operator burden to the explainer",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/29",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -1103,17 +1103,19 @@
       "labels": [],
       "body": "Possibly some of this should graduate to the draft too.",
       "createdAt": "2024-06-11T19:59:25Z",
-      "updatedAt": "2024-06-13T21:12:26Z",
+      "updatedAt": "2024-06-17T19:07:08Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "04d8bcc23638aa8603d4aedb18eb160d449ac2f8",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "server-operator-burden",
       "headRefOid": "bd10f57d5c66b36820bed5293a74d6096363dc71",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-06-17T19:07:05Z",
+      "mergedAt": "2024-06-17T19:07:05Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "0c2822ebaa411ed32e2266b41265455b2009b47c"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1191,6 +1193,19 @@
               "updatedAt": "2024-06-13T21:12:27Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-lQ7O",
+          "commit": {
+            "abbreviatedOid": "bd10f57"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "The changes LGTM. Thanks for the tweaks.",
+          "createdAt": "2024-06-17T19:01:34Z",
+          "updatedAt": "2024-06-17T19:01:34Z",
+          "comments": []
         }
       ]
     },
@@ -1336,6 +1351,197 @@
               "updatedAt": "2024-06-14T17:58:25Z"
             }
           ]
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "id": "PR_kwDOKigz-s5yuQWf",
+      "title": "Clarify that \"which browser\" can include any browser using the same trust expression. ",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/31",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In the Privacy section. \r\n\r\nDiscussion by Dennis Jackson on the mailing lists indicates this seems to be a point of confusion.",
+      "createdAt": "2024-06-17T17:41:42Z",
+      "updatedAt": "2024-06-18T00:59:06Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "d20509e10cec37724981594c38725ab61957eaa4",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "a85ea288b397f2741a0cb0e75737bd9640be977b",
+      "closedAt": "2024-06-18T00:59:06Z",
+      "mergedAt": "2024-06-18T00:59:06Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "cef41e4a48fc3604231e5e08628a60d544e70531"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5-l5WJ",
+          "commit": {
+            "abbreviatedOid": "280e8b8"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-17T20:39:11Z",
+          "updatedAt": "2024-06-17T20:39:11Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "I think the discussion at the IETF thread has slightly misrepresented the point of this paragraph. It is not a complete analysis of all web browser scenarios. Rather, it is an illustrative example in service of the point of a Privacy Considerations section: to guide implementors in using the mechanism according to privacy expectations. Given that confusion, I think it's worth rephrasing this a bit to be more clear about the scope. (Trying to do a complete analysis will be very product-specific, and depend on things like frequency of trust store updates, which browsers share root programs, and whether the browser has an out-of-band update process.)\r\n\r\nMaybe something like this?\r\n\r\n```suggestion\r\nFor example, a web browser may support both a common set of trust anchors configured by the browser vendor, along with user-specified additions and removals. Applying the above guidance with a typical browser's desired anonymity set, the trust expression would reflect only the common trust anchors. User-specified modifications may reveal identifying information about the user.\r\n\r\nThis guidance limits the benefits of trust anchor agility in two ways:\r\n```\r\n\r\nI tried to say something about what common trust anchors reveal, but it got really, really long-winded and awkward to cover all bases. WDYT?",
+              "createdAt": "2024-06-17T20:39:11Z",
+              "updatedAt": "2024-06-17T20:39:11Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-l_DK",
+          "commit": {
+            "abbreviatedOid": "280e8b8"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-17T20:55:17Z",
+          "updatedAt": "2024-06-17T20:55:17Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "I tweaked your text a bit. have a look\r\n",
+              "createdAt": "2024-06-17T20:55:17Z",
+              "updatedAt": "2024-06-17T20:55:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-mQ-8",
+          "commit": {
+            "abbreviatedOid": "4a97eba"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-17T21:48:29Z",
+          "updatedAt": "2024-06-17T21:48:30Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "> the trust expression would reflect only the common trust anchors for any web browsers using the same trust expression\r\n\r\nI think this is tautological and doesn't say what we're trying to say. Even if, say, a web browser decided to use the user-specified ones, it would be true that the trust expression only reflects trust anchors common to web browsers that use that trust expression. It's just that there's only one of them.\r\n\r\n\"common trust anchors\" was meant in reference to the first sentence in the paragraph:\r\n\r\n> For example, a web browser may support both a common set of trust anchors configured by a root program, along with user-specified additions and removals",
+              "createdAt": "2024-06-17T21:48:29Z",
+              "updatedAt": "2024-06-17T21:48:47Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-m5q6",
+          "commit": {
+            "abbreviatedOid": "4a97eba"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-18T00:40:28Z",
+          "updatedAt": "2024-06-18T00:40:28Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "I was tryin to sneak in there the notion that it's not just the anonymity set of a single web browser, multiple web browsers could use the same trust expression provided by a root program. ",
+              "createdAt": "2024-06-18T00:40:28Z",
+              "updatedAt": "2024-06-18T00:40:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-m54W",
+          "commit": {
+            "abbreviatedOid": "4a97eba"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-18T00:41:40Z",
+          "updatedAt": "2024-06-18T00:41:40Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Or at least make that somewhat clearer to the reader, on first cut it sounds like the anonymity set is only the browser unless you are very careful reading it",
+              "createdAt": "2024-06-18T00:41:40Z",
+              "updatedAt": "2024-06-18T00:41:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s5-m8cb",
+          "commit": {
+            "abbreviatedOid": "4a97eba"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-18T00:56:39Z",
+          "updatedAt": "2024-06-18T00:56:39Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "How about this?\r\n\r\n```suggestion\r\nFor example, a web browser may support both a common set of trust anchors configured by a root program, along with user-specified additions and removals. Applying the above guidance with a typical browser's desired anonymity set, the trust expression would reflect only the common trust anchors and not the user-specified modifications. The user-specified modifications may reveal identifying information about the user, while the common trust anchors would reveal at most, e.g., which version of which browser is used, or even less information if multiple browsers share a root program or the trust anchors were unchanged across multiple versions of the browser.\r\n```",
+              "createdAt": "2024-06-18T00:56:39Z",
+              "updatedAt": "2024-06-18T00:56:39Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "id": "PR_kwDOKigz-s5ywc01",
+      "title": "Fix the TrustStoreInclusion for C1_new",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/32",
+      "state": "MERGED",
+      "author": "devonobrien",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The labels for C1_new should match those specified i the example trust store manifest above.",
+      "createdAt": "2024-06-17T23:55:44Z",
+      "updatedAt": "2024-06-18T00:45:57Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "0c2822ebaa411ed32e2266b41265455b2009b47c",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "devonobrien-fix-example-c1-new",
+      "headRefOid": "7ad11cb9671bfdba89885d4566021ef3c192ab8a",
+      "closedAt": "2024-06-18T00:45:48Z",
+      "mergedAt": "2024-06-18T00:45:48Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "cf6dd30e82544c844e119a64b9ef55e41c0788fe"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5-m6je",
+          "commit": {
+            "abbreviatedOid": "7ad11cb"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-06-18T00:45:34Z",
+          "updatedAt": "2024-06-18T00:45:34Z",
+          "comments": []
         }
       ]
     }
