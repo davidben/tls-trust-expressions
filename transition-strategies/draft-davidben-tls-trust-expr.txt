@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 21 November 2024                                     Google LLC
-                                                             20 May 2024
+Expires: 27 December 2024                                     Google LLC
+                                                            25 June 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 November 2024.
+   This Internet-Draft will expire on 27 December 2024.
 
 Copyright Notice
 
@@ -79,8 +79,9 @@ Table of Contents
      2.2.  Terminology and Roles
    3.  Overview
    4.  Trust Store Manifests
-     4.1.  Trust Store Entry Expiration
-     4.2.  Labels
+     4.1.  Trust Store Identifiers
+     4.2.  Trust Store Entry Expiration
+     4.3.  Labels
    5.  Certificate Properties
      5.1.  Trust Store Inclusion
      5.2.  Computing Trust Store Inclusions
@@ -104,6 +105,9 @@ Table of Contents
      9.7.  Backup Certificates
    10. Privacy Considerations
    11. Security Considerations
+     11.1.  Relying Party Policies and Agility
+     11.2.  Incorrect Selection Metadata
+     11.3.  Serving Multiple Certificates
    12. IANA Considerations
      12.1.  TLS ExtensionType Updates
      12.2.  Media Type Updates
@@ -301,19 +305,14 @@ Table of Contents
    (Section 6).
 
    Trust store manifests are identified by a short, unique trust store
-   name and define a list of trust store versions.  A trust store
-   version contains a set of trust anchors, and is identified by a name
-   (from the manifest) and a version number.
-
-   [[TODO: Trust store names need to be unique, or at least unique among
-   relying parties and subscribers that talk to each other, but also
-   short.  How do we allocate them?  Registry?  Just pick values?
-   OIDs?]]
+   identifier and define a list of trust store versions.  A trust store
+   version contains a set of trust anchors, and is identified by an
+   identifier (from the manifest) and a version number.
 
    A trust store manifest is a JSON object [RFC8259] containing:
 
-   name:  A string containing a short, unique name that identifies the
-      collection of trust stores
+   id:  A string containing a a trust store identifier in text form, as
+      described in Section 4.1.
 
    max_age:  A non-negative integer containing the number of seconds
       that this document may be cached.
@@ -345,11 +344,11 @@ Table of Contents
          version of the trust store.  These are known as trust store
          entries.  Each element is an object containing:
 
-         id:  A string containing the name of some member of the
-            trust_anchors object.
+         trust_anchor:  A string containing the name of some member of
+            the trust_anchors object.
 
          labels:  A non-empty array of non-negative, 24-bit integer
-            labels associated with the trust anchor.  See Section 4.2
+            labels associated with the trust anchor.  See Section 4.3
             for how this field is interpreted.
 
          max_lifetime:  A non-negative integer containing the maximum
@@ -372,7 +371,25 @@ Table of Contents
    members as required.  Updates MUST NOT modify or remove existing
    entries in the versions array.
 
-4.1.  Trust Store Entry Expiration
+4.1.  Trust Store Identifiers
+
+   To simplify allocation, trust store identifiers use object
+   identifiers (OIDs) [X680] based on Private Enterprise Numbers (PENs)
+   [RFC9371].  An organization may define a trust store by allocating
+   some OID under its PEN.  For example, an organization with PEN 32473
+   might allocate a trust store identified by the OID
+   1.3.6.1.4.1.32473.1.
+
+   For compactness, this document uses relative object identifiers (see
+   Section 33 of [X680]), relative to the OID prefix 1.3.6.1.4.1.  In
+   the text form, these are written in dotted decimal notation, such as
+   32473.1.  In a binary protocol, such as TLS, this is encoded as the
+   contents octets of the relative object identifier's DER encoding, as
+   described in Section 8.20 of [X690].  For example, the binary
+   encoding of 32473.1 would be the four-octet sequence {0x81, 0xfd,
+   0x59, 0x01}.
+
+4.2.  Trust Store Entry Expiration
 
    The max_age and max_lifetime fields define an expiration time for
    trust store entries in versions other than the latest version.  For a
@@ -393,7 +410,7 @@ Table of Contents
    subsequent trust store versions, per Section 5.2.  This ensures the
    negotiation procedures in Section 6.3 and Section 6.5 interoperate.
 
-4.2.  Labels
+4.3.  Labels
 
    Trust store entries reference labels, which are 24-bit integers that
    identify subsets of a trust store version.  These integers are
@@ -419,7 +436,7 @@ Table of Contents
 
    When allocating labels, root programs MAY repurpose a previously
    allocated label value after all previous entries referencing it have
-   expired (Section 4.1).
+   expired (Section 4.2).
 
 5.  Certificate Properties
 
@@ -475,7 +492,7 @@ Table of Contents
    } TrustStoreStatus;
 
    struct {
-       opaque name<1..2^8-1>;
+       opaque id<1..2^8-1>;
        uint24 version;
    } TrustStore;
 
@@ -493,22 +510,22 @@ Table of Contents
    trust anchor's labels within that trust store.
 
    If status is latest_version_at_issuance, trust_store was the latest
-   trust store of its name at the time the certificate was issued.  In
-   this case, the trust expression evaluation algorithm (Section 6.3)
-   predicts this information additionally applies to all versions
-   greater than trust_store's version, up to the expiration of the
-   certification path.
+   version at the time the certificate was issued.  In this case, the
+   trust expression evaluation algorithm (Section 6.3) predicts this
+   information additionally applies to all versions greater than
+   trust_store's version, up to the expiration of the certification
+   path.
 
    A TrustStoreInclusionList MUST satisfy the following invariants:
 
    *  Each TrustStoreInclusion has a unique trust_store value.
 
    *  The TrustStoreInclusion structures are sorted, first by length of
-      trust_store's name, then by trust_store's name lexicographically,
-      then by trust_store's version.
+      trust_store's id, then by trust_store's id lexicographically, then
+      by trust_store's version.
 
    *  If status is latest_version_at_issuance in some
-      TrustStoreInclusion, no trust_store with the same name but higher
+      TrustStoreInclusion, no trust_store with the same id but higher
       version appears in the list.
 
 5.2.  Computing Trust Store Inclusions
@@ -524,13 +541,15 @@ Table of Contents
 
    2.  For each trust store version in the cached manifest's versions:
 
-       a.  Look for a trust store entry whose id, when indexed into
-           trust_anchors, matches the certification path's trust anchor.
+       a.  Look for a trust store entry whose trust_anchor field, when
+           indexed into trust_anchors, matches the certification path's
+           trust anchor.
 
        b.  If found, output a TrustStoreInclusion structure:
 
-           *  Set trust_store to the manifest's name, encoded in UTF-8
-              [RFC3629], and the version's version number.
+           *  Set trust_store to the manifest's id, encoded in binary
+              form as described in Section 4.1, and the version's
+              version number.
 
            *  Set status to latest_version_at_issuance if the trust
               store version is currently the latest version.  Otherwise,
@@ -594,7 +613,8 @@ Table of Contents
 6.  TLS Certificate Negotiation
 
    This section defines the trust_expressions extension, which is sent
-   in the ClientHello, CertificateRequest, and Certificate messages.
+   in the ClientHello, CertificateRequest, and Certificate messages in
+   TLS 1.3 or later.
 
 6.1.  Trust Expressions
 
@@ -617,7 +637,7 @@ Table of Contents
    contained in the list.  A TrustExpression specifies a list of trust
    anchors in two parts:
 
-   First, trust_store specifies a trust store by name and version (see
+   First, trust_store specifies a trust store by ID and version (see
    Section 4).  Any trust anchors contained in the specified trust store
    are included.
 
@@ -649,42 +669,68 @@ Table of Contents
    certify the final certificate.
 
    If a relying party receives this extension in the Certificate
-   message, it SHOULD NOT use path building [RFC4158] to validate the
-   result.
+   message, it MAY choose to disable path building [RFC4158] and
+   validate the peer's certificate list as pre-built certification path.
+   Doing so avoids the unpredictable behavior of path-building, and
+   helps ensure CAs and subscribers do not inadvertently provision
+   incorrect paths.
 
 6.3.  Evaluating Trust Expressions
 
-   Given a certification path with a trust_store certificate property
-   (Section 5.1), a subscriber can evaluate a TrustExpressionList to
-   determine whether the certification path matches.
+   Given a certification path and a TrustExpressionList from the relying
+   party, the subscriber runs the following procedure to determine if
+   the relying party is claiming support for the path's trust anchor.
+   If so, the TrustExpressionList is said to match the certification
+   path:
 
-   A TrustExpression is said to match a TrustStoreInclusionList if there
-   is at least one TrustStoreInclusion in the TrustStoreInclusionList
-   such that all of the following are true:
+   1.  If the certification path does not have an associated trust_store
+       certificate property (Section 5.1), containing a
+       TrustStoreInclusionList, terminate this procedure and return
+       false.  The certification path does not match the
+       TrustExpressionList.
 
-   *  The name fields of two structures' trust_store fields are equal.
+   2.  If the certification path has expired, terminate this procedure
+       and return false.  Expired certification paths are expected to be
+       rejected by the relying party and may also have stale
+       TrustStoreInclusionLists.
 
-   *  Either the version fields of the two structures' trust_store
-      fields are equal, or the TrustStoreInclusion's status is
-      latest_version_at_issuance and the version field of
-      TrustExpression's trust_store is greater than that of the
-      TrustStoreInclusion's trust_store.
+   3.  Otherwise, for each TrustExpression in the relying party's
+       TrustExpressionList:
 
-   *  There is no value in common between the TrustStoreInclusion's
-      labels field and the TrustExpression's excluded_labels field.
+       1.  Find the TrustExpression's corresponding TrustStoreInclusion
+           in the TrustStoreInclusionList, if any.  The corresponding
+           TrustStoreInclusion is the one where both of the following
+           are true:
 
-   The invariants in Section 5.1 imply that at most one
-   TrustStoreInclusion will satisfy the first two properties.
-   Implementations may evaluate this efficiently by performing a binary
-   search over the TrustStoreInclusionList, and then checking the third
-   property.
+           *  The id fields of two structures' trust_store fields are
+              equal.
 
-   A TrustExpressionList is said to match a TrustStoreInclusionList if
-   any TrustExpression in the TrustExpressionList matches the
-   TrustStoreInclusionList.
+           *  Either the version fields of the two structures'
+              trust_store fields are equal, or the TrustStoreInclusion's
+              status is latest_version_at_issuance and the version field
+              of TrustExpression's trust_store is greater than that of
+              the TrustStoreInclusion's trust_store.
+
+           The invariants in Section 5.1 imply that at most one
+           TrustStoreInclusion will satisfy this.  Implementations may
+           evaluate this efficiently by performing a binary search over
+           the TrustStoreInclusionList.
+
+       2.  If there was no corresponding TrustStoreInclusion, continue
+           to the next TrustExpression.
+
+       3.  Otherwise, check for common values between the
+           TrustStoreInclusion's labels field and the TrustExpression's
+           excluded_labels field.  If there are no common values,
+           terminate this procedure and return true.  The certification
+           path matches the TrustExpressionList.  Otherwise, continue to
+           the next TrustExpression.
+
+   4.  If no match was found in the TrustExpressionList, return false.
+       The certification path does not match the TrustExpressionList.
 
    When a TrustStoreInclusion's status is latest_version_at_issuance,
-   the above criteria predicts that trust anchors in the latest version
+   the above procedure predicts that trust anchors in the latest version
    will continue to be present in later versions.  This allows relying
    parties using later trust store versions to continue to interoperate
    with certification paths that predate the later version.  If this
@@ -695,43 +741,60 @@ Table of Contents
 6.4.  Subscriber Behavior
 
    Subscribers using this negotiation scheme are configured with a list
-   of certification paths, with corresponding CertificatePropertyList
-   (Section 5) structures, in some preference order.  When responding to
-   a ClientHello (as a server) or CertificateRequest (as a client)
-   containing the trust_expressions extension, the subscriber collects
-   all candidate certification paths such that all of the following are
-   true:
+   of candidate certification paths, with corresponding
+   CertificatePropertyList (Section 5) structures.  As a server
+   (respectively, client) responding to a ClientHello (respectively,
+   CertificateRequest), the subscriber selects the best candidate path,
+   incorporating the matching algorithm described in Section 6.3, and
+   other criteria defined in TLS.
 
-   *  The certification path has not expired.
+   If the subscriber selected a certification path which matched via
+   trust expressions, it MUST include an empty trust_expressions
+   extension in the first CertificateEntry.
 
-   *  The CertificatePropertyList has a trust_store property with a
-      TrustStoreInclusionList.
+   This document does not prescribe a precise selection procedure and
+   configuration, but the following is an example implementation
+   strategy:
 
-   *  The matching algorithm described in Section 6.3 returns true.
+   The TLS implementation allows the application to configure a list of
+   candidate credentials, each with certification path, private key, and
+   optional CertificatePropertyList, in preference order.  This order
+   may reflect a preference to, e.g., minimize message size, or more
+   performant private keys.  When selecting a credential, the TLS
+   implementation iterates over each candidate in preference order and
+   checks:
 
-   *  The certification path is suitable for use based on other TLS
-      criteria.  For example, the TLS signature_algorithms
-      (Section 4.2.3 of [RFC8446]) extension constrains the types of
-      keys which may be used.
+   1.  Either the matching algorithm described in Section 6.3 returns
+       true, or some other TLS extension, such as the
+       certificate_authorities extension, indicates the relying party
+       supports the trust anchor.
 
-   *  The certification path satisfies any other application-specific
-      constraints which may apply.  For example, TLS servers often
-      select certificates based on the server_name (Section 3 of
-      [RFC6066]) extension.
+   2.  The certification path is suitable for use based on other TLS
+       criteria.  For example, the TLS signature_algorithms
+       (Section 4.2.3 of [RFC8446]) extension constrains the types of
+       keys which may be used.
 
-   Once all candidate paths are determined, the subscriber picks one to
-   present to the relying party.  The subscriber MUST include an empty
-   trust_expressions extension in the first CertificateEntry.  If
-   multiple candidates match, the subscriber picks its most preferred
-   option.  For example, it may try to minimize message size, or prefer
-   options with more performant private keys.
+   3.  The certification path satisfies any other application-specific
+       constraints which may apply.  For example, TLS servers often
+       select certificates based on the server_name (Section 3 of
+       [RFC6066]) extension.
 
-   If no candidates match, or if the peer did not send a
-   trust_expressions extension, the subscriber falls back to preexisting
-   behavior outside the scope of this document, without including a
-   trust_expressions extension.  For example, the subscriber may have a
-   default certificate configured, or select a certificate using the
-   certificate_authorities extension.
+   The TLS implementation selects the first credential which satisfies
+   all of its selection criteria.  If no credentials match, the TLS
+   implementation may return a handshake_failure alert, or consider a
+   configured fallback set of credentials, which skip the first check
+   above.  These fallback credentials may be a separate credential list,
+   or appended to the same list with an option to control the matching
+   criteria.
+
+   Fallback credentials allow the subscriber to retain support for
+   relying parties that do not implement trust expressions.  As they are
+   be selected without trust anchor negotiation, the subscriber must
+   find a sufficiently ubiquitous trust anchor, if one exists.  However,
+   unlike existing PKIs that do not use trust expressions, only relying
+   parties without trust expressions need to be considered in this
+   ubiquity determination.  Updated relying parties may continue to
+   evolve without restricting fallback credential selection.
 
 6.5.  Constructing Trust Expressions
 
@@ -759,8 +822,9 @@ Table of Contents
 
    2.  For each trust store entry in the trust store version:
 
-       a.  If the trust store entry's id references a trust anchor that
-           is in the desired subset, add it to include_entries.
+       a.  If the trust store entry's trust_anchor references a trust
+           anchor that is in the desired subset, add it to
+           include_entries.
 
        b.  Otherwise, add it to exclude_entries.
 
@@ -768,9 +832,9 @@ Table of Contents
        specified version:
 
        a.  If the current time is before the entry's expiration time
-           (Section 4.1) and if the entry's id references a trust anchor
-           that is not in the desired subset, add the entry to
-           exclude_entries.
+           (Section 4.2) and if the entry's trust_anchor references a
+           trust anchor that is not in the desired subset, add the entry
+           to exclude_entries.
 
    4.  Compute a set of labels, excluded_labels such that:
 
@@ -780,7 +844,7 @@ Table of Contents
            common between excluded_labels and the labels in the entry.
 
        How to compute this set depends on the root program's label
-       allocation scheme (Section 4.2).  If the root program allocates a
+       allocation scheme (Section 4.3).  If the root program allocates a
        label for each trust anchor, this set is always computable,
        though more efficient sets may be possible depending on the
        allocation scheme.
@@ -868,7 +932,7 @@ Table of Contents
    manifest may then be:
 
    {
-     "name": "example",
+     "id": "32473.1",
      "max_age": 864000,
      "trust_anchors": {
        "A1": {"type": "x509", "data": "..."},
@@ -896,7 +960,7 @@ Table of Contents
    A certification path, A1_old, issued by A1, would have a
    TrustStoreInclusion:
 
-   *  trust_store.name is "example"
+   *  trust_store.id is "32473.1"
 
    *  trust_store.version is 0
 
@@ -907,7 +971,7 @@ Table of Contents
    A certification path, B1_old, issued by B1, would have a
    TrustStoreInclusion:
 
-   *  trust_store.name is "example"
+   *  trust_store.id is "32473.1"
 
    *  trust_store.version is 0
 
@@ -924,7 +988,7 @@ Table of Contents
    manifest may then be:
 
    {
-     "name": "example",
+     "id": "32473.1",
      "max_age": 864000,
      "trust_anchors": {
        "A1": {"type": "x509", "data": "..."},
@@ -967,7 +1031,7 @@ Table of Contents
    A certification path, A1_new, newly issued by A1, would have two
    TrustStoreInclusions.  The first:
 
-   *  trust_store.name is "example"
+   *  trust_store.id is "32473.1"
 
    *  trust_store.version is 0
 
@@ -977,7 +1041,7 @@ Table of Contents
 
    And the second:
 
-   *  trust_store.name is "example"
+   *  trust_store.id is "32473.1"
 
    *  trust_store.version is 1
 
@@ -988,7 +1052,7 @@ Table of Contents
    A certification path, B1_new, newly issued by B1, would have a
    TrustStoreInclusion:
 
-   *  trust_store.name is "example"
+   *  trust_store.id is "32473.1"
 
    *  trust_store.version is 0
 
@@ -999,13 +1063,13 @@ Table of Contents
    A certification path, C1_new, newly issued by C1, would have a
    TrustStoreInclusion:
 
-   *  trust_store.name is "example"
+   *  trust_store.id is "32473.1"
 
    *  trust_store.version is 1
 
-   *  status is previous_version
+   *  status is latest_version_at_issuance
 
-   *  labels contains 2, 101, 200
+   *  labels contains 4, 102, 200
 
    A relying party which trusts trust anchors A1, A2, B1, and B2 might
    send a TrustExpression referencing trust store "example", version 0,
@@ -1052,7 +1116,7 @@ Table of Contents
 
    Of the above examples, B1_old depends on the exclusion to avoid a
    false positive match. 100 days after February 1st, B1 and B2's trust
-   store entries from version 0 will expire (see Section 4.1), and the
+   store entries from version 0 will expire (see Section 4.2), and the
    relying party no longer needs to exclude them.  By this point, B1_old
    will have expired.  B1_new may still be valid, but it does not
    require the exclusion.
@@ -1251,12 +1315,19 @@ Table of Contents
    relying parties alongside trust store updates.
 
    For example, a web browser may support both a common set of trust
-   anchors configured by the browser vendor, along with user-specified
-   additions and removals.  The common trust anchors would reveal, at
-   most, which browser is used, while the user-specified modifications
-   may reveal identifying information about the user.  The trust
-   expression SHOULD reflect only the common trust anchors.  This limits
-   the benefits of trust anchor agility in two ways:
+   anchors configured by a root program, along with user-specified
+   additions and removals.  Applying the above guidance with a typical
+   browser's desired anonymity set, the trust expression would reflect
+   only the common trust anchors and not the user-specified
+   modifications.  The user-specified modifications may reveal
+   identifying information about the user, while the common trust
+   anchors would reveal at most, e.g., which version of which browser is
+   used, or even less information if multiple browsers share a root
+   program or the trust anchors were unchanged across multiple versions
+   of the browser.
+
+   This guidance limits the benefits of trust anchor agility in two
+   ways:
 
    *  If a subscriber relies on a user-specified addition, the procedure
       in Section 6.4 will fallback to preexisting behavior, such as
@@ -1273,6 +1344,8 @@ Table of Contents
 
 11.  Security Considerations
 
+11.1.  Relying Party Policies and Agility
+
    The certificate negotiation mechanism described in this document
    facilitates which certification path is served to relying parties,
    but has no impact on the relying party's trust preferences
@@ -1287,6 +1360,21 @@ Table of Contents
    deployed without needing to risk incompatibility or breakage for
    others.
 
+   For example, agility reduces pressures on relying parties to
+   sacrifice user security for compatibility.  Suppose a subscriber
+   currently uses some CA, but a relying party deems trusting that CA to
+   pose an unacceptable security risk to its users.  In a single-
+   certificate deployment, those subscribers may be unwilling to adopt a
+   CA trusted by the relying party, as switching CAs risks compatibility
+   problems elsewhere.  The relying party then faces compatibility
+   pressure add this CA, sacrificing user security.  However, in a
+   multi-certificate deployment, the subscriber can use its existing CA
+   _in addition to_ another CA trusted by relying party B.  This allows
+   the ecosystem to improve interoperability, while still meeting
+   relying party B's user-security goals.
+
+11.2.  Incorrect Selection Metadata
+
    If either the subscriber's TrustStoreInclusionList or the relying
    party's TrustExpressionList are incorrect, the matching algorithm
    described in Section 6.4 may incorrectly identify an untrusted
@@ -1295,6 +1383,36 @@ Table of Contents
    service.  These structures are provisioned by the CA and root
    program, respectively, who are already expected to provide accurate
    information.
+
+11.3.  Serving Multiple Certificates
+
+   In a multi-certificate deployment, subscribers have a collection of
+   certificates available to satisfy relying parties with potentially
+   different security policies.  It is possible that some of these
+   policies will only be satisifed by certificates from less trustworthy
+   CAs, such as if the relying party is out of date but still important
+   for the subscriber to support.  If a certificate asserts the correct
+   information about the subscriber (TLS key, DNS names, etc.), the
+   subscriber can safely present it, even if the CA is otherwise
+   untrustworthy.  In particular, doing so does not allow the CA decrypt
+   or intercept the connection.
+
+   However, the subscriber presenting a certificate is not an
+   endorsement of the CA.  The subscriber's role is to present a
+   certificate which will convince the relying party of the correct
+   subscriber information.  Subscribers do not vet CAs for
+   trustworthiness, only the correctness of their specific, configured
+   certificates and the CA's ability to meet the subscriber's
+   requirements, such as availability, compatibility, and performance.
+   It is the responsibility of the relying party, and its corresponding
+   root program, to determine the set of trusted CAs.  Trusting a CA
+   means trusting _all_ certificates issued by that CA, so it is not
+   enough to observe subscribers serving correct certificates.  An
+   untrustworthy CA may sign one correct certificate, but also sign
+   incorrect certificates, possibly in the future, that can attack the
+   relying party.  Root program management is a complex, security-
+   critical process, the full considerations of which are outside the
+   scope of this document.
 
 12.  IANA Considerations
 
@@ -1377,10 +1495,6 @@ Table of Contents
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
-   [RFC3629]  Yergeau, F., "UTF-8, a transformation format of ISO
-              10646", STD 63, RFC 3629, DOI 10.17487/RFC3629, November
-              2003, <https://www.rfc-editor.org/rfc/rfc3629>.
-
    [RFC4158]  Cooper, M., Dzambasow, Y., Hesse, P., Joseph, S., and R.
               Nicholas, "Internet X.509 Public Key Infrastructure:
               Certification Path Building", RFC 4158,
@@ -1435,10 +1549,19 @@ Table of Contents
               (ACME)", RFC 8555, DOI 10.17487/RFC8555, March 2019,
               <https://www.rfc-editor.org/rfc/rfc8555>.
 
+   [RFC9371]  Baber, A. and P. Hoffman, "Registration Procedures for
+              Private Enterprise Numbers (PENs)", RFC 9371,
+              DOI 10.17487/RFC9371, March 2023,
+              <https://www.rfc-editor.org/rfc/rfc9371>.
+
+   [X680]     ITU-T, "Information technology - Abstract Syntax Notation
+              One (ASN.1): Specification of basic notation", ISO/
+              IEC 8824-1:2021, 2021.
+
    [X690]     ITU-T, "Information technology - ASN.1 encoding Rules:
               Specification of Basic Encoding Rules (BER), Canonical
               Encoding Rules (CER) and Distinguished Encoding Rules
-              (DER)", ISO/IEC 8825-1:2002, 2002.
+              (DER)", ISO/IEC 8825-1:2021, 2021.
 
 13.2.  Informative References
 
@@ -1491,7 +1614,7 @@ Appendix A.  CDDL Schema
    }
 
    trust-store-entry = {
-       id: text,
+       trust_anchor: text,
        labels: [+ uint],
        max_lifetime: uint,
        * text => any,
@@ -1504,7 +1627,7 @@ Appendix A.  CDDL Schema
    }
 
    trust-store-manifest = {
-       name: text,
+       id: text,
        max_age: uint,
        trust_anchors: {+ text => trust-anchor},
        versions: [+ trust-store-version],
