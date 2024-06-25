@@ -22,7 +22,7 @@ As a key grows in age, the risk of it being compromised or misused increases. A 
 
 The CA operator can issue an intermediate from the old key to the new key, and then the server sends the intermediate on every connection. Older clients build a longer path, while newer clients stop the path earlier.
 
-This wastes bandwidth on intermediates that only the oldest clients use. This grows over time; as keys rotate, the server needs to send more and more old intermediates.
+This wastes bandwidth on intermediates that only the oldest clients use. The bandwidth cost grows over time; as keys rotate, the server needs to send more and more old intermediates.
 
 
 ### Retiring Obsolete Cross-Signs
@@ -38,6 +38,8 @@ Older clients can survive a missing intermediate if they fetched them from the [
 
 As a result, while it might reduce the above bandwidth problem, servers would still be forced to send unnecessary intermediates, at a significant bandwidth cost for a post-quantum PKI. The above operational challenges also apply, with yet another criteria to incorporate.
 
+Moreover, where this solution does work, it significantly degrades performance on older clients, adding bandwidth and latency costs. While these older clients are likely rarer, they are also likely weaker, so some deployments may prefer another tradeoff.
+
 
 ### Abridged Certificates
 
@@ -52,21 +54,25 @@ First, the entire intermediate set must be pushed and stored to each client. The
 
 Second, without named sets analogous to Trust Expressions’ named trust stores, this scheme adds some coordination delays to PKI transitions. Until the global intermediate set mints a new version, there is no size optimization and the transition cannot practically begin.
 
+Finally, older clients would not have an updated intermediate set and would need to be served the cross-sign. These older clients incur extra bandwidth cost. While these older clients are likely rarer, they are also likely weaker, so some deployments may prefer another tradeoff.
+
 
 ### Trust Expressions with Cross-Sign
 
 Trust expressions, with its ACME extensions, can directly support rotation. The ACME server provides two chains, one with the cross-sign and one without the cross-sign, for TLS clients that trust the old root and the new root, respectively. If the trust expression matches the shorter chain, the server will send it. Otherwise, it will send the longer chain.
 
-The multiple certificate provisioning mechanism on the ACME side ensures this is all transparent to the server operator, reducing operator burden.
+The multiple certificate provisioning mechanism on the ACME side ensures this can proceed automatically, without manual configuration by the server operator.
+
+As above, older clients would need to be served the cross-sign and incur extra bandwidth costs. While these older clients are likely rarer, they are also likely weaker, so some deployments may prefer another tradeoff. However, trust expressions enable deployments to navigate this tradeoff, as discussed below.
 
 
 ### Trust Expressions with Parallel Issuance
 
-Trust expressions enable a second deployment strategy. Rather than cross-signing the new key with the old one, the CA could operate both roots in parallel. Whenever a subscriber requests a certificate, it issues two parallel chains. As above, ACME ensures this is transparent and server software automatically selects between the two.
+Trust expressions enable a second deployment strategy. Rather than cross-signing the new key with the old one, the CA could operate both roots in parallel. Whenever a subscriber requests a certificate, it issues two parallel chains. As above, the ACME extensions automate this: the CA simply provides both chains, and server software automatically selects between the two.
 
 This is a trade-off between CA operational burden and bandwidth. Parallel issuance means the CA must maintain two instances of issuing infrastructure. But, by doing so, they keep the chains for both the old and new roots small.
 
-Both strategies meet the security and availability goals, but this strategy may be preferable with large post-quantum signatures. In the various cross-signing designs, once a CA switches to issuing from the new root, older clients pay a bandwidth cost. Server operators and clients would then prefer, for bandwidth efficiency, to defer this until the percentage of old clients is sufficiently small. Parallel issuance keeps the costs to both populations low, so the PKI can transition faster.
+Both strategies meet the security and availability goals, but this strategy may be preferable with large post-quantum signatures. In the various cross-signing designs, once a CA switches to issuing from the new root, older clients pay a bandwidth cost. While older clients are generally more rare, this may not always be the preferred tradeoff. At the start of a transition, older clients will be more common. Server operators and clients may then prefer to avoid the bandwidth costs until the percentage of old clients is sufficiently small. Parallel issuance keeps the costs to both populations low, so the PKI can transition faster, at the cost of higher CA operational overhead.
 
 One might also combine these strategies, temporarily maintaining parallel infrastructure during the initial stages of the transition, then switching to a lower-burden cross-sign when optimizing for the older clients is no longer justified.
 
@@ -87,7 +93,7 @@ If an existing CA cross-signs the newer CA, the server can serve the cross-sign 
 
 First, this wastes bandwidth on intermediates that only older clients use. This cost is particularly pronounced for post-quantum PKIs, where even a single unnecessary signature and public key pair is significant.
 
-Second, by cross-signing the new CA, the existing CA delegates all its authority to the new CA. The existing CA is now responsible for all certificates issued by the new CA, and the new CA can now issue in all contexts where the existing CA was trusted. This dramatically reduces the scenarios where the existing CA would be willing to perform this cross-sign. An individual server operator has little ability to influence this outcome. If no sufficiently ubiquitous existing CA is willing to cross-sign the new CA, server operators cannot use any solutions in this nature.
+Second, by cross-signing the new CA, the existing CA delegates all its authority to the new CA. The existing CA is now responsible for all certificates issued by the new CA, and the new CA can now issue in all contexts where the existing CA was trusted. This dramatically reduces the scenarios where the existing CA would be willing to perform this cross-sign. An individual server operator has little ability to influence this outcome. If no sufficiently ubiquitous existing CA is willing to cross-sign the new CA, server operators cannot use any solutions of this nature.
 
 
 ### Abridged Certificates
@@ -108,7 +114,7 @@ Second, without named sets analogous to Trust Expressions’ named trust stores,
 
 Trust expressions, and the ACME extensions, can directly support intermediate elision. The ACME server provides two chains, one with the cross-sign and one without the cross-sign, for TLS clients that trust the old root and the new root, respectively. If the trust expression matches the shorter chain, the server will send it. Otherwise, it will send the longer chain.
 
-The multiple certificate provisioning mechanism on the ACME side ensures this is all transparent to the server operator, reducing operator burden.
+The multiple certificate provisioning mechanism on the ACME side ensures this can proceed automatically, without manual configuration by the server operator.
 
 
 ### Root Program Cross-Sign
@@ -117,7 +123,7 @@ None of the above address the organizational challenges with cross-CA signatures
 
 * Bandwidth costs of cross-signs multiply. In any case where the server sends all cross-signs, the cost will be prohibitively expensive in a post-quantum PKI.
 * Robust X.509 [path-building](https://www.rfc-editor.org/rfc/rfc4158.html) is needed with non-linear PKI topologies, but this is not reliably implemented. This makes it difficult for a server to rely on it in the older clients that would need the intermediates.
-* [Abridged certificates](https://datatracker.ietf.org/doc/draft-ietf-tls-cert-abridge/) do not address the problem. As of writing, [draft-01](https://www.ietf.org/archive/id/draft-ietf-tls-cert-abridge-01.html) is a point-in-time snapshot and advantages incumbents in the PKI.
+* [Abridged certificates](https://datatracker.ietf.org/doc/draft-ietf-tls-cert-abridge/) do not address the problem. As of writing, [draft-01](https://www.ietf.org/archive/id/draft-ietf-tls-cert-abridge-01.html) is a point-in-time snapshot and advantages incumbents in the PKI, and thus discourages this and other PKI transitions.
 * A hypothetical alternate intermediate compression scheme would have several costs. The set now contains cross-signs scaling with the number of root programs. Moreover, the older clients, who will not have the updated intermediate set, must be sent all cross-signs, not just the one applicable to them. This cost is prohibitively high in a post-quantum PKI.
 
 As above, a trust expressions version of this solution does not scale with the number of cross-signs and has no significant fan-out costs. By negotiating the actual trust anchors, the server can send only the particular cross-sign needed, or no cross-sign at all if none is needed. Clients that directly trust the new CA do not need to retain a copy of any cross-sign locally.
@@ -125,9 +131,9 @@ As above, a trust expressions version of this solution does not scale with the n
 
 ### Trust Expressions with Parallel Issuance
 
-As with the root rotation scenario above, trust expressions also enable a parallel issuance strategy. Instead of cross-signs, with their organizational risks, the server can simply obtain certificates from both the new and an existing CA, with trust expressions transparently selecting which to use.
+As with the root rotation scenario above, trust expressions also enable a parallel issuance strategy. Instead of cross-signs, with their organizational risks, the server can simply obtain certificates from both the new and an existing CA, with trust expressions automatically selecting which to use.
 
-This could either be done transparently, if the server’s ACME server provides both types of certificates, or with manual configuration by the server operator, by running ACME against both URLs. The first option has lower organizational risk than cross-signing, as providing an additional certificate via ACME does not make one responsible for issuance by that CA. The second option, while more work, is the _only_ solution is within reach for a server operator acting unilaterally.
+This could either be done automatically, if the server’s ACME server provides both types of certificates, or with manual configuration by the server operator, by running ACME against both URLs. The first option has lower organizational risk than cross-signing, as providing an additional certificate via ACME does not make one responsible for issuance by that CA. The second option, while more work, is the _only_ solution is within reach for a server operator acting unilaterally.
 
 
 ## CA Removal
@@ -150,7 +156,7 @@ The client may choose to only distrust new certificates, while continuing to tru
 * If using the notBefore date, this is not an effective security measure; the user is still vulnerable to the distrusted CA, who may backdate certificates
 * Distrusting only new certificates still leaves the user vulnerable to existing misissued certificates. Those must be revoked separately, which requires identifying the set of certificates to re-evaluate.
 
-Certificate Transparency addresses both these concerns. By using the SCT timestamp, rather than the certificate timestamp, the client has a trustworthy timestamp. By enforcing all accepted certificates appear in CT logs, the set of remaining trusted certificates is known. This means, for example, root programs can request server operators check for any unauthorized certificates within that set.
+Certificate Transparency addresses both these concerns. By using the SCT timestamp, the distrusted CA cannot backdate the timestamp. By enforcing all accepted certificates appear in CT logs, the set of remaining trusted certificates is known. This means, for example, root programs can request server operators check for any unauthorized certificates within that set.
 
 However, this strategy does not address challenge (2). While the immediate timing conflict is resolved, the server must still switch to a replacement CA before the cutoff date.
 
@@ -175,7 +181,7 @@ If the distrusted CA cross-signs another existing CA, the server operator can se
 
 Also as in the above discussions, this cross-sign has a significant bandwidth cost for a post-quantum PKI, unless the extra intermediate can be omitted. Analogous considerations apply:
 
-* [Abridged certificates](https://datatracker.ietf.org/doc/draft-ietf-tls-cert-abridge/) do not address the problem. As of writing, [draft-01](https://www.ietf.org/archive/id/draft-ietf-tls-cert-abridge-01.html) is a point-in-time snapshot and advantages incumbents in the PKI.
+* [Abridged certificates](https://datatracker.ietf.org/doc/draft-ietf-tls-cert-abridge/) do not address the problem. As of writing, [draft-01](https://www.ietf.org/archive/id/draft-ietf-tls-cert-abridge-01.html) is a point-in-time snapshot and advantages incumbents in the PKI, and thus discourages this and other PKI transitions.
 * A hypothetical alternate intermediate compression scheme would address it, but it must ship the unused cross-sign to modern clients that do not trust the distrusted CA. Every distrust which uses this transition strategy grows the set.
 * If using a global versioning for the hypothetical compression scheme, the cross-sign is not compressible until the global intermediate set makes a new revision. **This adds coordination delay to a security incident response, and leaves users at risk for longer.**
 
@@ -191,7 +197,7 @@ From there, the server operator may asynchronously monitor usage of the old cert
 
 ### Backup CAs
 
-Trust expressions also enable a server operator to optionally maintain backup certificates for redundancy. The server operator can obtain certificates from multiple CAs ahead of time, further reducing their availability risk during a client’s security incident response.
+The server operator can obtain certificates from multiple CAs ahead of time, for redundancy, further reducing their availability risk during a client’s security incident response. With trust expressions, the server software will then automatically react to changes in client requirements and serve the correct one, with no manual configuration change by the server operator.
 
 
 ## Long-Lived Offline Keys
@@ -220,7 +226,7 @@ However, in an intermediate compression scheme, clients must carry the entire in
 
 Pre-shipping a trusted intermediate with a client is equivalent to simply treating the intermediate as a trust anchor, with some time bound. Thus trust expressions can be used to implement intermediate compression with no additional mechanism.
 
-CAs use the ACME extension to ship two chains to the TLS server, one with the intermediate, rooted at the long-lived key, and one without the intermediate, rooted at the short-lived key. Clients trust both the long-lived key and the most recent corresponding short-lived key. If the client’s trust anchors are up-to-date, the server will use the shorter chain. If the client’s trust anchors become out-of-date, the server will transparently fallback to the longer chain, until the client is updated.
+CAs use the ACME extension to ship two chains to the TLS server, one with the intermediate, rooted at the long-lived key, and one without the intermediate, rooted at the short-lived key. Clients trust both the long-lived key and the most recent corresponding short-lived key. If the client’s trust anchors are up-to-date, the server will use the shorter chain. If the client’s trust anchors become out-of-date, the server will automatically fallback to the longer chain, until the client is updated.
 
 
 ### Trust Expressions with Parallel Issuance

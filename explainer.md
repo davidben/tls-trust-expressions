@@ -382,7 +382,7 @@ In its current form, [draft-01](https://www.ietf.org/archive/id/draft-ietf-tls-c
 
 ## Alternate Intermediate Compression
 
-A hypothetical alternate intermediate elision scheme could be designed which avoids these drawbacks, but it would need to be much more complex to accommodate version skew, and the operational challenges of provisioning servers with the right metadata to evaluate information from newer and newer clients. For an example of how to address such challenges, see the Trust Expressions draft.
+A hypothetical alternate intermediate elision scheme could be designed which avoids these drawbacks, but it would need to be much more complex to accommodate version skew, and the operational challenges of provisioning servers with the right metadata to evaluate information from newer and newer clients. The Trust Expressions draft is an example of how to address these challenges, notably CertificatePropertyList, the ACME extension, the versioned trust stores, and the cross-version invariants managed by `excluded_labels` and expiry.
 
 Such a hypothetical scheme would be more applicable than Abridged Certificates, but imposes numerous costs, depending on the cross-signing scheme, including from delays to in security incident response, higher bandwidth usage in high-fanout scenarios, and the need to ship intermediates to clients that aren’t expected to need them. See also this [more detailed discussion](pki-transition-strategies.md).
 
