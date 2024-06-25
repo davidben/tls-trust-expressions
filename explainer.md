@@ -216,6 +216,8 @@ Where an individual ACME server does not cover all that some server operator nee
 
 ## Considered Alternatives
 
+See also this [more detailed discussion](pki-transition-strategies.md).
+
 ### TLS `certificate_authorities` Extension
 
 TLS already has a `certificate_authorities` extension to send the list of CAs, but it is impractical. Trust stores can be large, and the X.509 Name structure is inefficient. For example, as of August 2023, the [Mozilla CA Certificate Program](https://wiki.mozilla.org/CA/Included_Certificates) would encode 144 names totaling 14,457 bytes.
@@ -267,6 +269,8 @@ strategies. The server can send predictable, pre-built paths to the relying
 party. It is also free to use unrelated paths, which reduces the need for
 intermediate certificates and cross-signs. This is particularly valuable for
 post-quantum cryptography's larger sizes.
+
+For a more detailed discussion on path-based approaches, see [more detailed discussion](pki-transition-strategies.md).
 
 ### Fingerprinting
 
@@ -367,6 +371,21 @@ require a full transition to be secure. But the Web and HTTPS is now even larger
 and more important than when we began the ECDSA transition.
 `signature_algorithms` and `signature_algorithms_cert` are not robust enough on
 their own for a smooth post-quantum transition.
+
+
+## Abridged Certificates
+
+Some PKI transitions can be managed, imperfectly and with significant costs, by a combination of cross-signs and intermediate compression. The [Abridged Certificates](https://datatracker.ietf.org/doc/draft-ietf-tls-cert-abridge/) draft describes a mechanism for compressing pre-shipped intermediate certificates.
+
+In its current form, [draft-01](https://www.ietf.org/archive/id/draft-ietf-tls-cert-abridge-01.html), Abridged Certificates does not address these scenarios. It allocates a single codepoint for a fixed snapshot of intermediates in the PKI. By doing so, it cannot compress any intermediate that postdates the snapshot. This means it cannot handle future transitions. Moreover, it gives a size advantage to incumbents in the Web PKI, thus discouraging any further improvements in user security. It also cannot handle non-Web-PKI uses like private PKIs.
+
+
+## Alternate Intermediate Compression
+
+A hypothetical alternate intermediate elision scheme could be designed which avoids these drawbacks, but it would need to be much more complex to accommodate version skew, and the operational challenges of provisioning servers with the right metadata to evaluate information from newer and newer clients. For an example of how to address such challenges, see the Trust Expressions draft.
+
+Such a hypothetical scheme would be more applicable than Abridged Certificates, but imposes numerous costs, depending on the cross-signing scheme, including from delays to in security incident response, higher bandwidth usage in high-fanout scenarios, and the need to ship intermediates to clients that aren’t expected to need them. See also this [more detailed discussion](pki-transition-strategies.md).
+
 
 ## References and Acknowledgements
 
