@@ -151,14 +151,20 @@ The most natural server remediation is to reconfigure servers to switch to a dif
 
 ### Distrust Only New Certificates
 
-The client may choose to only distrust new certificates, while continuing to trust existing certificates. This helps with challenge (1) above, with some caveats with this approach:
+The client may choose to only distrust new certificates, issued after some cutoff date, while continuing to trust existing certificates. This helps with challenge (1) above, with some caveats:
 
 * If using the notBefore date, this is not an effective security measure; the user is still vulnerable to the distrusted CA, who may backdate certificates
 * Distrusting only new certificates still leaves the user vulnerable to existing misissued certificates. Those must be revoked separately, which requires identifying the set of certificates to re-evaluate.
 
-Certificate Transparency addresses both these concerns. By using the SCT timestamp, the distrusted CA cannot backdate the timestamp. By enforcing all accepted certificates appear in CT logs, the set of remaining trusted certificates is known. This means, for example, root programs can request server operators check for any unauthorized certificates within that set.
+Since Certificate Transparency pairs certificates with SCTs issued from a third party, these timestamps can be used to measure the cutoff date, so the distrusted CA cannot backdate certificates in CT-enforcing clients. Since the existence of SCTs implies the corresponding certificate is present in multiple CT logs, the set of remaining trusted certificates is known and will decrease over time as certificates expire or are replaced. While this strategy is a useful tool, it is not a complete solution:
 
-However, this strategy does not address challenge (2). While the immediate timing conflict is resolved, the server must still switch to a replacement CA before the cutoff date.
+* Not all distrusts present fact patterns that lend themselves to SCT-based distrust. For example, if too many certificates were misissued before the cutoff date, revocation lists may become too large to feasibly deliver to clients. Moving cutoff dates earlier risks additional breakage for sites unaffected by misissuance. During PKI transitions, root programs evaluate such tradeoffs, picking the approach that best suits the security needs of their users.
+
+* There are certain CA failure modes for which trusting certificates before a certain date is inappropriate. For example, a CA that has been performing domain validation incorrectly may have never issued a certificate correctly. Auditing the entire corpus of certificates issued from this CA to determine which were misissued may be infeasible due to both scale and changes in subscribers and domain ownership over time.
+
+* Clients that do not enforce Certificate Transparency are also still vulnerable to backdating, since such certificates would successfully validate without the SCTs present to indicate the incorrect issuance time asserted in the certificate.
+
+* Additionally, this strategy does not help server operators address challenge (2). The server must still switch to a replacement CA before the cutoff date, under the same constraints as in a more straightforward distrust. The following section discusses this further.
 
 
 ### Identifying a Replacement CA
