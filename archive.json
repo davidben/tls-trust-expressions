@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-25T01:26:21.561840+00:00",
+  "timestamp": "2024-06-27T01:26:52.349917+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -1541,6 +1541,95 @@
           "body": "",
           "createdAt": "2024-06-18T00:45:34Z",
           "updatedAt": "2024-06-18T00:45:34Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "id": "PR_kwDOKigz-s5ziGpB",
+      "title": "Add a document discussion PKI transition strategies",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/33",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "We'll probably find more topics to discuss here, but this is already long enough to warrant its own document.",
+      "createdAt": "2024-06-25T18:16:15Z",
+      "updatedAt": "2024-06-25T18:22:08Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "cef41e4a48fc3604231e5e08628a60d544e70531",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "transition-strategies",
+      "headRefOid": "d7d9b9ac4d97a309e603a7835550f642c9f06915",
+      "closedAt": "2024-06-25T18:22:05Z",
+      "mergedAt": "2024-06-25T18:22:05Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "8b2e515a32a0e33da0a6675b3d5e8d5aae15513c"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5_hbIE",
+          "commit": {
+            "abbreviatedOid": "d7d9b9a"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-06-25T18:20:45Z",
+          "updatedAt": "2024-06-25T18:20:45Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "id": "PR_kwDOKigz-s5zjcS5",
+      "title": "Update explainer text a bit",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/34",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien"
+      ],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-06-25T22:04:58Z",
+      "updatedAt": "2024-06-25T22:24:46Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "8b2e515a32a0e33da0a6675b3d5e8d5aae15513c",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "explainer-update",
+      "headRefOid": "f04268d9b8857e0fa3a89699e3264373fd5075bd",
+      "closedAt": "2024-06-25T22:24:43Z",
+      "mergedAt": "2024-06-25T22:24:43Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "52fb8e3761d26a6d789c0a038808c2771d0991cf"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s5_jYVI",
+          "commit": {
+            "abbreviatedOid": "f04268d"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Thanks for copying my comments over to GH. LGTM!",
+          "createdAt": "2024-06-25T22:20:11Z",
+          "updatedAt": "2024-06-25T22:20:11Z",
           "comments": []
         }
       ]
