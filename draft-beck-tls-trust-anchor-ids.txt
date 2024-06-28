@@ -511,7 +511,7 @@ Table of Contents
    Although this service parameter is intended to reduce trust anchor
    mismatches, mismatches may still occur in some scenarios.  Clients
    and servers MUST continue to implement the provisions described in
-   Section 4, even when using this service parameter.
+   Section 4.3, even when using this service parameter.
 
 6.  ACME Extension
 
