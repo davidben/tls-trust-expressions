@@ -1,13 +1,21 @@
-# TLS Trust Expressions
+# TLS Drafts
 
-This is the working area for the individual Internet-Draft, "TLS Trust Expressions".
+This is the working area for individual Internet-Drafts.
+
+## TLS Trust Anchor Identifiers
+
+* [Editor's Copy](https://davidben.github.io/tls-trust-expressions/#go.draft-beck-tls-trust-anchor-ids.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-beck-tls-trust-anchor-ids)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-beck-tls-trust-anchor-ids)
+* [Compare Editor's Copy to Individual Draft](https://davidben.github.io/tls-trust-expressions/#go.draft-beck-tls-trust-anchor-ids.diff)
+
+## TLS Trust Expressions
 
 * [Editor's Copy](https://davidben.github.io/tls-trust-expressions/#go.draft-davidben-tls-trust-expr.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-davidben-tls-trust-expr)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr)
 * [Compare Editor's Copy to Individual Draft](https://davidben.github.io/tls-trust-expressions/#go.draft-davidben-tls-trust-expr.diff)
 
-There is also an informal [explainer](explainer.md) document.
 
 ## Contributing
 
