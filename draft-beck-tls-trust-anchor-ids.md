@@ -270,7 +270,7 @@ When connecting to a service endpoint whose HTTPS or SVCB record contains the `t
 
 If doing so, the client MAY send a subset of this intersection to meet size constraints, but SHOULD offer multiple options. This reduces the chance of a reconnection if, for example, the first option in the intersection uses a signature algorithm that the client doesn’t support, or if the TLS server and DNS configuration are out of sync.
 
-Although this service parameter is intended to reduce trust anchor mismatches, mismatches may still occur in some scenarios. Clients and servers MUST continue to implement the provisions described in {{tls-extension}}, even when using this service parameter.
+Although this service parameter is intended to reduce trust anchor mismatches, mismatches may still occur in some scenarios. Clients and servers MUST continue to implement the provisions described in {{retry-mechanism}}, even when using this service parameter.
 
 # ACME Extension
 
