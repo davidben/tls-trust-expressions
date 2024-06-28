@@ -15,17 +15,17 @@
 <meta content="draft-davidben-tls-trust-expr-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.21.0
-    Python 3.11.9
+    Python 3.12.3
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
-    Jinja2 3.1.2
-    lxml 4.9.3
-    platformdirs 4.2.1
+    Jinja2 3.1.4
+    lxml 4.9.4
+    platformdirs 4.2.2
     pycountry 22.3.5
     PyYAML 6.0.1
     requests 2.31.0
-    setuptools 68.2.2
+    setuptools 69.5.1
     six 1.16.0
     wcwidth 0.2.13
 -->
@@ -1026,11 +1026,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS Trust Expressions</td>
-<td class="right">May 2024</td>
+<td class="right">June 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin, et al.</td>
-<td class="center">Expires 29 November 2024</td>
+<td class="center">Expires 30 December 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1043,12 +1043,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-davidben-tls-trust-expr-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-05-28" class="published">28 May 2024</time>
+<time datetime="2024-06-28" class="published">28 June 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-11-29">29 November 2024</time></dd>
+<dd class="expires"><time datetime="2024-12-30">30 December 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1106,7 +1106,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 29 November 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 30 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1156,10 +1156,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-trust-store-manifests" class="internal xref">Trust Store Manifests</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
-                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-trust-store-entry-expiratio" class="internal xref">Trust Store Entry Expiration</a></p>
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-trust-store-identifiers" class="internal xref">Trust Store Identifiers</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-labels" class="internal xref">Labels</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-trust-store-entry-expiratio" class="internal xref">Trust Store Entry Expiration</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-labels" class="internal xref">Labels</a></p>
 </li>
             </ul>
 </li>
@@ -1437,70 +1440,69 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-trust-store-manifests" class="section-name selfRef">Trust Store Manifests</a>
       </h2>
 <p id="section-4-1">This section defines a trust store manifest, which is a structure published by the root program to some well-known location. These manifests are used to compute certificate properties for the subscriber (<a href="#certificate-properties" class="auto internal xref">Section 5</a>) and trust expressions for the relying party (<a href="#tls-certificate-negotiation" class="auto internal xref">Section 6</a>).<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">Trust store manifests are identified by a short, unique trust store name and define a list of trust store versions. A trust store version contains a set of trust anchors, and is identified by a name (from the manifest) and a version number.<a href="#section-4-2" class="pilcrow">¶</a></p>
-<p id="section-4-3">[[TODO: Trust store names need to be unique, or at least unique among relying parties and subscribers that talk to each other, but also short. How do we allocate them? Registry? Just pick values? OIDs?]]<a href="#section-4-3" class="pilcrow">¶</a></p>
-<p id="section-4-4">A trust store manifest is a JSON object <span>[<a href="#RFC8259" class="cite xref">RFC8259</a>]</span> containing:<a href="#section-4-4" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="section-4-5">
-        <dt id="section-4-5.1">
-<code>name</code>:</dt>
-        <dd style="margin-left: 1.5em" id="section-4-5.2">
-          <p id="section-4-5.2.1">A string containing a short, unique name that identifies the collection of trust stores<a href="#section-4-5.2.1" class="pilcrow">¶</a></p>
+<p id="section-4-2">Trust store manifests are identified by a short, unique trust store identifier and define a list of trust store versions. A trust store version contains a set of trust anchors, and is identified by an identifier (from the manifest) and a version number.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">A trust store manifest is a JSON object <span>[<a href="#RFC8259" class="cite xref">RFC8259</a>]</span> containing:<a href="#section-4-3" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-4-4">
+        <dt id="section-4-4.1">
+<code>id</code>:</dt>
+        <dd style="margin-left: 1.5em" id="section-4-4.2">
+          <p id="section-4-4.2.1">A string containing a a trust store identifier in text form, as described in <a href="#trust-store-ids" class="auto internal xref">Section 4.1</a>.<a href="#section-4-4.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-4-5.3">
+<dt id="section-4-4.3">
 <code>max_age</code>:</dt>
-        <dd style="margin-left: 1.5em" id="section-4-5.4">
-          <p id="section-4-5.4.1">A non-negative integer containing the number of seconds that this document may be cached.<a href="#section-4-5.4.1" class="pilcrow">¶</a></p>
+        <dd style="margin-left: 1.5em" id="section-4-4.4">
+          <p id="section-4-4.4.1">A non-negative integer containing the number of seconds that this document may be cached.<a href="#section-4-4.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-4-5.5">
+<dt id="section-4-4.5">
 <code>trust_anchors</code>:</dt>
-        <dd style="margin-left: 1.5em" id="section-4-5.6">
-          <p id="section-4-5.6.1">A non-empty object describing a set of trust anchors. Each member's name is a short identifier for the trust anchor, used in <code>entries</code> below. Each member's value is an object describing the trust anchor, containing:<a href="#section-4-5.6.1" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="section-4-5.6.2">
-            <dt id="section-4-5.6.2.1">
+        <dd style="margin-left: 1.5em" id="section-4-4.6">
+          <p id="section-4-4.6.1">A non-empty object describing a set of trust anchors. Each member's name is a short identifier for the trust anchor, used in <code>entries</code> below. Each member's value is an object describing the trust anchor, containing:<a href="#section-4-4.6.1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-4-4.6.2">
+            <dt id="section-4-4.6.2.1">
 <code>type</code>:</dt>
-            <dd style="margin-left: 1.5em" id="section-4-5.6.2.2">
-              <p id="section-4-5.6.2.2.1">A string describing the type of trust anchor.<a href="#section-4-5.6.2.2.1" class="pilcrow">¶</a></p>
+            <dd style="margin-left: 1.5em" id="section-4-4.6.2.2">
+              <p id="section-4-4.6.2.2.1">A string describing the type of trust anchor.<a href="#section-4-4.6.2.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 </dl>
-<p id="section-4-5.6.3">In this document, the value of <code>type</code> is always "x509". In this case, the object additionally contains a member <code>data</code> whose value is a string containing a base64-encoded <span>[<a href="#RFC4648" class="cite xref">RFC4648</a>]</span>, DER-encoded <span>[<a href="#X690" class="cite xref">X690</a>]</span> X.509 certificate.<a href="#section-4-5.6.3" class="pilcrow">¶</a></p>
-<p id="section-4-5.6.4">Future documents may extend this format with other trust anchor types. Recipients MUST ignore trust anchors with unrecognized <code>type</code>.<a href="#section-4-5.6.4" class="pilcrow">¶</a></p>
+<p id="section-4-4.6.3">In this document, the value of <code>type</code> is always "x509". In this case, the object additionally contains a member <code>data</code> whose value is a string containing a base64-encoded <span>[<a href="#RFC4648" class="cite xref">RFC4648</a>]</span>, DER-encoded <span>[<a href="#X690" class="cite xref">X690</a>]</span> X.509 certificate.<a href="#section-4-4.6.3" class="pilcrow">¶</a></p>
+<p id="section-4-4.6.4">Future documents may extend this format with other trust anchor types. Recipients MUST ignore trust anchors with unrecognized <code>type</code>.<a href="#section-4-4.6.4" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-4-5.7">
+<dt id="section-4-4.7">
 <code>versions</code>:</dt>
-        <dd style="margin-left: 1.5em" id="section-4-5.8">
-          <p id="section-4-5.8.1">A non-empty array describing versions of the trust store. Each element of the array is a JSON object containing:<a href="#section-4-5.8.1" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="section-4-5.8.2">
-            <dt id="section-4-5.8.2.1">
+        <dd style="margin-left: 1.5em" id="section-4-4.8">
+          <p id="section-4-4.8.1">A non-empty array describing versions of the trust store. Each element of the array is a JSON object containing:<a href="#section-4-4.8.1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-4-4.8.2">
+            <dt id="section-4-4.8.2.1">
 <code>timestamp</code>:</dt>
-            <dd style="margin-left: 1.5em" id="section-4-5.8.2.2">
-              <p id="section-4-5.8.2.2.1">An integer, which is the time at which this trust store version was defined, as a POSIX timestamp (see <a href="#time" class="auto internal xref">Section 2.1</a>).<a href="#section-4-5.8.2.2.1" class="pilcrow">¶</a></p>
+            <dd style="margin-left: 1.5em" id="section-4-4.8.2.2">
+              <p id="section-4-4.8.2.2.1">An integer, which is the time at which this trust store version was defined, as a POSIX timestamp (see <a href="#time" class="auto internal xref">Section 2.1</a>).<a href="#section-4-4.8.2.2.1" class="pilcrow">¶</a></p>
 </dd>
             <dd class="break"></dd>
-<dt id="section-4-5.8.2.3">
+<dt id="section-4-4.8.2.3">
 <code>entries</code>:</dt>
-            <dd style="margin-left: 1.5em" id="section-4-5.8.2.4">
-              <p id="section-4-5.8.2.4.1">A non-empty array describing the contents of this version of the trust store. These are known as trust store entries. Each element is an object containing:<a href="#section-4-5.8.2.4.1" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="section-4-5.8.2.4.2">
-                <dt id="section-4-5.8.2.4.2.1">
-<code>id</code>:</dt>
-                <dd style="margin-left: 1.5em" id="section-4-5.8.2.4.2.2">
-                  <p id="section-4-5.8.2.4.2.2.1">A string containing the name of some member of the <code>trust_anchors</code> object.<a href="#section-4-5.8.2.4.2.2.1" class="pilcrow">¶</a></p>
+            <dd style="margin-left: 1.5em" id="section-4-4.8.2.4">
+              <p id="section-4-4.8.2.4.1">A non-empty array describing the contents of this version of the trust store. These are known as trust store entries. Each element is an object containing:<a href="#section-4-4.8.2.4.1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-4-4.8.2.4.2">
+                <dt id="section-4-4.8.2.4.2.1">
+<code>trust_anchor</code>:</dt>
+                <dd style="margin-left: 1.5em" id="section-4-4.8.2.4.2.2">
+                  <p id="section-4-4.8.2.4.2.2.1">A string containing the name of some member of the <code>trust_anchors</code> object.<a href="#section-4-4.8.2.4.2.2.1" class="pilcrow">¶</a></p>
 </dd>
                 <dd class="break"></dd>
-<dt id="section-4-5.8.2.4.2.3">
+<dt id="section-4-4.8.2.4.2.3">
 <code>labels</code>:</dt>
-                <dd style="margin-left: 1.5em" id="section-4-5.8.2.4.2.4">
-                  <p id="section-4-5.8.2.4.2.4.1">A non-empty array of non-negative, 24-bit integer labels associated with the trust anchor. See <a href="#labels" class="auto internal xref">Section 4.2</a> for how this field is interpreted.<a href="#section-4-5.8.2.4.2.4.1" class="pilcrow">¶</a></p>
+                <dd style="margin-left: 1.5em" id="section-4-4.8.2.4.2.4">
+                  <p id="section-4-4.8.2.4.2.4.1">A non-empty array of non-negative, 24-bit integer labels associated with the trust anchor. See <a href="#labels" class="auto internal xref">Section 4.3</a> for how this field is interpreted.<a href="#section-4-4.8.2.4.2.4.1" class="pilcrow">¶</a></p>
 </dd>
                 <dd class="break"></dd>
-<dt id="section-4-5.8.2.4.2.5">
+<dt id="section-4-4.8.2.4.2.5">
 <code>max_lifetime</code>:</dt>
-                <dd style="margin-left: 1.5em" id="section-4-5.8.2.4.2.6">
-                  <p id="section-4-5.8.2.4.2.6.1">A non-negative integer containing the maximum lifetime, in seconds, of certification paths that this trust anchor is expected to issue.<a href="#section-4-5.8.2.4.2.6.1" class="pilcrow">¶</a></p>
+                <dd style="margin-left: 1.5em" id="section-4-4.8.2.4.2.6">
+                  <p id="section-4-4.8.2.4.2.6.1">A non-negative integer containing the maximum lifetime, in seconds, of certification paths that this trust anchor is expected to issue.<a href="#section-4-4.8.2.4.2.6.1" class="pilcrow">¶</a></p>
 </dd>
               <dd class="break"></dd>
 </dl>
@@ -1510,39 +1512,48 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 </dd>
       <dd class="break"></dd>
 </dl>
-<p id="section-4-6">Versions in <code>versions</code> are identified by their zero-indexed position in the array. That is, the first entry is version 0, the second is version 1, and so on.<a href="#section-4-6" class="pilcrow">¶</a></p>
-<p id="section-4-7">Recipients MUST ignore JSON object members with unrecognized names in each of the objects defined above. Future documents MAY extend these formats with new names. <a href="#cddl-schema" class="auto internal xref">Appendix A</a> contains a CDDL <span>[<a href="#RFC8610" class="cite xref">RFC8610</a>]</span> describing the above structure.<a href="#section-4-7" class="pilcrow">¶</a></p>
-<p id="section-4-8">When updating a trust store manifest, root programs append a new object to the <code>versions</code> array to represent the new trust store version. When the new object references a trust anchor, the root program uses the existing members of <code>trust_anchors</code>, or adds new members as required. Updates MUST NOT modify or remove existing entries in the <code>versions</code> array.<a href="#section-4-8" class="pilcrow">¶</a></p>
-<div id="expiration">
+<p id="section-4-5">Versions in <code>versions</code> are identified by their zero-indexed position in the array. That is, the first entry is version 0, the second is version 1, and so on.<a href="#section-4-5" class="pilcrow">¶</a></p>
+<p id="section-4-6">Recipients MUST ignore JSON object members with unrecognized names in each of the objects defined above. Future documents MAY extend these formats with new names. <a href="#cddl-schema" class="auto internal xref">Appendix A</a> contains a CDDL <span>[<a href="#RFC8610" class="cite xref">RFC8610</a>]</span> describing the above structure.<a href="#section-4-6" class="pilcrow">¶</a></p>
+<p id="section-4-7">When updating a trust store manifest, root programs append a new object to the <code>versions</code> array to represent the new trust store version. When the new object references a trust anchor, the root program uses the existing members of <code>trust_anchors</code>, or adds new members as required. Updates MUST NOT modify or remove existing entries in the <code>versions</code> array.<a href="#section-4-7" class="pilcrow">¶</a></p>
+<div id="trust-store-ids">
 <section id="section-4.1">
-        <h3 id="name-trust-store-entry-expiratio">
-<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-trust-store-entry-expiratio" class="section-name selfRef">Trust Store Entry Expiration</a>
+        <h3 id="name-trust-store-identifiers">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-trust-store-identifiers" class="section-name selfRef">Trust Store Identifiers</a>
         </h3>
-<p id="section-4.1-1">The <code>max_age</code> and <code>max_lifetime</code> fields define an expiration time for trust store entries in versions other than the latest version. For a trust store entry in version V, the expiration time is the sum of:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-1">To simplify allocation, trust store identifiers use object identifiers (OIDs) <span>[<a href="#X680" class="cite xref">X680</a>]</span> based on Private Enterprise Numbers (PENs) <span>[<a href="#RFC9371" class="cite xref">RFC9371</a>]</span>. An organization may define a trust store by allocating some OID under its PEN. For example, an organization with PEN 32473 might allocate a trust store identified by the OID <code>1.3.6.1.4.1.32473.1</code>.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">For compactness, this document uses relative object identifiers (see Section 33 of <span>[<a href="#X680" class="cite xref">X680</a>]</span>), relative to the OID prefix <code>1.3.6.1.4.1</code>. In the text form, these are written in dotted decimal notation, such as <code>32473.1</code>. In a binary protocol, such as TLS, this is encoded as the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of <span>[<a href="#X690" class="cite xref">X690</a>]</span>. For example, the binary encoding of <code>32473.1</code> would be the four-octet sequence <code>{0x81, 0xfd, 0x59, 0x01}</code>.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="expiration">
+<section id="section-4.2">
+        <h3 id="name-trust-store-entry-expiratio">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-trust-store-entry-expiratio" class="section-name selfRef">Trust Store Entry Expiration</a>
+        </h3>
+<p id="section-4.2-1">The <code>max_age</code> and <code>max_lifetime</code> fields define an expiration time for trust store entries in versions other than the latest version. For a trust store entry in version V, the expiration time is the sum of:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4.1-2.1">
-            <p id="section-4.1-2.1.1">The <code>timestamp</code> of the subsequent version, i.e. version V+1<a href="#section-4.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-4.2-2.1">
+            <p id="section-4.2-2.1.1">The <code>timestamp</code> of the subsequent version, i.e. version V+1<a href="#section-4.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-4.1-2.2">
-            <p id="section-4.1-2.2.1">The <code>max_age</code> of the manifest<a href="#section-4.1-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-4.2-2.2">
+            <p id="section-4.2-2.2.1">The <code>max_age</code> of the manifest<a href="#section-4.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-4.1-2.3">
-            <p id="section-4.1-2.3.1">The <code>max_lifetime</code> of the trust store entry<a href="#section-4.1-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-4.2-2.3">
+            <p id="section-4.2-2.3.1">The <code>max_lifetime</code> of the trust store entry<a href="#section-4.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-4.1-3">Expiration times for entries in the latest version are not defined. They are determined once the root store appends a new version.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
-<p id="section-4.1-4">Trust store entries are not removed from their containing version after they expire. Rather, the expiration time is the point at which all unexpired certificates have incorporated information about subsequent trust store versions, per <a href="#computing-trust-store-inclusions" class="auto internal xref">Section 5.2</a>. This ensures the negotiation procedures in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a> and <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a> interoperate.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-3">Expiration times for entries in the latest version are not defined. They are determined once the root store appends a new version.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.2-4">Trust store entries are not removed from their containing version after they expire. Rather, the expiration time is the point at which all unexpired certificates have incorporated information about subsequent trust store versions, per <a href="#computing-trust-store-inclusions" class="auto internal xref">Section 5.2</a>. This ensures the negotiation procedures in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a> and <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a> interoperate.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="labels">
-<section id="section-4.2">
+<section id="section-4.3">
         <h3 id="name-labels">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-labels" class="section-name selfRef">Labels</a>
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-labels" class="section-name selfRef">Labels</a>
         </h3>
-<p id="section-4.2-1">Trust store entries reference labels, which are 24-bit integers that identify subsets of a trust store version. These integers are defined relative to the trust store manifest and are not globally unique. Root programs allocate labels when defining versions of a trust store.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">Labels are used in trust expressions (<a href="#trust-expressions" class="auto internal xref">Section 6.1</a>) to exclude trust anchor entries from the expression. A label may identify an individual trust anchor if it is the only one with that label, or multiple trust anchors if they share the label.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
-<p id="section-4.2-3">The root program's label allocation scheme determines which sets may be efficiently represented. In particular, when trust anchors are removed in a later version of a trust store, trust expressions must express the removed set with labels as described in <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a>. Root programs SHOULD allocate individual labels for each trust anchor, and shared labels for trust anchors that will likely be removed together. For example, the root program may allocate shared labels for trust anchors with the same operator, or trust anchors that use some signature algorithm if it expects some relying parties to exclude by algorithm.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.2-4">When allocating labels, root programs MAY repurpose a previously allocated label value after all previous entries referencing it have expired (<a href="#expiration" class="auto internal xref">Section 4.1</a>).<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.3-1">Trust store entries reference labels, which are 24-bit integers that identify subsets of a trust store version. These integers are defined relative to the trust store manifest and are not globally unique. Root programs allocate labels when defining versions of a trust store.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">Labels are used in trust expressions (<a href="#trust-expressions" class="auto internal xref">Section 6.1</a>) to exclude trust anchor entries from the expression. A label may identify an individual trust anchor if it is the only one with that label, or multiple trust anchors if they share the label.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.3-3">The root program's label allocation scheme determines which sets may be efficiently represented. In particular, when trust anchors are removed in a later version of a trust store, trust expressions must express the removed set with labels as described in <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a>. Root programs SHOULD allocate individual labels for each trust anchor, and shared labels for trust anchors that will likely be removed together. For example, the root program may allocate shared labels for trust anchors with the same operator, or trust anchors that use some signature algorithm if it expects some relying parties to exclude by algorithm.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.3-4">When allocating labels, root programs MAY repurpose a previously allocated label value after all previous entries referencing it have expired (<a href="#expiration" class="auto internal xref">Section 4.2</a>).<a href="#section-4.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1584,7 +1595,7 @@ enum {
 } TrustStoreStatus;
 
 struct {
-    opaque name&lt;1..2^8-1&gt;;
+    opaque id&lt;1..2^8-1&gt;;
     uint24 version;
 } TrustStore;
 
@@ -1598,17 +1609,17 @@ TrustStoreInclusion TrustStoreInclusionList&lt;1..2^16-1&gt;;
 </pre><a href="#section-5.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-5.1-3">Each TrustStoreInclusion describes a trust store version which contains this certification path's trust anchor. <code>trust_store</code> specifies a version of the trust store, and <code>labels</code> specifies the trust anchor's labels within that trust store.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
-<p id="section-5.1-4">If <code>status</code> is <code>latest_version_at_issuance</code>, <code>trust_store</code> was the latest trust store of its name at the time the certificate was issued. In this case, the trust expression evaluation algorithm (<a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a>) predicts this information additionally applies to all versions greater than <code>trust_store</code>'s <code>version</code>, up to the expiration of the certification path.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-4">If <code>status</code> is <code>latest_version_at_issuance</code>, <code>trust_store</code> was the latest version at the time the certificate was issued. In this case, the trust expression evaluation algorithm (<a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a>) predicts this information additionally applies to all versions greater than <code>trust_store</code>'s <code>version</code>, up to the expiration of the certification path.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
 <p id="section-5.1-5">A TrustStoreInclusionList MUST satisfy the following invariants:<a href="#section-5.1-5" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.1-6.1">
             <p id="section-5.1-6.1.1">Each TrustStoreInclusion has a unique <code>trust_store</code> value.<a href="#section-5.1-6.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-5.1-6.2">
-            <p id="section-5.1-6.2.1">The TrustStoreInclusion structures are sorted, first by length of <code>trust_store</code>'s <code>name</code>, then by <code>trust_store</code>'s <code>name</code> lexicographically, then by <code>trust_store</code>'s <code>version</code>.<a href="#section-5.1-6.2.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-6.2.1">The TrustStoreInclusion structures are sorted, first by length of <code>trust_store</code>'s <code>id</code>, then by <code>trust_store</code>'s <code>id</code> lexicographically, then by <code>trust_store</code>'s <code>version</code>.<a href="#section-5.1-6.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-5.1-6.3">
-            <p id="section-5.1-6.3.1">If <code>status</code> is <code>latest_version_at_issuance</code> in some TrustStoreInclusion, no <code>trust_store</code> with the same <code>name</code> but higher <code>version</code> appears in the list.<a href="#section-5.1-6.3.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-6.3.1">If <code>status</code> is <code>latest_version_at_issuance</code> in some TrustStoreInclusion, no <code>trust_store</code> with the same <code>id</code> but higher <code>version</code> appears in the list.<a href="#section-5.1-6.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1627,13 +1638,13 @@ TrustStoreInclusion TrustStoreInclusionList&lt;1..2^16-1&gt;;
             <p id="section-5.2-2.2.1">For each trust store version in the cached manifest's <code>versions</code>:<a href="#section-5.2-2.2.1" class="pilcrow">¶</a></p>
 <ol start="1" type="a" class="normal type-a" id="section-5.2-2.2.2">
 <li id="section-5.2-2.2.2.1">
-                <p id="section-5.2-2.2.2.1.1">Look for a trust store entry whose <code>id</code>, when indexed into <code>trust_anchors</code>, matches the certification path's trust anchor.<a href="#section-5.2-2.2.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-5.2-2.2.2.1.1">Look for a trust store entry whose <code>trust_anchor</code> field, when indexed into <code>trust_anchors</code>, matches the certification path's trust anchor.<a href="#section-5.2-2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-5.2-2.2.2.2">
                 <p id="section-5.2-2.2.2.2.1">If found, output a TrustStoreInclusion structure:<a href="#section-5.2-2.2.2.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.2-2.2.2.2.2.1">
-                    <p id="section-5.2-2.2.2.2.2.1.1">Set <code>trust_store</code> to the manifest's <code>name</code>, encoded in UTF-8 <span>[<a href="#RFC3629" class="cite xref">RFC3629</a>]</span>, and the version's version number.<a href="#section-5.2-2.2.2.2.2.1.1" class="pilcrow">¶</a></p>
+                    <p id="section-5.2-2.2.2.2.2.1.1">Set <code>trust_store</code> to the manifest's <code>id</code>, encoded in binary form as described in <a href="#trust-store-ids" class="auto internal xref">Section 4.1</a>, and the version's version number.<a href="#section-5.2-2.2.2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
                   <li class="normal" id="section-5.2-2.2.2.2.2.2">
                     <p id="section-5.2-2.2.2.2.2.2.1">Set <code>status</code> to <code>latest_version_at_issuance</code> if the trust store version is currently the latest version. Otherwise, set it to <code>previous_version</code>.<a href="#section-5.2-2.2.2.2.2.2.1" class="pilcrow">¶</a></p>
@@ -1693,7 +1704,7 @@ TODO fill in an example
       <h2 id="name-tls-certificate-negotiation">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-tls-certificate-negotiation" class="section-name selfRef">TLS Certificate Negotiation</a>
       </h2>
-<p id="section-6-1">This section defines the <code>trust_expressions</code> extension, which is sent in the ClientHello, CertificateRequest, and Certificate messages.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">This section defines the <code>trust_expressions</code> extension, which is sent in the ClientHello, CertificateRequest, and Certificate messages in TLS 1.3 or later.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <div id="trust-expressions">
 <section id="section-6.1">
         <h3 id="name-trust-expressions">
@@ -1713,7 +1724,7 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
 </pre><a href="#section-6.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-6.1-3">A TrustExpressionList is an unordered set of TrustExpression objects. When a relying party sends a TrustExpressionList, it indicates support for all trust anchors specified by any TrustExpression contained in the list. A TrustExpression specifies a list of trust anchors in two parts:<a href="#section-6.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.1-4">First, <code>trust_store</code> specifies a trust store by name and version (see <a href="#trust-store-manifests" class="auto internal xref">Section 4</a>). Any trust anchors contained in the specified trust store are included.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.1-4">First, <code>trust_store</code> specifies a trust store by ID and version (see <a href="#trust-store-manifests" class="auto internal xref">Section 4</a>). Any trust anchors contained in the specified trust store are included.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
 <p id="section-6.1-5">Second, <code>excluded_labels</code> specifies a set of labels, each of which identify one or more trust anchors in a trust store manifest. Any trust anchors identified by any label in <code>excluded_labels</code> are excluded. <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a> discusses this set in more detail.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
 <p id="section-6.1-6"><code>excluded_labels</code> MUST be sorted in ascending order and contain no duplicate values to be valid. If invalid, receivers MUST terminate the connection with an <code>illegal_parameter</code> alert.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
 <p id="section-6.1-7">Together, a TrustExpression indicates that the relying party accepts all trust anchors in the referenced trust store version, except for any that were excluded via <code>excluded_labels</code>.<a href="#section-6.1-7" class="pilcrow">¶</a></p>
@@ -1726,7 +1737,7 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
         </h3>
 <p id="section-6.2-1">When the <code>trust_expressions</code> extension is sent in a Certificate message, the extension MUST be in the first CertificateEntry and the <code>extension_data</code> field MUST be empty. This extension indicates the subscriber selected a certification path using trust expressions.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
 <p id="section-6.2-2">In this case, the <code>certificate_list</code> flexibility described in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.4.2" class="relref">Section 4.4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> no longer applies. The <code>certificate_list</code> MUST contain a complete certification path, correctly ordered and with no extraneous certificates. That is, each certificate MUST certify the one immediately preceding it, and the trust anchor MUST certify the final certificate.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
-<p id="section-6.2-3">If a relying party receives this extension in the Certificate message, it SHOULD NOT use path building <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span> to validate the result.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<p id="section-6.2-3">If a relying party receives this extension in the Certificate message, it MAY choose to disable path building <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span> and validate the peer's certificate list as pre-built certification path. Doing so avoids the unpredictable behavior of path-building, and helps ensure CAs and subscribers do not inadvertently provision incorrect paths.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="evaluating-trust-expressions">
@@ -1734,22 +1745,43 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
         <h3 id="name-evaluating-trust-expression">
 <a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-evaluating-trust-expression" class="section-name selfRef">Evaluating Trust Expressions</a>
         </h3>
-<p id="section-6.3-1">Given a certification path with a <code>trust_store</code> certificate property (<a href="#trust-store-inclusion" class="auto internal xref">Section 5.1</a>), a subscriber can evaluate a TrustExpressionList to determine whether the certification path matches.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
-<p id="section-6.3-2">A TrustExpression is said to match a TrustStoreInclusionList if there is at least one TrustStoreInclusion in the TrustStoreInclusionList such that all of the following are true:<a href="#section-6.3-2" class="pilcrow">¶</a></p>
+<p id="section-6.3-1">Given a certification path and a TrustExpressionList from the relying party, the subscriber runs the following procedure to determine if the relying party is claiming support for the path's trust anchor. If so, the TrustExpressionList is said to match the certification path:<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.3-2">
+<li id="section-6.3-2.1">
+            <p id="section-6.3-2.1.1">If the certification path does not have an associated <code>trust_store</code> certificate property (<a href="#trust-store-inclusion" class="auto internal xref">Section 5.1</a>), containing a TrustStoreInclusionList, terminate this procedure and return false. The certification path does not match the TrustExpressionList.<a href="#section-6.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.2">
+            <p id="section-6.3-2.2.1">If the certification path has expired, terminate this procedure and return false. Expired certification paths are expected to be rejected by the relying party and may also have stale TrustStoreInclusionLists.<a href="#section-6.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.3">
+            <p id="section-6.3-2.3.1">Otherwise, for each TrustExpression in the relying party's TrustExpressionList:<a href="#section-6.3-2.3.1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.3-2.3.2">
+<li id="section-6.3-2.3.2.1">
+                <p id="section-6.3-2.3.2.1.1">Find the TrustExpression's corresponding TrustStoreInclusion in the TrustStoreInclusionList, if any. The corresponding TrustStoreInclusion is the one where both of the following are true:<a href="#section-6.3-2.3.2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.3-3.1">
-            <p id="section-6.3-3.1.1">The <code>name</code> fields of two structures' <code>trust_store</code> fields are equal.<a href="#section-6.3-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6.3-2.3.2.1.2.1">
+                    <p id="section-6.3-2.3.2.1.2.1.1">The <code>id</code> fields of two structures' <code>trust_store</code> fields are equal.<a href="#section-6.3-2.3.2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.3-3.2">
-            <p id="section-6.3-3.2.1">Either the <code>version</code> fields of the two structures' <code>trust_store</code> fields are equal, or the TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code> and the <code>version</code> field of TrustExpression's <code>trust_store</code> is greater than that of the TrustStoreInclusion's <code>trust_store</code>.<a href="#section-6.3-3.2.1" class="pilcrow">¶</a></p>
+                  <li class="normal" id="section-6.3-2.3.2.1.2.2">
+                    <p id="section-6.3-2.3.2.1.2.2.1">Either the <code>version</code> fields of the two structures' <code>trust_store</code> fields are equal, or the TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code> and the <code>version</code> field of TrustExpression's <code>trust_store</code> is greater than that of the TrustStoreInclusion's <code>trust_store</code>.<a href="#section-6.3-2.3.2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.3-3.3">
-            <p id="section-6.3-3.3.1">There is no value in common between the TrustStoreInclusion's <code>labels</code> field and the TrustExpression's <code>excluded_labels</code> field.<a href="#section-6.3-3.3.1" class="pilcrow">¶</a></p>
+                </ul>
+<p id="section-6.3-2.3.2.1.3">
+The invariants in <a href="#trust-store-inclusion" class="auto internal xref">Section 5.1</a> imply that at most one TrustStoreInclusion will satisfy this. Implementations may evaluate this efficiently by performing a binary search over the TrustStoreInclusionList.<a href="#section-6.3-2.3.2.1.3" class="pilcrow">¶</a></p>
 </li>
-        </ul>
-<p id="section-6.3-4">The invariants in <a href="#trust-store-inclusion" class="auto internal xref">Section 5.1</a> imply that at most one TrustStoreInclusion will satisfy the first two properties. Implementations may evaluate this efficiently by performing a binary search over the TrustStoreInclusionList, and then checking the third property.<a href="#section-6.3-4" class="pilcrow">¶</a></p>
-<p id="section-6.3-5">A TrustExpressionList is said to match a TrustStoreInclusionList if any TrustExpression in the TrustExpressionList matches the TrustStoreInclusionList.<a href="#section-6.3-5" class="pilcrow">¶</a></p>
-<p id="section-6.3-6">When a TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code>, the above criteria predicts that trust anchors in the latest version will continue to be present in later versions. This allows relying parties using later trust store versions to continue to interoperate with certification paths that predate the later version. If this prediction is incorrect and the trust anchor has been removed from the later version, <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a> requires that the TrustExpression include appropriate <code>excluded_labels</code> values to mitigate this.<a href="#section-6.3-6" class="pilcrow">¶</a></p>
+              <li id="section-6.3-2.3.2.2">
+                <p id="section-6.3-2.3.2.2.1">If there was no corresponding TrustStoreInclusion, continue to the next TrustExpression.<a href="#section-6.3-2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-6.3-2.3.2.3">
+                <p id="section-6.3-2.3.2.3.1">Otherwise, check for common values between the TrustStoreInclusion's <code>labels</code> field and the TrustExpression's <code>excluded_labels</code> field. If there are no common values, terminate this procedure and return true. The certification path matches the TrustExpressionList. Otherwise, continue to the next TrustExpression.<a href="#section-6.3-2.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ol>
+</li>
+          <li id="section-6.3-2.4">
+            <p id="section-6.3-2.4.1">If no match was found in the TrustExpressionList, return false. The certification path does not match the TrustExpressionList.<a href="#section-6.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-6.3-3">When a TrustStoreInclusion's <code>status</code> is <code>latest_version_at_issuance</code>, the above procedure predicts that trust anchors in the latest version will continue to be present in later versions. This allows relying parties using later trust store versions to continue to interoperate with certification paths that predate the later version. If this prediction is incorrect and the trust anchor has been removed from the later version, <a href="#constructing-trust-expressions" class="auto internal xref">Section 6.5</a> requires that the TrustExpression include appropriate <code>excluded_labels</code> values to mitigate this.<a href="#section-6.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="subscriber-behavior">
@@ -1757,26 +1789,23 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
         <h3 id="name-subscriber-behavior">
 <a href="#section-6.4" class="section-number selfRef">6.4. </a><a href="#name-subscriber-behavior" class="section-name selfRef">Subscriber Behavior</a>
         </h3>
-<p id="section-6.4-1">Subscribers using this negotiation scheme are configured with a list of certification paths, with corresponding CertificatePropertyList (<a href="#certificate-properties" class="auto internal xref">Section 5</a>) structures, in some preference order. When responding to a ClientHello (as a server) or CertificateRequest (as a client) containing the <code>trust_expressions</code> extension, the subscriber collects all candidate certification paths such that all of the following are true:<a href="#section-6.4-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-6.4-2.1">
-            <p id="section-6.4-2.1.1">The certification path has not expired.<a href="#section-6.4-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-6.4-1">Subscribers using this negotiation scheme are configured with a list of candidate certification paths, with corresponding CertificatePropertyList (<a href="#certificate-properties" class="auto internal xref">Section 5</a>) structures. As a server (respectively, client) responding to a ClientHello (respectively, CertificateRequest), the subscriber selects the best candidate path, incorporating the matching algorithm described in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a>, and other criteria defined in TLS.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.4-2">If the subscriber selected a certification path which matched via trust expressions, it MUST include an empty <code>trust_expressions</code> extension in the first CertificateEntry.<a href="#section-6.4-2" class="pilcrow">¶</a></p>
+<p id="section-6.4-3">This document does not prescribe a precise selection procedure and configuration, but the following is an example implementation strategy:<a href="#section-6.4-3" class="pilcrow">¶</a></p>
+<p id="section-6.4-4">The TLS implementation allows the application to configure a list of candidate credentials, each with certification path, private key, and optional CertificatePropertyList, in preference order. This order may reflect a preference to, e.g., minimize message size, or more performant private keys. When selecting a credential, the TLS implementation iterates over each candidate in preference order and checks:<a href="#section-6.4-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.4-5">
+<li id="section-6.4-5.1">
+            <p id="section-6.4-5.1.1">Either the matching algorithm described in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a> returns true, or some other TLS extension, such as the <code>certificate_authorities</code> extension, indicates the relying party supports the trust anchor.<a href="#section-6.4-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.4-2.2">
-            <p id="section-6.4-2.2.1">The CertificatePropertyList has a <code>trust_store</code> property with a TrustStoreInclusionList.<a href="#section-6.4-2.2.1" class="pilcrow">¶</a></p>
+          <li id="section-6.4-5.2">
+            <p id="section-6.4-5.2.1">The certification path is suitable for use based on other TLS criteria. For example, the TLS <code>signature_algorithms</code> (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.3" class="relref">Section 4.2.3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>) extension constrains the types of keys which may be used.<a href="#section-6.4-5.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.4-2.3">
-            <p id="section-6.4-2.3.1">The matching algorithm described in <a href="#evaluating-trust-expressions" class="auto internal xref">Section 6.3</a> returns true.<a href="#section-6.4-2.3.1" class="pilcrow">¶</a></p>
+          <li id="section-6.4-5.3">
+            <p id="section-6.4-5.3.1">The certification path satisfies any other application-specific constraints which may apply. For example, TLS servers often select certificates based on the <code>server_name</code> (<span><a href="https://rfc-editor.org/rfc/rfc6066#section-3" class="relref">Section 3</a> of [<a href="#RFC6066" class="cite xref">RFC6066</a>]</span>) extension.<a href="#section-6.4-5.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.4-2.4">
-            <p id="section-6.4-2.4.1">The certification path is suitable for use based on other TLS criteria. For example, the TLS <code>signature_algorithms</code> (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.3" class="relref">Section 4.2.3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>) extension constrains the types of keys which may be used.<a href="#section-6.4-2.4.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-6.4-2.5">
-            <p id="section-6.4-2.5.1">The certification path satisfies any other application-specific constraints which may apply. For example, TLS servers often select certificates based on the <code>server_name</code> (<span><a href="https://rfc-editor.org/rfc/rfc6066#section-3" class="relref">Section 3</a> of [<a href="#RFC6066" class="cite xref">RFC6066</a>]</span>) extension.<a href="#section-6.4-2.5.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-6.4-3">Once all candidate paths are determined, the subscriber picks one to present to the relying party. The subscriber MUST include an empty <code>trust_expressions</code> extension in the first CertificateEntry. If multiple candidates match, the subscriber picks its most preferred option. For example, it may try to minimize message size, or prefer options with more performant private keys.<a href="#section-6.4-3" class="pilcrow">¶</a></p>
-<p id="section-6.4-4">If no candidates match, or if the peer did not send a <code>trust_expressions</code> extension, the subscriber falls back to preexisting behavior outside the scope of this document, without including a <code>trust_expressions</code> extension. For example, the subscriber may have a default certificate configured, or select a certificate using the <code>certificate_authorities</code> extension.<a href="#section-6.4-4" class="pilcrow">¶</a></p>
+        </ol>
+<p id="section-6.4-6">The TLS implementation selects the first credential which satisfies all of its selection criteria. If no credentials match, the TLS implementation may return a <code>handshake_failure</code> alert, or consider a configured fallback set of credentials, which skip the first check above. These fallback credentials may be a separate credential list, or appended to the same list with an option to control the matching criteria.<a href="#section-6.4-6" class="pilcrow">¶</a></p>
+<p id="section-6.4-7">Fallback credentials allow the subscriber to retain support for relying parties that do not implement trust expressions. As they are be selected without trust anchor negotiation, the subscriber must find a sufficiently ubiquitous trust anchor, if one exists. However, unlike existing PKIs that do not use trust expressions, only relying parties without trust expressions need to be considered in this ubiquity determination. Updated relying parties may continue to evolve without restricting fallback credential selection.<a href="#section-6.4-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="constructing-trust-expressions">
@@ -1795,7 +1824,7 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
             <p id="section-6.5-4.2.1">For each trust store entry in the trust store version:<a href="#section-6.5-4.2.1" class="pilcrow">¶</a></p>
 <ol start="1" type="a" class="normal type-a" id="section-6.5-4.2.2">
 <li id="section-6.5-4.2.2.1">
-                <p id="section-6.5-4.2.2.1.1">If the trust store entry's <code>id</code> references a trust anchor that is in the desired subset, add it to <code>include_entries</code>.<a href="#section-6.5-4.2.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-6.5-4.2.2.1.1">If the trust store entry's <code>trust_anchor</code> references a trust anchor that is in the desired subset, add it to <code>include_entries</code>.<a href="#section-6.5-4.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-6.5-4.2.2.2">
                 <p id="section-6.5-4.2.2.2.1">Otherwise, add it to <code>exclude_entries</code>.<a href="#section-6.5-4.2.2.2.1" class="pilcrow">¶</a></p>
@@ -1806,7 +1835,7 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
             <p id="section-6.5-4.3.1">For all trust store entries in trust store versions before the specified version:<a href="#section-6.5-4.3.1" class="pilcrow">¶</a></p>
 <ol start="1" type="a" class="normal type-a" id="section-6.5-4.3.2">
 <li id="section-6.5-4.3.2.1">
-                <p id="section-6.5-4.3.2.1.1">If the current time is before the entry's expiration time (<a href="#expiration" class="auto internal xref">Section 4.1</a>) and if the entry's <code>id</code> references a trust anchor that is not in the desired subset, add the entry to <code>exclude_entries</code>.<a href="#section-6.5-4.3.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-6.5-4.3.2.1.1">If the current time is before the entry's expiration time (<a href="#expiration" class="auto internal xref">Section 4.2</a>) and if the entry's <code>trust_anchor</code> references a trust anchor that is not in the desired subset, add the entry to <code>exclude_entries</code>.<a href="#section-6.5-4.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
             </ol>
 </li>
@@ -1821,7 +1850,7 @@ TrustExpression TrustExpressionList&lt;1..2^16-1&gt;;
 </li>
             </ol>
 <p id="section-6.5-4.4.3">
-How to compute this set depends on the root program's label allocation scheme (<a href="#labels" class="auto internal xref">Section 4.2</a>). If the root program allocates a label for each trust anchor, this set is always computable, though more efficient sets may be possible depending on the allocation scheme.<a href="#section-6.5-4.4.3" class="pilcrow">¶</a></p>
+How to compute this set depends on the root program's label allocation scheme (<a href="#labels" class="auto internal xref">Section 4.3</a>). If the root program allocates a label for each trust anchor, this set is always computable, though more efficient sets may be possible depending on the allocation scheme.<a href="#section-6.5-4.4.3" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.5-4.5">
             <p id="section-6.5-4.5.1">Output a TrustExpression such that <code>trust_store</code> is the referenced trust store version, and <code>excluded_labels</code> is the computed <code>excluded_labels</code> value.<a href="#section-6.5-4.5.1" class="pilcrow">¶</a></p>
@@ -1864,7 +1893,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <div class="alignLeft art-text artwork" id="section-8-3">
 <pre>
 {
-  "name": "example",
+  "id": "32473.1",
   "max_age": 864000,
   "trust_anchors": {
     "A1": {"type": "x509", "data": "..."},
@@ -1893,7 +1922,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <p id="section-8-4">A certification path, A1_old, issued by A1, would have a TrustStoreInclusion:<a href="#section-8-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-5.1">
-          <p id="section-8-5.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-5.1.1" class="pilcrow">¶</a></p>
+          <p id="section-8-5.1.1"><code>trust_store.id</code> is "32473.1"<a href="#section-8-5.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-5.2">
           <p id="section-8-5.2.1"><code>trust_store.version</code> is 0<a href="#section-8-5.2.1" class="pilcrow">¶</a></p>
@@ -1908,7 +1937,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <p id="section-8-6">A certification path, B1_old, issued by B1, would have a TrustStoreInclusion:<a href="#section-8-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-7.1">
-          <p id="section-8-7.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-7.1.1" class="pilcrow">¶</a></p>
+          <p id="section-8-7.1.1"><code>trust_store.id</code> is "32473.1"<a href="#section-8-7.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-7.2">
           <p id="section-8-7.2.1"><code>trust_store.version</code> is 0<a href="#section-8-7.2.1" class="pilcrow">¶</a></p>
@@ -1925,7 +1954,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <div class="alignLeft art-text artwork" id="section-8-10">
 <pre>
 {
-  "name": "example",
+  "id": "32473.1",
   "max_age": 864000,
   "trust_anchors": {
     "A1": {"type": "x509", "data": "..."},
@@ -1969,7 +1998,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <p id="section-8-11">A certification path, A1_new, newly issued by A1, would have two TrustStoreInclusions. The first:<a href="#section-8-11" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-12.1">
-          <p id="section-8-12.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-12.1.1" class="pilcrow">¶</a></p>
+          <p id="section-8-12.1.1"><code>trust_store.id</code> is "32473.1"<a href="#section-8-12.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-12.2">
           <p id="section-8-12.2.1"><code>trust_store.version</code> is 0<a href="#section-8-12.2.1" class="pilcrow">¶</a></p>
@@ -1984,7 +2013,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <p id="section-8-13">And the second:<a href="#section-8-13" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-14.1">
-          <p id="section-8-14.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-14.1.1" class="pilcrow">¶</a></p>
+          <p id="section-8-14.1.1"><code>trust_store.id</code> is "32473.1"<a href="#section-8-14.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-14.2">
           <p id="section-8-14.2.1"><code>trust_store.version</code> is 1<a href="#section-8-14.2.1" class="pilcrow">¶</a></p>
@@ -1999,7 +2028,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <p id="section-8-15">A certification path, B1_new, newly issued by B1, would have a TrustStoreInclusion:<a href="#section-8-15" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-16.1">
-          <p id="section-8-16.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-16.1.1" class="pilcrow">¶</a></p>
+          <p id="section-8-16.1.1"><code>trust_store.id</code> is "32473.1"<a href="#section-8-16.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-16.2">
           <p id="section-8-16.2.1"><code>trust_store.version</code> is 0<a href="#section-8-16.2.1" class="pilcrow">¶</a></p>
@@ -2014,16 +2043,16 @@ How to compute this set depends on the root program's label allocation scheme (<
 <p id="section-8-17">A certification path, C1_new, newly issued by C1, would have a TrustStoreInclusion:<a href="#section-8-17" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-18.1">
-          <p id="section-8-18.1.1"><code>trust_store.name</code> is "example"<a href="#section-8-18.1.1" class="pilcrow">¶</a></p>
+          <p id="section-8-18.1.1"><code>trust_store.id</code> is "32473.1"<a href="#section-8-18.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-18.2">
           <p id="section-8-18.2.1"><code>trust_store.version</code> is 1<a href="#section-8-18.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-18.3">
-          <p id="section-8-18.3.1"><code>status</code> is <code>previous_version</code><a href="#section-8-18.3.1" class="pilcrow">¶</a></p>
+          <p id="section-8-18.3.1"><code>status</code> is <code>latest_version_at_issuance</code><a href="#section-8-18.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-18.4">
-          <p id="section-8-18.4.1"><code>labels</code> contains 2, 101, 200<a href="#section-8-18.4.1" class="pilcrow">¶</a></p>
+          <p id="section-8-18.4.1"><code>labels</code> contains 4, 102, 200<a href="#section-8-18.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-8-19">A relying party which trusts trust anchors A1, A2, B1, and B2 might send a TrustExpression referencing trust store "example", version 0, with empty <code>excluded_labels</code>. This would match A1_old, A1_new, B1_old, and B1_new by the corresponding TrustStoreInclusion. It would not match C1_old or C1_new.<a href="#section-8-19" class="pilcrow">¶</a></p>
@@ -2050,7 +2079,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 </li>
       </ul>
 <p id="section-8-23">The relying party could equivalently have sent a TrustExpression referencing trust store "example", version 1, with <code>excluded_labels</code> of 2 and 3. This pair of labels excludes the same CAs as 101.<a href="#section-8-23" class="pilcrow">¶</a></p>
-<p id="section-8-24">Of the above examples, B1_old depends on the exclusion to avoid a false positive match. 100 days after February 1st, B1 and B2's trust store entries from version 0 will expire (see <a href="#expiration" class="auto internal xref">Section 4.1</a>), and the relying party no longer needs to exclude them. By this point, B1_old will have expired. B1_new may still be valid, but it does not require the exclusion.<a href="#section-8-24" class="pilcrow">¶</a></p>
+<p id="section-8-24">Of the above examples, B1_old depends on the exclusion to avoid a false positive match. 100 days after February 1st, B1 and B2's trust store entries from version 0 will expire (see <a href="#expiration" class="auto internal xref">Section 4.2</a>), and the relying party no longer needs to exclude them. By this point, B1_old will have expired. B1_new may still be valid, but it does not require the exclusion.<a href="#section-8-24" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="use-cases">
@@ -2154,16 +2183,17 @@ How to compute this set depends on the root program's label allocation scheme (<
       </h2>
 <p id="section-10-1">The negotiation mechanism described in this document is analogous to the <code>certificate_authorities</code> extension (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.4" class="relref">Section 4.2.4</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>), but more size-efficient. Like that extension, it presumes the advertised trust anchor list is not sensitive.<a href="#section-10-1" class="pilcrow">¶</a></p>
 <p id="section-10-2">Thus, this mechanism SHOULD NOT be used to advertise trust anchors or distrusts which are unique to an individual user. Rather, trust expressions SHOULD be computed based only on the trust anchors common to the relying party's anonymity set (<span><a href="https://rfc-editor.org/rfc/rfc6973#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC6973" class="cite xref">RFC6973</a>]</span>). Additionally, multiple trust expressions may evaluate to the same trust anchor list, so relying parties in the same anonymity set SHOULD send the same trust expression. To achieve this, trust expressions SHOULD be assembled by the root program and configured in relying parties alongside trust store updates.<a href="#section-10-2" class="pilcrow">¶</a></p>
-<p id="section-10-3">For example, a web browser may support both a common set of trust anchors configured by the browser vendor, along with user-specified additions and removals. The common trust anchors would reveal, at most, which browser is used, while the user-specified modifications may reveal identifying information about the user. The trust expression SHOULD reflect only the common trust anchors. This limits the benefits of trust anchor agility in two ways:<a href="#section-10-3" class="pilcrow">¶</a></p>
+<p id="section-10-3">For example, a web browser may support both a common set of trust anchors configured by a root program, along with user-specified additions and removals. Applying the above guidance with a typical browser's desired anonymity set, the trust expression would reflect only the common trust anchors and not the user-specified modifications. The user-specified modifications may reveal identifying information about the user, while the common trust anchors would reveal at most, e.g., which version of which browser is used, or even less information if multiple browsers share a root program or the trust anchors were unchanged across multiple versions of the browser.<a href="#section-10-3" class="pilcrow">¶</a></p>
+<p id="section-10-4">This guidance limits the benefits of trust anchor agility in two ways:<a href="#section-10-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-10-4.1">
-          <p id="section-10-4.1.1">If a subscriber relies on a user-specified addition, the procedure in <a href="#subscriber-behavior" class="auto internal xref">Section 6.4</a> will fallback to preexisting behavior, such as selecting a default certificate. The subscriber then relies on the default certificate matching the relying party.<a href="#section-10-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10-5.1">
+          <p id="section-10-5.1.1">If a subscriber relies on a user-specified addition, the procedure in <a href="#subscriber-behavior" class="auto internal xref">Section 6.4</a> will fallback to preexisting behavior, such as selecting a default certificate. The subscriber then relies on the default certificate matching the relying party.<a href="#section-10-5.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-10-4.2">
-          <p id="section-10-4.2.1">If a subscriber has a certificate issued by a CA distrusted by the user, the procedure in <a href="#subscriber-behavior" class="auto internal xref">Section 6.4</a> may select a distrusted certificate. In that case, the connection will fail, even if the subscriber has another certificate available.<a href="#section-10-4.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-10-5.2">
+          <p id="section-10-5.2.1">If a subscriber has a certificate issued by a CA distrusted by the user, the procedure in <a href="#subscriber-behavior" class="auto internal xref">Section 6.4</a> may select a distrusted certificate. In that case, the connection will fail, even if the subscriber has another certificate available.<a href="#section-10-5.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-10-5">Both of these cases match the preexisting behavior in PKIs that do not use trust expressions.<a href="#section-10-5" class="pilcrow">¶</a></p>
+<p id="section-10-6">Both of these cases match the preexisting behavior in PKIs that do not use trust expressions.<a href="#section-10-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
@@ -2366,10 +2396,6 @@ How to compute this set depends on the root program's label allocation scheme (<
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC3629">[RFC3629]</dt>
-        <dd>
-<span class="refAuthor">Yergeau, F.</span>, <span class="refTitle">"UTF-8, a transformation format of ISO 10646"</span>, <span class="seriesInfo">STD 63</span>, <span class="seriesInfo">RFC 3629</span>, <span class="seriesInfo">DOI 10.17487/RFC3629</span>, <time datetime="2003-11" class="refDate">November 2003</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3629">https://www.rfc-editor.org/rfc/rfc3629</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC4158">[RFC4158]</dt>
         <dd>
 <span class="refAuthor">Cooper, M.</span>, <span class="refAuthor">Dzambasow, Y.</span>, <span class="refAuthor">Hesse, P.</span>, <span class="refAuthor">Joseph, S.</span>, and <span class="refAuthor">R. Nicholas</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure: Certification Path Building"</span>, <span class="seriesInfo">RFC 4158</span>, <span class="seriesInfo">DOI 10.17487/RFC4158</span>, <time datetime="2005-09" class="refDate">September 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4158">https://www.rfc-editor.org/rfc/rfc4158</a>&gt;</span>. </dd>
@@ -2414,9 +2440,17 @@ How to compute this set depends on the root program's label allocation scheme (<
         <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Hoffman-Andrews, J.</span>, <span class="refAuthor">McCarney, D.</span>, and <span class="refAuthor">J. Kasten</span>, <span class="refTitle">"Automatic Certificate Management Environment (ACME)"</span>, <span class="seriesInfo">RFC 8555</span>, <span class="seriesInfo">DOI 10.17487/RFC8555</span>, <time datetime="2019-03" class="refDate">March 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8555">https://www.rfc-editor.org/rfc/rfc8555</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC9371">[RFC9371]</dt>
+        <dd>
+<span class="refAuthor">Baber, A.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Registration Procedures for Private Enterprise Numbers (PENs)"</span>, <span class="seriesInfo">RFC 9371</span>, <span class="seriesInfo">DOI 10.17487/RFC9371</span>, <time datetime="2023-03" class="refDate">March 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9371">https://www.rfc-editor.org/rfc/rfc9371</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="X680">[X680]</dt>
+        <dd>
+<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology - Abstract Syntax Notation One (ASN.1): Specification of basic notation"</span>, <span class="seriesInfo">ISO/IEC 8824-1:2021</span>, <time datetime="2021" class="refDate">2021</time>. </dd>
+<dd class="break"></dd>
 <dt id="X690">[X690]</dt>
       <dd>
-<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"</span>, <span class="seriesInfo">ISO/IEC 8825-1:2002</span>, <time datetime="2002" class="refDate">2002</time>. </dd>
+<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"</span>, <span class="seriesInfo">ISO/IEC 8825-1:2021</span>, <time datetime="2021" class="refDate">2021</time>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -2473,7 +2507,7 @@ trust-anchor = {
 }
 
 trust-store-entry = {
-    id: text,
+    trust_anchor: text,
     labels: [+ uint],
     max_lifetime: uint,
     * text =&gt; any,
@@ -2486,7 +2520,7 @@ trust-store-version = {
 }
 
 trust-store-manifest = {
-    name: text,
+    id: text,
     max_age: uint,
     trust_anchors: {+ text =&gt; trust-anchor},
     versions: [+ trust-store-version],
