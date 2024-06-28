@@ -1,6 +1,6 @@
-# TLS Drafts
+# TLS Trust Anchor Negotiation
 
-This is the working area for individual Internet-Drafts.
+This repository contains a pair of draft mechanisms for negotiating certificate trust anchors in TLS. See this informal [explainer](explainer.md) document for a high-level overview.
 
 ## TLS Trust Anchor Identifiers
 
