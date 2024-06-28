@@ -1,6 +1,6 @@
 # TLS Trust Anchor Negotiation
 
-This repository contains a pair of draft mechanisms for negotiating certificate trust anchors in TLS. See this informal [explainer](explainer.md) document for a high-level overview.
+This repository contains a pair of draft mechanisms for negotiating certificate trust anchors in TLS.
 
 ## TLS Trust Anchor Identifiers
 
@@ -16,6 +16,10 @@ This repository contains a pair of draft mechanisms for negotiating certificate 
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr)
 * [Compare Editor's Copy to Individual Draft](https://davidben.github.io/tls-trust-expressions/#go.draft-davidben-tls-trust-expr.diff)
 
+## Additional Materials
+
+* [Explainer](explainer.md)
+* [PKI Transition Strategies](pki-transition-strategies.md)
 
 ## Contributing
 
