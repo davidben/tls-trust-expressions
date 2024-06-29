@@ -5,8 +5,8 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 30 December 2024                                     Google LLC
-                                                            28 June 2024
+Expires: 31 December 2024                                     Google LLC
+                                                            29 June 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 December 2024.
+   This Internet-Draft will expire on 31 December 2024.
 
 Copyright Notice
 
@@ -88,7 +88,8 @@ Table of Contents
      4.3.  Retry Mechanism
    5.  DNS Service Parameter
      5.1.  Syntax
-     5.2.  Client Behavior
+     5.2.  Configuring Services
+     5.3.  Client Behavior
    6.  ACME Extension
    7.  Use Cases
    8.  Privacy Considerations
@@ -480,7 +481,7 @@ Table of Contents
    0x05, 0x81, 0xfd, 0x59, 0x02, 0x01,
    0x05, 0x81, 0xfd, 0x59, 0x02, 0x02,
 
-   ## Configuring Services
+5.2.  Configuring Services
 
    Services SHOULD include the trust anchor identifier for each of their
    available certification paths, in preference order, in the tls-trust-
@@ -492,7 +493,7 @@ Table of Contents
    Services MAY have certification paths without trust anchor
    identifiers, but those paths will not participate in this mechanism.
 
-5.2.  Client Behavior
+5.3.  Client Behavior
 
    When connecting to a service endpoint whose HTTPS or SVCB record
    contains the tls-trust-anchors parameter, the client first computes
@@ -702,9 +703,9 @@ Table of Contents
    [I-D.davidben-tls-trust-expr]
               Benjamin, D., O'Brien, D., and B. Beck, "TLS Trust
               Expressions", Work in Progress, Internet-Draft, draft-
-              davidben-tls-trust-expr-03, 24 May 2024,
+              davidben-tls-trust-expr-04, 28 June 2024,
               <https://datatracker.ietf.org/doc/html/draft-davidben-tls-
-              trust-expr-03>.
+              trust-expr-04>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
