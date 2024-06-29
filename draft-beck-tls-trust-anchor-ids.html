@@ -1031,7 +1031,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Beck, et al.</td>
-<td class="center">Expires 30 December 2024</td>
+<td class="center">Expires 31 December 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1044,12 +1044,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-beck-tls-trust-anchor-ids-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-06-28" class="published">28 June 2024</time>
+<time datetime="2024-06-29" class="published">29 June 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-12-30">30 December 2024</time></dd>
+<dd class="expires"><time datetime="2024-12-31">31 December 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1108,7 +1108,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 30 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 31 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1180,7 +1180,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-syntax" class="internal xref">Syntax</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-client-behavior" class="internal xref">Client Behavior</a></p>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-configuring-services" class="internal xref">Configuring Services</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-client-behavior" class="internal xref">Client Behavior</a></p>
 </li>
             </ul>
 </li>
@@ -1368,7 +1371,7 @@ TrustAnchorIdentifier ::= RELATIVE-OID
         </h3>
 <p id="section-3.2-1">Subscribers are configured with one or more candidate certification paths to present in TLS, in some preference order. This preference order is used when multiple candidate paths are usable for a connection. For example, the subscriber may prefer candidates that minimize message size or have more performant private keys.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.2-2">Each candidate path which participates in this protocol must be provisioned with the trust anchor identifier for its corresponding trust anchor.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-<p id="section-3.2-3">To carry this information, this document defines the <code>trust_anchor_identifier</code> property for a CertificatePropertyList <span><a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-03#section-5" class="relref">Section 5</a> of [<a href="#I-D.davidben-tls-trust-expr" class="cite xref">I-D.davidben-tls-trust-expr</a>]</span>. This <code>data</code> field of the property contains the binary representation of the trust anchor identifier of the certification path’s trust anchor, as described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">To carry this information, this document defines the <code>trust_anchor_identifier</code> property for a CertificatePropertyList <span><a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04#section-5" class="relref">Section 5</a> of [<a href="#I-D.davidben-tls-trust-expr" class="cite xref">I-D.davidben-tls-trust-expr</a>]</span>. This <code>data</code> field of the property contains the binary representation of the trust anchor identifier of the certification path’s trust anchor, as described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.2-4">
 <pre>
 enum {
@@ -1477,19 +1480,25 @@ example.net.  7200  IN SVCB 3 server.example.net. (
 0x05, 0x81, 0xfd, 0x59, 0x02, 0x02,
 </pre><a href="#section-5.1-7" class="pilcrow">¶</a>
 </div>
-<p id="section-5.1-8">## Configuring Services<a href="#section-5.1-8" class="pilcrow">¶</a></p>
-<p id="section-5.1-9">Services SHOULD include the trust anchor identifier for each of their available certification paths, in preference order, in the <code>tls-trust-anchors</code> of their HTTPS or SVCB endpoints. As TLS configuration is updated, services SHOULD update the DNS record to match. The mechanism for this is out of scope for this document, but services are RECOMMENDED to automate this process.<a href="#section-5.1-9" class="pilcrow">¶</a></p>
-<p id="section-5.1-10">Services MAY have certification paths without trust anchor identifiers, but those paths will not participate in this mechanism.<a href="#section-5.1-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="configuring-services">
+<section id="section-5.2">
+        <h3 id="name-configuring-services">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-configuring-services" class="section-name selfRef">Configuring Services</a>
+        </h3>
+<p id="section-5.2-1">Services SHOULD include the trust anchor identifier for each of their available certification paths, in preference order, in the <code>tls-trust-anchors</code> of their HTTPS or SVCB endpoints. As TLS configuration is updated, services SHOULD update the DNS record to match. The mechanism for this is out of scope for this document, but services are RECOMMENDED to automate this process.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">Services MAY have certification paths without trust anchor identifiers, but those paths will not participate in this mechanism.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="client-behavior">
-<section id="section-5.2">
+<section id="section-5.3">
         <h3 id="name-client-behavior">
-<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-client-behavior" class="section-name selfRef">Client Behavior</a>
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-client-behavior" class="section-name selfRef">Client Behavior</a>
         </h3>
-<p id="section-5.2-1">When connecting to a service endpoint whose HTTPS or SVCB record contains the <code>tls-trust-anchors</code> parameter, the client first computes the intersection between its configured trust anchors and the server’s provided list. If this intersection is non-empty, the client MAY use it to determine the <code>trust_anchors</code> extension in the ClientHello (see <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a>).<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<p id="section-5.2-2">If doing so, the client MAY send a subset of this intersection to meet size constraints, but SHOULD offer multiple options. This reduces the chance of a reconnection if, for example, the first option in the intersection uses a signature algorithm that the client doesn’t support, or if the TLS server and DNS configuration are out of sync.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
-<p id="section-5.2-3">Although this service parameter is intended to reduce trust anchor mismatches, mismatches may still occur in some scenarios. Clients and servers MUST continue to implement the provisions described in <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a>, even when using this service parameter.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.3-1">When connecting to a service endpoint whose HTTPS or SVCB record contains the <code>tls-trust-anchors</code> parameter, the client first computes the intersection between its configured trust anchors and the server’s provided list. If this intersection is non-empty, the client MAY use it to determine the <code>trust_anchors</code> extension in the ClientHello (see <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a>).<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-2">If doing so, the client MAY send a subset of this intersection to meet size constraints, but SHOULD offer multiple options. This reduces the chance of a reconnection if, for example, the first option in the intersection uses a signature algorithm that the client doesn’t support, or if the TLS server and DNS configuration are out of sync.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
+<p id="section-5.3-3">Although this service parameter is intended to reduce trust anchor mismatches, mismatches may still occur in some scenarios. Clients and servers MUST continue to implement the provisions described in <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a>, even when using this service parameter.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1499,7 +1508,7 @@ example.net.  7200  IN SVCB 3 server.example.net. (
       <h2 id="name-acme-extension">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-acme-extension" class="section-name selfRef">ACME Extension</a>
       </h2>
-<p id="section-6-1">We reuse the ACME extension defined in <span><a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-03#section-7" class="relref">Section 7</a> of [<a href="#I-D.davidben-tls-trust-expr" class="cite xref">I-D.davidben-tls-trust-expr</a>]</span>, except that each CertificatePropertyList will contain a <code>trust_anchor_identifier</code> property.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">We reuse the ACME extension defined in <span><a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04#section-7" class="relref">Section 7</a> of [<a href="#I-D.davidben-tls-trust-expr" class="cite xref">I-D.davidben-tls-trust-expr</a>]</span>, except that each CertificatePropertyList will contain a <code>trust_anchor_identifier</code> property.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">[[TODO: Move this over from the trust expressions draft, if this ends up being the canonical one.]]<a href="#section-6-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1508,7 +1517,7 @@ example.net.  7200  IN SVCB 3 server.example.net. (
       <h2 id="name-use-cases">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-use-cases" class="section-name selfRef">Use Cases</a>
       </h2>
-<p id="section-7-1">See <span><a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-03#section-9" class="relref">Section 9</a> of [<a href="#I-D.davidben-tls-trust-expr" class="cite xref">I-D.davidben-tls-trust-expr</a>]</span>.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">See <span><a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04#section-9" class="relref">Section 9</a> of [<a href="#I-D.davidben-tls-trust-expr" class="cite xref">I-D.davidben-tls-trust-expr</a>]</span>.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <p id="section-7-2">[[TODO: Move the text here if this document ends up being the canonical one.]]<a href="#section-7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1646,7 +1655,7 @@ example.net.  7200  IN SVCB 3 server.example.net. (
 <dl class="references">
 <dt id="I-D.davidben-tls-trust-expr">[I-D.davidben-tls-trust-expr]</dt>
         <dd>
-<span class="refAuthor">Benjamin, D.</span>, <span class="refAuthor">O'Brien, D.</span>, and <span class="refAuthor">B. Beck</span>, <span class="refTitle">"TLS Trust Expressions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-davidben-tls-trust-expr-03</span>, <time datetime="2024-05-24" class="refDate">24 May 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-03">https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-03</a>&gt;</span>. </dd>
+<span class="refAuthor">Benjamin, D.</span>, <span class="refAuthor">O'Brien, D.</span>, and <span class="refAuthor">B. Beck</span>, <span class="refTitle">"TLS Trust Expressions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-davidben-tls-trust-expr-04</span>, <time datetime="2024-06-28" class="refDate">28 June 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04">https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
