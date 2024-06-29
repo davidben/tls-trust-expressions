@@ -258,6 +258,7 @@ The wire format of the SvcParamValue would be the 17 octets below. In the exampl
 0x05, 0x81, 0xfd, 0x59, 0x02, 0x01,
 0x05, 0x81, 0xfd, 0x59, 0x02, 0x02,
 ~~~
+
 ## Configuring Services
 
 Services SHOULD include the trust anchor identifier for each of their available certification paths, in preference order, in the `tls-trust-anchors` of their HTTPS or SVCB endpoints. As TLS configuration is updated, services SHOULD update the DNS record to match. The mechanism for this is out of scope for this document, but services are RECOMMENDED to automate this process.
