@@ -131,11 +131,12 @@ Certification path:
 
 
 # Trust Anchor Identifiers {#trust-anchor-ids}
+
 This section defines trust anchor identifiers, which are short, unique identifiers for a trust anchor. To simplify allocation, these identifiers are defined with object identifiers (OIDs) {{X680}} and IANA-registered Private Enterprise Numbers (PENs) {{!RFC9371}}:
 
 A trust anchor identifier is an OID under the OID arc of some PEN. For example, an organization with PEN 32473 might define a trust anchor identifier with the OID `1.3.6.1.4.1.32473.1`.
 
-Trust anchor identifiers have ASCII text representations, for use in text-based formats, and binary representations, for use in a binary protocol such as TLS. For compactness, both representations use relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. The text representation is the relative object identifier in dotted decimal notation. The above example’s text representation would be `32473.1`. The binary representation consists of  the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of {{X690}}. For example, the binary representation of `32473.1` would be the four-octet sequence `{0x81, 0xfd, 0x59, 0x01}`.
+Trust anchor identifiers have ASCII text representations, for use in text-based formats, and binary representations, for use in a binary protocol such as TLS. For compactness, both representations use relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. The text representation is the relative object identifier in dotted decimal notation. The above example’s text representation would be `32473.1`. The binary representation consists of the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of {{X690}}. Note this omits the tag and length portion of the encoding. For example, the binary representation of `32473.1` would be the four-octet sequence `{0x81, 0xfd, 0x59, 0x01}`.
 
 ## Relying Party Configuration
 

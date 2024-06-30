@@ -272,7 +272,7 @@ When updating a trust store manifest, root programs append a new object to the `
 
 To simplify allocation, trust store identifiers use object identifiers (OIDs) {{X680}} based on Private Enterprise Numbers (PENs) {{!RFC9371}}. An organization may define a trust store by allocating some OID under its PEN. For example, an organization with PEN 32473 might allocate a trust store identified by the OID `1.3.6.1.4.1.32473.1`.
 
-For compactness, this document uses relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. In the text form, these are written in dotted decimal notation, such as `32473.1`. In a binary protocol, such as TLS, this is encoded as the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of {{X690}}. For example, the binary encoding of `32473.1` would be the four-octet sequence `{0x81, 0xfd, 0x59, 0x01}`.
+For compactness, this document uses relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. In the text form, these are written in dotted decimal notation, such as `32473.1`. In a binary protocol, such as TLS, this is encoded as the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of {{X690}}. Note this omits the tag and length portion of the encoding. For example, the binary encoding of `32473.1` would be the four-octet sequence `{0x81, 0xfd, 0x59, 0x01}`.
 
 ## Trust Store Entry Expiration {#expiration}
 
