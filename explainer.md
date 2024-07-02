@@ -205,7 +205,7 @@ As above, such a client decision constrains how the server evolves over time. As
 
 Trust anchor negotiation relieves this conflict. The server can select a certificate from the pinned CA with the pinning client, and another CA with newer clients. The server must decide whether to continue to obtaining certificates from pinned CA, or drop support for those pinning clients, but negotiation decouples this decision from the newer clients.
 
-For this to work, the pinning client must accurately negotiate its reduced trust anchor list. TLS Trust Expressions is not as well-suited for this scenario, as it cannot as efficiently represent arbitrary trust store subsets. However, the same supporting infrastructure can be used with the existing `certificate_authorities` extension. While size often makes `certificate_authorities` impractical, a pinning client's reduced trust anchor list is small. Alternatively, the TLS Trust Anchor Identifiers option can handle this case efficiently than `certificate_authorities`.
+For this to work, the pinning client must accurately negotiate its reduced trust anchor list. TLS Trust Anchor Identifiers can efficiently handle this. TLS Trust Expressions is not as well-suited, as it cannot as efficiently represent arbitrary trust store subsets. However, the same supporting server infrastructure can be used with the existing `certificate_authorities` extension. While size often makes `certificate_authorities` impractical, a pinning client's reduced trust anchor list is small.
 
 ## Server Software Changes
 
