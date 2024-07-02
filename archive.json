@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-30T01:39:29.759651+00:00",
+  "timestamp": "2024-07-02T01:33:29.516427+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -1750,6 +1750,35 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 37,
+      "id": "PR_kwDOKigz-s5z_mip",
+      "title": "Clarify that we omit the tag and length",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/37",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "X.690 unambiguous defines the \"contents octets\", but people probably don't have X.690 memorized, so add an extra sentence to further clarify it. Thanks to Russ Housley for pointing out this was confusing.",
+      "createdAt": "2024-06-30T19:34:20Z",
+      "updatedAt": "2024-06-30T19:34:20Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "d060854042871eec9f85dc9af92352b09dc37b6b",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "clarify-contents-octets",
+      "headRefOid": "40c0e099f302269870e0893272e84ba82d476d11",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
