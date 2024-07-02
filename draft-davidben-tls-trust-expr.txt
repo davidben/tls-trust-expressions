@@ -385,9 +385,9 @@ Table of Contents
    the text form, these are written in dotted decimal notation, such as
    32473.1.  In a binary protocol, such as TLS, this is encoded as the
    contents octets of the relative object identifier's DER encoding, as
-   described in Section 8.20 of [X690].  For example, the binary
-   encoding of 32473.1 would be the four-octet sequence {0x81, 0xfd,
-   0x59, 0x01}.
+   described in Section 8.20 of [X690].  Note this omits the tag and
+   length portion of the encoding.  For example, the binary encoding of
+   32473.1 would be the four-octet sequence {0x81, 0xfd, 0x59, 0x01}.
 
 4.2.  Trust Store Entry Expiration
 

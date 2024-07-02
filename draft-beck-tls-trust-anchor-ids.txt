@@ -230,8 +230,9 @@ Table of Contents
    object identifier in dotted decimal notation.  The above example’s
    text representation would be 32473.1.  The binary representation
    consists of the contents octets of the relative object identifier's
-   DER encoding, as described in Section 8.20 of [X690].  For example,
-   the binary representation of 32473.1 would be the four-octet sequence
+   DER encoding, as described in Section 8.20 of [X690].  Note this
+   omits the tag and length portion of the encoding.  For example, the
+   binary representation of 32473.1 would be the four-octet sequence
    {0x81, 0xfd, 0x59, 0x01}.
 
 3.1.  Relying Party Configuration
