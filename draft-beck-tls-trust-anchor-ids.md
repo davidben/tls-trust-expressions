@@ -208,7 +208,7 @@ If the ClientHello or CertificateRequest contains a `trust_anchors` extension, t
 
 If the ClientHello or CertificateRequest contains both `trust_anchors` and `certificate_authorities`, certification paths that satisfy either extension’s criteria may be used. This additionally applies to future extensions which play a similar role.
 
-If no certification paths satisfy either extension, the subscriber MAY return a `handshake_failure` alert, or choose among fallback certification paths without considering `trust_anchors` or  `certification_authorities`. See {{retry-mechanism}} for additional guidance on selecting a fallback when the ClientHello contains `trust_anchors`.
+If no certification paths satisfy either extension, the subscriber MAY return a `handshake_failure` alert, or choose among fallback certification paths without considering `trust_anchors` or `certification_authorities`. See {{retry-mechanism}} for additional guidance on selecting a fallback when the ClientHello contains `trust_anchors`.
 
 Sending a fallback allows the subscriber to retain support for relying parties that do not implement any form of trust anchor negotiation. In this case, the subscriber must find a sufficiently ubiquitous trust anchor, if one exists. However, only those relying parties need to be considered in this ubiquity determination. Updated relying parties may continue to evolve without restricting fallback certificate selection.
 
@@ -301,15 +301,15 @@ The negotiation mechanism described in this document is analogous to the `certif
 
 The privacy implications of this are determined by how a relying party uses this extension. Trust anchors supported by a relying party may be divided into three categories:
 
-1. Trust anchors whose identifiers the relying party sends unconditionally, i.e. not in response to the server’s HTTPS/SVCB record, trust anchor list in EncryptedExtensions, etc.
+1. Trust anchors whose identifiers the relying party sends *unconditionally*, i.e. not in response to the server’s HTTPS/SVCB record, trust anchor list in EncryptedExtensions, etc.
 
-2. Trust anchors whose identifiers the relying party sends if the server offers them. For example, the relying party may indicate support for a trust anchor if its identifier is listed in the server’s HTTPS/SVCB record or trust anchor list in EncryptedExtensions.
+2. Trust anchors whose identifiers the relying party sends *conditionally*, i.e. only if the server offers them. For example, the relying party may indicate support for a trust anchor if its identifier is listed in the server’s HTTPS/SVCB record or trust anchor list in EncryptedExtensions.
 
-3. Trust anchors that the relying party accepts but will never send a corresponding trust anchor identifier  in `trust_anchors`. These are trust anchors which do not participate in this mechanism.
+3. Trust anchors whose identifiers the relying party never sends, but still trusts. These are trust anchors which do not participate in this mechanism.
 
 Each of these categories carries a different fingerprinting exposure:
 
-Trust anchor identifiers sent unconditionally can be observed passively. Thus, relying parties SHOULD NOT unconditionally advertise trust anchor lists which are unique to an individual user. Rather, such lists  SHOULD be either empty or computed only from the trust anchors common to the relying party's anonymity set ({{Section 3.3 of !RFC6973}}).
+Trust anchor identifiers sent unconditionally can be observed passively. Thus, relying parties SHOULD NOT unconditionally advertise trust anchor lists which are unique to an individual user. Rather, such lists SHOULD be either empty or computed only from the trust anchors common to the relying party's anonymity set ({{Section 3.3 of !RFC6973}}).
 
 Trust anchor identifiers sent in response to the subscriber can only be observed actively. That is, the subscriber could vary its list and observe how the client responds, in order to probe for the client’s trust anchor list.
 
