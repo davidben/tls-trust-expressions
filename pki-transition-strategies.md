@@ -12,6 +12,8 @@ This document discusses some of these changes, and different strategies for the 
 
 Difficulties in meeting these goals, e.g. if some PKI change prevents a server from simultaneously supporting old and new clients, will result in delays and pressure against the PKI change. When this happens, user security usually pays the price, so it is important for PKI transitions to proceed smoothly.
 
+When this document refers to "trust anchor negotiation" it means either of [TLS Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html) or [TLS Trust Expressions](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html). While they differ in approach, both mechanisms aim to allow the server to select certificates based on the client's trusted CAs.
+
 
 ## Key Rotation
 
@@ -57,18 +59,18 @@ Second, without named sets analogous to Trust Expressions’ named trust stores,
 Finally, older clients would not have an updated intermediate set and would need to be served the cross-sign. These older clients incur extra bandwidth cost. While these older clients are likely rarer, they are also likely weaker, so some deployments may prefer another tradeoff.
 
 
-### Trust Expressions with Cross-Sign
+### Trust Anchor Negotation with Cross-Sign
 
-Trust expressions, with its ACME extensions, can directly support rotation. The ACME server provides two chains, one with the cross-sign and one without the cross-sign, for TLS clients that trust the old root and the new root, respectively. If the trust expression matches the shorter chain, the server will send it. Otherwise, it will send the longer chain.
+The two trust anchor negotiation drafts, with the ACME extension, can directly support rotation. The ACME server provides two chains, one with the cross-sign and one without the cross-sign, for TLS clients that trust the old root and the new root, respectively. If the client supports the shorter chain, the server will send it. Otherwise, it will send the longer chain.
 
 The multiple certificate provisioning mechanism on the ACME side ensures this can proceed automatically, without manual configuration by the server operator.
 
-As above, older clients would need to be served the cross-sign and incur extra bandwidth costs. While these older clients are likely rarer, they are also likely weaker, so some deployments may prefer another tradeoff. However, trust expressions enable deployments to navigate this tradeoff, as discussed below.
+As above, older clients would need to be served the cross-sign and incur extra bandwidth costs. While these older clients are likely rarer, they are also likely weaker, so some deployments may prefer another tradeoff. However, trust anchor negotiation enables deployments to navigate this tradeoff, as discussed below.
 
 
-### Trust Expressions with Parallel Issuance
+### Trust Anchor Negotation with Parallel Issuance
 
-Trust expressions enable a second deployment strategy. Rather than cross-signing the new key with the old one, the CA could operate both roots in parallel. Whenever a subscriber requests a certificate, it issues two parallel chains. As above, the ACME extensions automate this: the CA simply provides both chains, and server software automatically selects between the two.
+Trust anchor negotiation enable a second deployment strategy. Rather than cross-signing the new key with the old one, the CA could operate both roots in parallel. Whenever a subscriber requests a certificate, it issues two parallel chains. As above, the ACME extensions automate this: the CA simply provides both chains, and server software automatically selects between the two.
 
 This is a trade-off between CA operational burden and bandwidth. Parallel issuance means the CA must maintain two instances of issuing infrastructure. But, by doing so, they keep the chains for both the old and new roots small.
 
@@ -110,9 +112,9 @@ First, the entire intermediate set must be pushed and stored to each client. The
 Second, without named sets analogous to Trust Expressions’ named trust stores, this scheme adds coordination delay before the new CA is useful. Until the global intermediate set mints a new version, there is no size optimization and the new CA cannot practically be used.
 
 
-### Trust Expressions with Cross-Sign
+### Trust Anchor Negotiation with Cross-Sign
 
-Trust expressions, and the ACME extensions, can directly support intermediate elision. The ACME server provides two chains, one with the cross-sign and one without the cross-sign, for TLS clients that trust the old root and the new root, respectively. If the trust expression matches the shorter chain, the server will send it. Otherwise, it will send the longer chain.
+The two trust anchor negotiation drafts, with the ACME extension, can directly support intermediate elision. The ACME server provides two chains, one with the cross-sign and one without the cross-sign, for TLS clients that trust the old root and the new root, respectively. If the client supports the shorter chain, the server will send it. Otherwise, it will send the longer chain.
 
 The multiple certificate provisioning mechanism on the ACME side ensures this can proceed automatically, without manual configuration by the server operator.
 
@@ -126,12 +128,12 @@ None of the above address the organizational challenges with cross-CA signatures
 * [Abridged certificates](https://datatracker.ietf.org/doc/draft-ietf-tls-cert-abridge/) do not address the problem. As of writing, [draft-01](https://www.ietf.org/archive/id/draft-ietf-tls-cert-abridge-01.html) is a point-in-time snapshot and advantages incumbents in the PKI, and thus discourages this and other PKI transitions.
 * A hypothetical alternate intermediate compression scheme would have several costs. The set now contains cross-signs scaling with the number of root programs. Moreover, the older clients, who will not have the updated intermediate set, must be sent all cross-signs, not just the one applicable to them. This cost is prohibitively high in a post-quantum PKI.
 
-As above, a trust expressions version of this solution does not scale with the number of cross-signs and has no significant fan-out costs. By negotiating the actual trust anchors, the server can send only the particular cross-sign needed, or no cross-sign at all if none is needed. Clients that directly trust the new CA do not need to retain a copy of any cross-sign locally.
+As above, trust anchor negotiation enables a solution whose costs do not scale with the number of cross-signs and has no significant fan-out costs. By negotiating the actual trust anchors, the server can send only the particular cross-sign needed, or no cross-sign at all if none is needed. Clients that directly trust the new CA do not need to retain a copy of any cross-sign locally.
 
 
-### Trust Expressions with Parallel Issuance
+### Trust Anchor Negotiation with Parallel Issuance
 
-As with the root rotation scenario above, trust expressions also enable a parallel issuance strategy. Instead of cross-signs, with their organizational risks, the server can simply obtain certificates from both the new and an existing CA, with trust expressions automatically selecting which to use.
+As with the root rotation scenario above, trust anchor negotiation also enables a parallel issuance strategy. Instead of cross-signs, with their organizational risks, the server can simply obtain certificates from both the new and an existing CA, with the TLS software automatically selecting which to use.
 
 This could either be done automatically, if the server’s ACME server provides both types of certificates, or with manual configuration by the server operator, by running ACME against both URLs. The first option has lower organizational risk than cross-signing, as providing an additional certificate via ACME does not make one responsible for issuance by that CA. The second option, while more work, is the _only_ solution is within reach for a server operator acting unilaterally.
 
@@ -191,19 +193,19 @@ Also as in the above discussions, this cross-sign has a significant bandwidth co
 * A hypothetical alternate intermediate compression scheme would address it, but it must ship the unused cross-sign to modern clients that do not trust the distrusted CA. Every distrust which uses this transition strategy grows the set.
 * If using a global versioning for the hypothetical compression scheme, the cross-sign is not compressible until the global intermediate set makes a new revision. **This adds coordination delay to a security incident response, and leaves users at risk for longer.**
 
-Trust expressions instead directly negotiate supported trust anchors, so the server operator can decide whether to include the cross-sign or not. However, trust expressions enable a more direct solution, which avoids the organizational challenges with the cross-sign.
+Trust anchor negotiation allows the server software to decide whether to include the cross-sign. However, it also enables a more direct solution, which avoids the organizational challenges with the cross-sign.
 
 
-### Trust Expressions with Parallel Issuance
+### Trust Anchor Negotiation with Parallel Issuance
 
-Instead of limiting to the distrusted CA’s chosen successor, the server operator can simply obtain certificates from both the distrusted CA and another CA. Trust expressions allow the server software to direct the right certificate to each client, and thus the server operator can react to the client policy change with minimal added deployment risk.
+Instead of limiting to the distrusted CA’s chosen successor, the server operator can simply obtain certificates from both the distrusted CA and another CA. Trust anchor negotiation allows the server software to direct the right certificate to each client, and thus the server operator can react to the client policy change with minimal added deployment risk.
 
-From there, the server operator may asynchronously monitor usage of the old certificate and retire it when needed. Or it may continue to serve it indefinitely if needed. Trust expressions decouple this decision from the immediate security incident response, reducing user security risk faster.
+From there, the server operator may asynchronously monitor usage of the old certificate and retire it when needed. Or it may continue to serve it indefinitely if needed. Trust anchor negotiation decouples this decision from the immediate security incident response, reducing user security risk faster.
 
 
 ### Backup CAs
 
-The server operator can obtain certificates from multiple CAs ahead of time, for redundancy, further reducing their availability risk during a client’s security incident response. With trust expressions, the server software will then automatically react to changes in client requirements and serve the correct one, with no manual configuration change by the server operator.
+The server operator can obtain certificates from multiple CAs ahead of time, for redundancy, further reducing their availability risk during a client’s security incident response. With trust anchor negotiation, the server software will then automatically react to changes in client requirements and serve the correct one, with no manual configuration change by the server operator.
 
 
 ## Long-Lived Offline Keys
@@ -228,16 +230,16 @@ As above, an alternate intermediate compression scheme, incorporating something 
 However, in an intermediate compression scheme, clients must carry the entire intermediate set, even CAs they do not trust. Even if an intermediate appears unreachable from the client’s trusted CAs, it may become reachable with a cross-sign.
 
 
-### Trust Expressions with Intermediate Certificate
+### Trust Anchor Negotiation with Intermediate Certificate
 
-Pre-shipping a trusted intermediate with a client is equivalent to simply treating the intermediate as a trust anchor, with some time bound. Thus trust expressions can be used to implement intermediate compression with no additional mechanism.
+Pre-shipping a trusted intermediate with a client is equivalent to simply treating the intermediate as a trust anchor, with some time bound. Trust anchor negotiation can then be used to implement intermediate compression with no additional mechanism. (See the [explainer](explainer.md#minimizing-server-operator-burden) for a discussion on why this is valuable.)
 
 CAs use the ACME extension to ship two chains to the TLS server, one with the intermediate, rooted at the long-lived key, and one without the intermediate, rooted at the short-lived key. Clients trust both the long-lived key and the most recent corresponding short-lived key. If the client’s trust anchors are up-to-date, the server will use the shorter chain. If the client’s trust anchors become out-of-date, the server will automatically fallback to the longer chain, until the client is updated.
 
 
-### Trust Expressions with Parallel Issuance
+### Trust Anchor Negotiation with Parallel Issuance
 
-As in the other scenarios, trust expressions enable a parallel issuance alternative. The CA maintains two parallel signing infrastructures:
+As in the other scenarios, trust anchor negotiation enables a parallel issuance alternative. The CA maintains two parallel signing infrastructures:
 
 1. An offline, long-lived root A1, which cross-signs an online, short-lived intermediate A2
 2. An online, short-lived root B1, separate from A1 and A2

@@ -1,6 +1,8 @@
-# TLS Trust Expressions
+# TLS Trust Anchor Negotiation
 
-This document is a high-level overview and [explainer](https://tag.w3.org/explainers/) for [TLS Trust Expressions](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html).
+This document is a high-level overview and [explainer](https://tag.w3.org/explainers/) for [TLS Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html) and [TLS Trust Expressions](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html). While they differ in approach, both mechanisms aim to allow the server to select certificates based on the client's trusted CAs. We refer to overall problem being solved as "trust anchor negotiation".
+
+The two drafts apply to both TLS server certificates, where the server authenticates to the client, and TLS client certificates, where the client authenticates to the server. The two cases use similar protocol mechanisms, but their PKIs are often structured differently. As most of the motivating scenarios are drawn from server certificate deployments, this explainer focuses on those roles.
 
 ## Authors
 
@@ -25,7 +27,7 @@ This constraint imposes costs on the ecosystem as PKIs evolve over time. The old
 
 * When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.
 
-TLS trust expressions aims to remove this constraint, by enabling a *multi-certificate deployment model*. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for different relying parties, including older and newer ones.
+The two drafts aim to remove this constraint, by enabling a *multi-certificate deployment model*. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for different relying parties, including older and newer ones.
 
 There are three parts to understanding this proposal:
 
@@ -37,7 +39,7 @@ Together, these aim to support a more flexible and robust Public Key Infrastruct
 
 ## Goals
 
-At a high level, the goal for TLS Trust Expressions is to enable a multi-certificate deployment model for TLS, particularly as used in HTTPS on the web.
+At a high level, the goal for TLS trust anchor negotiation is to enable a multi-certificate deployment model for TLS, particularly as used in HTTPS on the web.
 
 Our goals in doing so are:
 
@@ -146,13 +148,12 @@ This means:
 
 ## Overview
 
-See the [draft specification](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-overview) for an overview of the protocol.
+The two protocols have very different approaches, so see the [Trust Expressions](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-overview) and [Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html#name-introduction) drafts for overviews of the two protocols.
 
 ## Key Scenarios
 
-The following section is an overview of scenarios where TLS Trust Expressions
-are helpful. For more details, see the
-[draft specification](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-use-cases).
+The following section is an overview of scenarios where trust anchor negotiation is helpful. For more details, see the
+[draft specification](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-use-cases) and [this more detailed discussion](pki-transition-strategies.md).
 
 ### Key Rotation
 
@@ -196,17 +197,31 @@ A single-certificate deployment model forces subscribers to find a single certif
 
 A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.
 
+### Public Key Pinning
+
+To reduce the risk of attacks from misissued certificates, TLS clients sometimes employ [public key pinning](https://www.rfc-editor.org/rfc/rfc7469.html). This enforces that one of some set of public keys appear in the final certificate path. This effectively reduces a client's trust anchor list to a subset.
+
+As above, such a client decision constrains how the server evolves over time. As other clients in the PKI evolve, the pinning clients limit the server to satisfy both the pinning constraint and newer constraints in the PKI. This can lead to conflicts if, for example, the pinned CA is distrusted by a newer client. The server is then forced to either break the pinning clients, or break the newer ones.
+
+Trust anchor negotiation relieves this conflict. The server can select a certificate from the pinned CA with the pinning client, and another CA with newer clients. The server must decide whether to continue to obtaining certificates from pinned CA, or drop support for those pinning clients, but negotiation decouples this decision from the newer clients.
+
+For this to work, the pinning client must accurately negotiate its reduced trust anchor list. TLS Trust Anchor Identifiers can efficiently handle this. TLS Trust Expressions is not as well-suited, as it cannot as efficiently represent arbitrary trust store subsets. However, the same supporting server infrastructure can be used with the existing `certificate_authorities` extension. While size often makes `certificate_authorities` impractical, a pinning client's reduced trust anchor list is small.
+
 ## Server Software Changes
 
-Server software will need to be modified to support Trust Expressions. We expect this to look something like:
+Server software will need to be modified to support Trust Expressions, or Trust Anchor Identifiers. We expect this to look something like:
 
 Servers are configured to obtain multiple certificate paths with associated metadata for clients that do present a trust expression, possibly from more than one CA. The CA maintains relationships with root programs, so it can populate this metadata. Ideally, these come from some form of automated certificate distribution mechanism, such as ACME, so that the server operator only needs to specify, e.g., an ACME URL and the rest occurs automatically.
-With a collection of certificate paths and associated metadata, the server software automatically selects one to send. It matches the client’s trust expressions with the metadata to determine if the client trusts it, along with other TLS criteria such as ECDSA vs RSA. If there are multiple matches, server software chooses based on their own criteria (such as the size of matching path, performance characteristics, etc.).
-To handle the cases in which a trust expression is unrecognised or none is presented, servers should behave as they do today, either by serving a single certificate to all clients, or relying on fingerprinting signals to choose among a set of credentials (e.g. ECDSA vs. RSA based on inferred client support). The existing behaviour remains unchanged.
+
+Trust Anchor Identifiers adds an additional server component, which is to [publish some information in the DNS](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html#name-dns-service-parameter). While the protocol will function without it, the DNS mechanism enables optimal performance. This would ideally also be automated, e.g. as in [draft-ietf-tls-wkech](https://datatracker.ietf.org/doc/draft-ietf-tls-wkech/).
+
+With a collection of candidate certificate paths and associated metadata, the server software automatically selects one to send. For each candidate, the software matches the ClientHello message against the metadata to determine if the client trusts it, along with other TLS criteria such as ECDSA vs RSA. If there are multiple matches, server software chooses based on its own criteria (such as the size of matching path, performance characteristics, etc.).
+
+If the negotiation mechanism is either not supported or did not match a candidate, servers should behave as they do today, either by serving a single certificate to all clients, or relying on fingerprinting signals to choose among a set of credentials (e.g. ECDSA vs. RSA based on inferred client support). The existing behaviour remains unchanged.
 
 ## Certificate Provisioning
 
-The server software changes above take, as input, a collection of certificate paths with associated metadata. In principle, these may come from any source, even manual configuration. However, Trust Expressions is designed with automation in mind, with the aim of reducing server operator burden.
+The server software changes above take, as input, a collection of certificate paths with associated metadata. In principle, these may come from any source, even manual configuration. However, Trust Expressions and Trust Anchor Identifiers are designed with automation in mind, with the aim of reducing server operator burden.
 
 When using an automated issuance protocol, such as ACME, we intend that the issuance protocol be extended so that a single ACME endpoint can return *multiple* certificate paths for the server's requested key and identity. As CAs already maintain relationships with root programs, they are well-positioned to update the kinds of certificates they provision in response to PKI changes. Automation allows subscribers to benefit from this without manual reconfiguration.
 
@@ -284,8 +299,8 @@ unreliable and usually requires writing custom service-specific logic. It is
 only viable for large server operators, who can continually update their
 heuristics based on what they observe in the ecosystem.
 
-TLS Trust Expressions avoids this ambiguity, and thus can be evaluated
-automatically in TLS software.
+TLS Trust Expressions and TLS Trust Anchor Identifiers each avoid this
+ambiguity, and thus can be evaluated automatically in TLS software.
 
 ### Client-specific DNS Names
 
@@ -343,7 +358,8 @@ Additionally, such a solution would also still require most of the machinery in
 this draft, so that server software can be correctly configured with
 certificates across different generations of trust store. Populations which
 *are* sufficiently coordinated for a global version number can simply use a
-shared trust store with TLS trust expressions.
+shared trust store with TLS trust expressions, or configure same trust anchors
+with TLS trust anchor identifiers.
 
 ### Signature Algorithm Negotiation
 
