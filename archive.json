@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-02T01:33:29.516427+00:00",
+  "timestamp": "2024-07-04T01:33:27.551948+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -1756,7 +1756,7 @@
       "id": "PR_kwDOKigz-s5z_mip",
       "title": "Clarify that we omit the tag and length",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/37",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -1766,13 +1766,136 @@
       "labels": [],
       "body": "X.690 unambiguous defines the \"contents octets\", but people probably don't have X.690 memorized, so add an extra sentence to further clarify it. Thanks to Russ Housley for pointing out this was confusing.",
       "createdAt": "2024-06-30T19:34:20Z",
-      "updatedAt": "2024-06-30T19:34:20Z",
+      "updatedAt": "2024-07-02T21:29:15Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "d060854042871eec9f85dc9af92352b09dc37b6b",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "clarify-contents-octets",
       "headRefOid": "40c0e099f302269870e0893272e84ba82d476d11",
+      "closedAt": "2024-07-02T21:29:11Z",
+      "mergedAt": "2024-07-02T21:29:11Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "fe7adb6f0fe3a23ef26e93a2eb8b6b9874dc52bf"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6AadLi",
+          "commit": {
+            "abbreviatedOid": "40c0e09"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-02T17:09:12Z",
+          "updatedAt": "2024-07-02T17:09:12Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "id": "PR_kwDOKigz-s50OZe4",
+      "title": "Update the explainer text to cover both drafts",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/38",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Since most of this applies equally to both, just switch to discussing \"trust anchor negotiation\" as a general problem space. Generalizing it also lets us talk about the interaction with pinning.",
+      "createdAt": "2024-07-02T16:54:32Z",
+      "updatedAt": "2024-07-02T17:29:51Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "d060854042871eec9f85dc9af92352b09dc37b6b",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "explainer-both",
+      "headRefOid": "5f347fd4a03be8b279e7ecaf952d2572a6220cf8",
+      "closedAt": "2024-07-02T17:29:49Z",
+      "mergedAt": "2024-07-02T17:29:49Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "6f407031d56ce84177de9ab4b557d2635d71c1e5"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6AaYh7",
+          "commit": {
+            "abbreviatedOid": "30575c0"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-02T17:00:03Z",
+          "updatedAt": "2024-07-02T17:02:52Z",
+          "comments": [
+            {
+              "originalPosition": 58,
+              "body": "handle this case more efficiently",
+              "createdAt": "2024-07-02T17:00:04Z",
+              "updatedAt": "2024-07-02T17:02:52Z"
+            },
+            {
+              "originalPosition": 58,
+              "body": "and perhaps reword \"the TLS Trust Anchor Identifiers option\" as just TLS Trust Anchor Identifiers (to mimic how you use TLS Trust Expressions)",
+              "createdAt": "2024-07-02T17:01:32Z",
+              "updatedAt": "2024-07-02T17:02:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6AamLr",
+          "commit": {
+            "abbreviatedOid": "30575c0"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-07-02T17:27:49Z",
+          "updatedAt": "2024-07-02T17:27:49Z",
+          "comments": [
+            {
+              "originalPosition": 58,
+              "body": "Rephrased a bit. Put the TAI option first, which seemed more natural anyway.",
+              "createdAt": "2024-07-02T17:27:49Z",
+              "updatedAt": "2024-07-02T17:27:49Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 39,
+      "id": "PR_kwDOKigz-s50P8Pv",
+      "title": "Slightly tweak Privacy Considerations",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/39",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Using a parallel wording between all three cases seems clearer. Also emphasize \"unconditionally\" and \"conditionally\" since we're basically defining terms.\r\n\r\nAlso fix a few places where double spaces snuck in from the Markdown export.",
+      "createdAt": "2024-07-02T21:11:59Z",
+      "updatedAt": "2024-07-02T21:11:59Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "6f407031d56ce84177de9ab4b557d2635d71c1e5",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "privacy-considerations-editorial",
+      "headRefOid": "c975240c47f4a8b85e2de51d9aa6c80c81516523",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
