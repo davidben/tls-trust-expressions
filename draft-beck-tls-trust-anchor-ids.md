@@ -134,15 +134,21 @@ Certification path:
 
 This section defines trust anchor identifiers, which are short, unique identifiers for a trust anchor. To simplify allocation, these identifiers are defined with object identifiers (OIDs) {{X680}} and IANA-registered Private Enterprise Numbers (PENs) {{!RFC9371}}:
 
-A trust anchor identifier is an OID under the OID arc of some PEN. For example, an organization with PEN 32473 might define a trust anchor identifier with the OID `1.3.6.1.4.1.32473.1`.
+A trust anchor identifier is defined with a OID under the OID arc of some PEN. For compactness, they are represented as relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. For example, an organization with PEN 32473 might define a trust anchor identifier with the OID `1.3.6.1.4.1.32473.1`. As a relative object identifier, it would be the OID `32473.1`.
 
-Trust anchor identifiers have ASCII text representations, for use in text-based formats, and binary representations, for use in a binary protocol such as TLS. For compactness, both representations use relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. The text representation is the relative object identifier in dotted decimal notation. The above example’s text representation would be `32473.1`. The binary representation consists of the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of {{X690}}. Note this omits the tag and length portion of the encoding. For example, the binary representation of `32473.1` would be the four-octet sequence `{0x81, 0xfd, 0x59, 0x01}`.
+Depending on the protocol, trust anchor identifiers may be represented in one of three ways:
+
+* For use in ASN.1-based protocols, a trust anchor identifier's ASN.1 representation is the relative object identifier described above. This may be encoded in DER {{X690}}, or some other ASN.1 encoding. The example identifier's DER encoding is the six-octet sequence `{0x0d, 0x04, 0x81, 0xfd, 0x59, 0x01}`.
+
+* For use in binary protocols such as TLS, a trust anchor identifier's binary representation consists of the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of {{X690}}. Note this omits the tag and length portion of the encoding. The example identifier's binary representation is the four-octet sequence `{0x81, 0xfd, 0x59, 0x01}`.
+
+* For use in ASCII-compatible text protocols, a trust anchor identifier's ASCII representation is the relative object identifier in dotted decimal notation. The example identifier's ASCII representation is `32473.1`.
 
 ## Relying Party Configuration
 
 Relying parties are configured with one or more supported trust anchors. Each trust anchor which participates in this protocol must have an associated trust anchor identifier.
 
-When trust anchors are self-signed X.509 certificates, the X.509 trust anchor identifier extension MAY be used to carry this identifier. The trust anchor identifier extension has an `extnID` of `id-trustAnchorIdentifier` and an `extnValue` containing a DER-encoded TrustAnchorIdentifier structure, defined below. The TrustAnchorIdentifier is a relative object identifier, determined as in {{trust-anchor-ids}}. This extension MUST be non-critical.
+When trust anchors are self-signed X.509 certificates, the X.509 trust anchor identifier extension MAY be used to carry this identifier. The trust anchor identifier extension has an `extnID` of `id-trustAnchorIdentifier` and an `extnValue` containing a DER-encoded TrustAnchorIdentifier structure, defined below. The TrustAnchorIdentifier is the trust anchor identifier's ASN.1 representation, described in {{trust-anchor-ids}}. This extension MUST be non-critical.
 
 ~~~
 id-trustAnchorIdentifier OBJECT IDENTIFIER ::= { TBD }
@@ -188,7 +194,7 @@ opaque TrustAnchorIdentifier<1..2^8-1>;
 TrustAnchorIdentifier TrustAnchorIdentifierList<0..2^16-1>;
 ~~~
 
-When the extension is sent in the ClientHello or CertificateRequest messages, the `extension_data` is a TrustAnchorIdentifierList and indicates that the sender supports the specified trust anchors. The list is unordered, and MAY be empty.
+When the extension is sent in the ClientHello or CertificateRequest messages, the `extension_data` is a TrustAnchorIdentifierList and indicates that the sender supports the specified trust anchors. The list is unordered, and MAY be empty. Each TrustAnchorIdentifier uses the binary representation, as described in {{trust-anchor-ids}}.
 
 When the extension is sent in EncryptedExtensions, the `extension_data` is a TrustAnchorIdentifierList containing the list of trust anchors that server has available, in the server’s preference order, and MUST NOT be empty.
 
@@ -241,7 +247,7 @@ This section defines the `tls-trust-anchors` SvcParamKey {{!RFC9460}}. TLS serve
 
 The `tls-trust-anchors` parameter contains an ordered list of one or more trust anchor identifiers, in server preference order.
 
-The presentation `value` of the SvcParamValue is a non-empty comma-separated list ({{Appendix A.1 of RFC9460}}). Each element of the list is a trust anchor identifier in the text representation defined in {{trust-anchor-ids}}. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
+The presentation `value` of the SvcParamValue is a non-empty comma-separated list ({{Appendix A.1 of RFC9460}}). Each element of the list is a trust anchor identifier in the ASCII representation defined in {{trust-anchor-ids}}. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
 
 The wire format of the SvcParamValue is determined by prefixing each trust anchor identifier with its length as a single octet, then concatenating each of these length-value pairs to form the SvcParamValue. These pairs MUST exactly fill the SvcParamValue; otherwise, the SvcParamValue is malformed.
 
