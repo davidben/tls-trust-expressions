@@ -12,10 +12,10 @@
        This document defines the TLS Trust Anchors extension, a mechanism for relying parties and subscribers to convey trusted certification authorities. It describes individual certification authorities more succinctly than the TLS Certificate Authorities extension. 
        Additionally, to support TLS clients with many trusted certification authorities, it supports a mode where servers describe their available certification paths and the client selects from them. Servers may describe this during connection setup, or in DNS for lower latency. 
     " name="description">
-<meta content="xml2rfc 3.21.0" name="generator">
+<meta content="xml2rfc 3.22.0" name="generator">
 <meta content="draft-beck-tls-trust-anchor-ids-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.21.0
+  xml2rfc 3.22.0
     Python 3.12.3
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
@@ -25,9 +25,8 @@
     platformdirs 4.2.2
     pycountry 22.3.5
     PyYAML 6.0.1
-    requests 2.31.0
+    requests 2.32.3
     setuptools 69.5.1
-    six 1.16.0
     wcwidth 0.2.13
 -->
 <link href="draft-beck-tls-trust-anchor-ids.xml" rel="alternate" type="application/rfc+xml">
@@ -1031,7 +1030,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Beck, et al.</td>
-<td class="center">Expires 3 January 2025</td>
+<td class="center">Expires 11 January 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1044,12 +1043,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-beck-tls-trust-anchor-ids-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-07-02" class="published">2 July 2024</time>
+<time datetime="2024-07-10" class="published">10 July 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-01-03">3 January 2025</time></dd>
+<dd class="expires"><time datetime="2025-01-11">11 January 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1108,7 +1107,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 January 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 11 January 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1344,15 +1343,26 @@ when, and only when, they appear in all capitaIs, as shown here.<a href="#sectio
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-trust-anchor-identifiers" class="section-name selfRef">Trust Anchor Identifiers</a>
       </h2>
 <p id="section-3-1">This section defines trust anchor identifiers, which are short, unique identifiers for a trust anchor. To simplify allocation, these identifiers are defined with object identifiers (OIDs) <span>[<a href="#X680" class="cite xref">X680</a>]</span> and IANA-registered Private Enterprise Numbers (PENs) <span>[<a href="#RFC9371" class="cite xref">RFC9371</a>]</span>:<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">A trust anchor identifier is an OID under the OID arc of some PEN. For example, an organization with PEN 32473 might define a trust anchor identifier with the OID <code>1.3.6.1.4.1.32473.1</code>.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">Trust anchor identifiers have ASCII text representations, for use in text-based formats, and binary representations, for use in a binary protocol such as TLS. For compactness, both representations use relative object identifiers (see Section 33 of <span>[<a href="#X680" class="cite xref">X680</a>]</span>), relative to the OID prefix <code>1.3.6.1.4.1</code>. The text representation is the relative object identifier in dotted decimal notation. The above example’s text representation would be <code>32473.1</code>. The binary representation consists of the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of <span>[<a href="#X690" class="cite xref">X690</a>]</span>. Note this omits the tag and length portion of the encoding. For example, the binary representation of <code>32473.1</code> would be the four-octet sequence <code>{0x81, 0xfd, 0x59, 0x01}</code>.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-2">A trust anchor identifier is defined with a OID under the OID arc of some PEN. For compactness, they are represented as relative object identifiers (see Section 33 of <span>[<a href="#X680" class="cite xref">X680</a>]</span>), relative to the OID prefix <code>1.3.6.1.4.1</code>. For example, an organization with PEN 32473 might define a trust anchor identifier with the OID <code>1.3.6.1.4.1.32473.1</code>. As a relative object identifier, it would be the OID <code>32473.1</code>.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">Depending on the protocol, trust anchor identifiers may be represented in one of three ways:<a href="#section-3-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-4.1">
+          <p id="section-3-4.1.1">For use in ASN.1-based protocols, a trust anchor identifier's ASN.1 representation is the relative object identifier described above. This may be encoded in DER <span>[<a href="#X690" class="cite xref">X690</a>]</span>, or some other ASN.1 encoding. The example identifier's DER encoding is the six-octet sequence <code>{0x0d, 0x04, 0x81, 0xfd, 0x59, 0x01}</code>.<a href="#section-3-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-4.2">
+          <p id="section-3-4.2.1">For use in binary protocols such as TLS, a trust anchor identifier's binary representation consists of the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of <span>[<a href="#X690" class="cite xref">X690</a>]</span>. Note this omits the tag and length portion of the encoding. The example identifier's binary representation is the four-octet sequence <code>{0x81, 0xfd, 0x59, 0x01}</code>.<a href="#section-3-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-4.3">
+          <p id="section-3-4.3.1">For use in ASCII-compatible text protocols, a trust anchor identifier's ASCII representation is the relative object identifier in dotted decimal notation. The example identifier's ASCII representation is <code>32473.1</code>.<a href="#section-3-4.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
 <div id="relying-party-configuration">
 <section id="section-3.1">
         <h3 id="name-relying-party-configuration">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-relying-party-configuration" class="section-name selfRef">Relying Party Configuration</a>
         </h3>
 <p id="section-3.1-1">Relying parties are configured with one or more supported trust anchors. Each trust anchor which participates in this protocol must have an associated trust anchor identifier.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">When trust anchors are self-signed X.509 certificates, the X.509 trust anchor identifier extension MAY be used to carry this identifier. The trust anchor identifier extension has an <code>extnID</code> of <code>id-trustAnchorIdentifier</code> and an <code>extnValue</code> containing a DER-encoded TrustAnchorIdentifier structure, defined below. The TrustAnchorIdentifier is a relative object identifier, determined as in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. This extension MUST be non-critical.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">When trust anchors are self-signed X.509 certificates, the X.509 trust anchor identifier extension MAY be used to carry this identifier. The trust anchor identifier extension has an <code>extnID</code> of <code>id-trustAnchorIdentifier</code> and an <code>extnValue</code> containing a DER-encoded TrustAnchorIdentifier structure, defined below. The TrustAnchorIdentifier is the trust anchor identifier's ASN.1 representation, described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. This extension MUST be non-critical.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.1-3">
 <pre>
 id-trustAnchorIdentifier OBJECT IDENTIFIER ::= { TBD }
@@ -1406,7 +1416,7 @@ opaque TrustAnchorIdentifier&lt;1..2^8-1&gt;;
 TrustAnchorIdentifier TrustAnchorIdentifierList&lt;0..2^16-1&gt;;
 </pre><a href="#section-4.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-4.1-3">When the extension is sent in the ClientHello or CertificateRequest messages, the <code>extension_data</code> is a TrustAnchorIdentifierList and indicates that the sender supports the specified trust anchors. The list is unordered, and MAY be empty.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">When the extension is sent in the ClientHello or CertificateRequest messages, the <code>extension_data</code> is a TrustAnchorIdentifierList and indicates that the sender supports the specified trust anchors. The list is unordered, and MAY be empty. Each TrustAnchorIdentifier uses the binary representation, as described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
 <p id="section-4.1-4">When the extension is sent in EncryptedExtensions, the <code>extension_data</code> is a TrustAnchorIdentifierList containing the list of trust anchors that server has available, in the server’s preference order, and MUST NOT be empty.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <p id="section-4.1-5">When the extension is sent in Certificate, the <code>extension_data</code> MUST be empty and indicates that the sender sent the certificate because the certificate matched a trust anchor identifier sent by the peer. When used in this form, the extension may only be sent in the first CertificateEntry. It MUST NOT be sent in subsequent ones.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
 </section>
@@ -1463,7 +1473,7 @@ TrustAnchorIdentifier TrustAnchorIdentifierList&lt;0..2^16-1&gt;;
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-syntax" class="section-name selfRef">Syntax</a>
         </h3>
 <p id="section-5.1-1">The <code>tls-trust-anchors</code> parameter contains an ordered list of one or more trust anchor identifiers, in server preference order.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">The presentation <code>value</code> of the SvcParamValue is a non-empty comma-separated list (<span><a href="https://rfc-editor.org/rfc/rfc9460#appendix-A.1" class="relref">Appendix A.1</a> of [<a href="#RFC9460" class="cite xref">RFC9460</a>]</span>). Each element of the list is a trust anchor identifier in the text representation defined in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. Any other <code>value</code> is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">The presentation <code>value</code> of the SvcParamValue is a non-empty comma-separated list (<span><a href="https://rfc-editor.org/rfc/rfc9460#appendix-A.1" class="relref">Appendix A.1</a> of [<a href="#RFC9460" class="cite xref">RFC9460</a>]</span>). Each element of the list is a trust anchor identifier in the ASCII representation defined in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. Any other <code>value</code> is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <p id="section-5.1-3">The wire format of the SvcParamValue is determined by prefixing each trust anchor identifier with its length as a single octet, then concatenating each of these length-value pairs to form the SvcParamValue. These pairs MUST exactly fill the SvcParamValue; otherwise, the SvcParamValue is malformed.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 <p id="section-5.1-4">For example, if a TLS server has three available certification paths issued by <code>32473.1</code>, <code>32473.2.1</code>, and <code>32473.2.2</code>, respectively, the DNS record in presentation syntax may be:<a href="#section-5.1-4" class="pilcrow">¶</a></p>
 <div class="lang-dns sourcecode" id="section-5.1-5">
@@ -1712,7 +1722,7 @@ example.net.  7200  IN SVCB 3 server.example.net. (
 <dl class="references">
 <dt id="I-D.ietf-tls-wkech">[I-D.ietf-tls-wkech]</dt>
         <dd>
-<span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Salz, R.</span>, and <span class="refAuthor">B. M. Schwartz</span>, <span class="refTitle">"A well-known URI for publishing ECHConfigList values."</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-wkech-04</span>, <time datetime="2023-10-22" class="refDate">22 October 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-04">https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-04</a>&gt;</span>. </dd>
+<span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Salz, R.</span>, and <span class="refAuthor">B. M. Schwartz</span>, <span class="refTitle">"A well-known URI for publishing ECHConfigList values."</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-wkech-05</span>, <time datetime="2024-07-07" class="refDate">7 July 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-05">https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-05</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="MOZILLA-ROOTS">[MOZILLA-ROOTS]</dt>
       <dd>
