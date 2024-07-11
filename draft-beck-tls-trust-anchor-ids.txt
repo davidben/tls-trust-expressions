@@ -5,8 +5,8 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 11 January 2025                                      Google LLC
-                                                            10 July 2024
+Expires: 12 January 2025                                      Google LLC
+                                                            11 July 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 January 2025.
+   This Internet-Draft will expire on 12 January 2025.
 
 Copyright Notice
 
@@ -560,18 +560,18 @@ Table of Contents
    party may be divided into three categories:
 
    1.  Trust anchors whose identifiers the relying party sends
-       unconditionally, i.e. not in response to the server’s HTTPS/SVCB
-       record, trust anchor list in EncryptedExtensions, etc.
+       _unconditionally_, i.e. not in response to the server’s HTTPS/
+       SVCB record, trust anchor list in EncryptedExtensions, etc.
 
-   2.  Trust anchors whose identifiers the relying party sends if the
-       server offers them.  For example, the relying party may indicate
-       support for a trust anchor if its identifier is listed in the
-       server’s HTTPS/SVCB record or trust anchor list in
-       EncryptedExtensions.
+   2.  Trust anchors whose identifiers the relying party sends
+       _conditionally_, i.e. only if the server offers them.  For
+       example, the relying party may indicate support for a trust
+       anchor if its identifier is listed in the server’s HTTPS/SVCB
+       record or trust anchor list in EncryptedExtensions.
 
-   3.  Trust anchors that the relying party accepts but will never send
-       a corresponding trust anchor identifier in trust_anchors.  These
-       are trust anchors which do not participate in this mechanism.
+   3.  Trust anchors whose identifiers the relying party never sends,
+       but still trusts.  These are trust anchors which do not
+       participate in this mechanism.
 
    Each of these categories carries a different fingerprinting exposure:
 
