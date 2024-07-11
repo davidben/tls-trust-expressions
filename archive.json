@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-09T01:34:47.992759+00:00",
+  "timestamp": "2024-07-11T01:35:18.457155+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -47,6 +47,16 @@
       "name": "wontfix",
       "description": "This will not be worked on",
       "color": "ffffff"
+    },
+    {
+      "name": "trust-expressions",
+      "description": "",
+      "color": "bfdadc"
+    },
+    {
+      "name": "trust-anchor-ids",
+      "description": "",
+      "color": "A03D7B"
     }
   ],
   "issues": [
@@ -59,10 +69,12 @@
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "trust-expressions"
+      ],
       "body": "The document is currently written to be append-only, which is correct for X.509 and also shouldn't grow significantly. @bwesterb points out Merkle tree certs have different properties:\r\n\r\n1. MTC trust anchors are minted every hour\r\n2. MTC trust anchors naturally deactivate themselves\r\n\r\nProperty 1 means the manifest will grow over time and potentially get unwieldy. But property 2 implies an easy fix. Once an MTC trust anchor expires, there is no benefit to listing it in the manifest beyond historical interest. So we could potentially allow those to get trimmed. That will, in turn, allow trimming the old versions since they become empty. We have no way to express either of these, so we may want to add some allowance for this in the format.\r\n\r\nWe also don't necessarily need to do this here. Since the manifest document is consumed by just the root programs and CAs, who know what type of CA they are, we can always put this extra allowance in the MTC document. But it would be convenient if the changes slot nicely into the existing format, so we may want to look at this a bit.",
       "createdAt": "2023-10-19T18:00:38Z",
-      "updatedAt": "2023-11-20T23:07:06Z",
+      "updatedAt": "2024-07-10T16:05:33Z",
       "closedAt": null,
       "comments": [
         {
@@ -90,10 +102,12 @@
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "trust-expressions"
+      ],
       "body": "We mostly want it to be the root program, but relying parties might end up tweaking things if, say, something is conditioned on software version. I was envisioning the root program sends down some private structure like \"also include these exclusions under these conditions\", etc., but that's very hard to describe.\r\n\r\nPerhaps a better separation is to say:\r\n* Root programs compute the compatibility exclusions\r\n* Better yet, stick them in the manifest so people can easily use them; root programs periodically recompute them to trim away stuff they don't need anymore\r\n* Relying parties take the mandatory ones from the manifest and then add in their own as needed. If that task is half done by the software vendor and half done on the client device, that's the application's business, but we describe it as the relying party doing it.\r\n\r\nThe problem is that computing exclusions is a little tricky. Maybe we need to mark which label is the singleton one, so that computing the label set is always possible? This does add quite a lot more moving parts though.",
       "createdAt": "2023-10-24T21:07:21Z",
-      "updatedAt": "2023-10-24T21:07:21Z",
+      "updatedAt": "2024-07-10T16:05:34Z",
       "closedAt": null,
       "comments": []
     },
@@ -222,16 +236,24 @@
       "id": "I_kwDOKigz-s6EuBAN",
       "title": "Decide how to allocate trust store names",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/12",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Merkle Tree certificates will have a similar problem in naming CAs. And honestly even for X.509 certificates, a shorter name would be valuable.\r\n\r\nGoofy as ASN.1 is, we're actually thinking OIDs right now. Specifically OIDs under the [Private Enterprise Number (PEN) arc](https://www.rfc-editor.org/rfc/rfc9371.html), probably represented as a DER-encoded `RELATIVE-OID` contents, excluding the tag and length, relative to the `1.3.6.1.4.1` prefix, avoid an unnecessary 5 bytes.\r\n\r\nThis is nice because:\r\n* Anyone can register them, so there's an easy answer for private PKIs\r\n* They're pretty compact; the largest PEN so far fits in 3 bytes, and then an organization should only need a couple more bytes past that, even if they've already been using their namespace. We're unlikely to ever allocate a 4-byte PEN.\r\n* While not directly useful for this draft, the hierarchical nature might be handy for MTCs, which have a two-layer thing going on\r\n* It seems perhaps handy for MTC CA names and trust stores to not collide. You could potentially use an MTC CA name as an implicit trust store. (Not yet thought through.)",
       "createdAt": "2024-04-04T22:55:37Z",
-      "updatedAt": "2024-04-04T22:55:37Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2024-07-10T16:04:56Z",
+      "closedAt": "2024-07-10T16:04:56Z",
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "This is now done.",
+          "createdAt": "2024-07-10T16:04:56Z",
+          "updatedAt": "2024-07-10T16:04:56Z"
+        }
+      ]
     },
     {
       "number": 13,
@@ -242,10 +264,12 @@
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "trust-expressions"
+      ],
       "body": "I suspect there is a way to express this with the draft as-is, since you just need newly-issued certificates to stop being associated with newer versions of the trust store, but filing this so we remember to think about this.",
       "createdAt": "2024-05-03T20:38:17Z",
-      "updatedAt": "2024-05-03T20:38:28Z",
+      "updatedAt": "2024-07-10T16:05:34Z",
       "closedAt": null,
       "comments": []
     },
@@ -260,10 +284,12 @@
       "assignees": [
         "devonobrien"
       ],
-      "labels": [],
+      "labels": [
+        "trust-expressions"
+      ],
       "body": "We ought to document the design rationale somewhere. Some things we could discuss:\r\n\r\n* All the complications around how we need to handle version skew\r\n* Growth of manifest list over time \r\n* Growth of TrustStoreInclusion metadata overtime",
       "createdAt": "2024-05-24T20:13:56Z",
-      "updatedAt": "2024-05-24T20:13:56Z",
+      "updatedAt": "2024-07-10T16:05:35Z",
       "closedAt": null,
       "comments": []
     },
@@ -330,10 +356,12 @@
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "trust-expressions"
+      ],
       "body": "@martinschmatz wrote the following on https://github.com/davidben/tls-trust-expressions/issues/19#issuecomment-2137282741\r\n\r\n> Just FYI: I was playing around with the idea to pack the information intended to be transported in the proposed new `trust_expressions` extension in \"fake\" root certs which can be sent to the subscriber using the _existing_ `certificate_authorities` extension \"which SHOULD be used by the receiving endpoint to guide certificate selection\" as per [RFC](https://datatracker.ietf.org/doc/html/rfc8446#section-4.2.4) (read: The server is free how to use the information). \r\n>\r\n> It is easy to create a self signed \"root cert\" with some base64 encoded information in CN etc fields to help the subscriber in the selection of the certificate chain to use for authentication. \r\n\r\nMoving this to a separate issue as issue #19 is about something completely unrelated.\r\n\r\n@martinschmatz, could you perhaps expand on this? I don't see what benefit it would have, but some of the details don't make sense to me, so perhaps I am misunderstanding.\r\n\r\nFirst, the `certificate_authorities` extension doesn't carry certificates but names. So there wouldn't be a root certificate in the first place. Base64 encoding also sounds like unnecessarily wasteful (keep in mind we want a compact scheme), though one could use a new OCTET-STRING-carrying attribute. That would still be wasteful with the rest of the ASN.1 structure, but much less so.\r\n\r\nSecond, even though RFC 8446 does not prescribe a precise way to use the information, no one implements a trust expressions matching algorithm with it today. They'll all do some variation of checking for a matching issuer among the relying party's list, because those are the semantics of the field. The allowance is because there are lots of ways to do that and integrate it with other processes.\r\n\r\nIf we were to imbue an existing field with new semantics, we're going to need a code change in the TLS stack anyway. (And, to reduce server operator burden, I think it's important that the matching algorithm be in the TLS stack, at least long-term.) At that point, there is no cost to using a new extension, so we may as well define an extension with the right semantics.\r\n\r\nFinally, there is a real cost to jamming new semantics into existing fields. In addition to the wasteful encoding, this risks weird behaviors when existing software interprets the field according to its existing semantics.",
       "createdAt": "2024-05-29T12:39:09Z",
-      "updatedAt": "2024-05-29T16:32:36Z",
+      "updatedAt": "2024-07-10T16:05:35Z",
       "closedAt": null,
       "comments": [
         {
@@ -354,10 +382,12 @@
       "author": "bob-beck",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "trust-expressions"
+      ],
       "body": "While possibly not an unusual requirement in 2024, Today, a server serving a certificate does not need to know the time, the only time that matters is the client's notion of time to evaluate the validity of the certificate. \r\n\r\nWe need to call out that (in absence of other things) the server's time causing trust expresions to not choose a certificate it believes is expired could result in the default certificate being sent to a client that would otherwise have been presented with an expired certificate, and be allowed to possibly decide based on it's own notion of time that it was fine, (or that it did not care)\r\n\r\nI *think* this change is kind of \"ok\" but it is certainly a change compared to today. \r\n\r\n",
       "createdAt": "2024-05-30T17:48:50Z",
-      "updatedAt": "2024-05-30T17:48:50Z",
+      "updatedAt": "2024-07-10T16:05:35Z",
       "closedAt": null,
       "comments": []
     },
@@ -370,10 +400,12 @@
       "author": "bob-beck",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "trust-expressions"
+      ],
       "body": "\r\nHow important this is we are unsure, but if a client sending a trust expression sends a non matching trust expression that\r\nthe server does not choose (because for example, the server has a distrusted root, time, etc) The client does not then get\r\nto look at what the server would have sent, but instead sees the (possibly very legacy) fallback certificate. \r\n\r\nAs an example, we could have a client that trusts entirely a new set of roots (PQ?) and then instead of being offered a choice\r\nof an \"older less trusted or expired\" PQ cert that it might choose to work with, It instead gets a fallback certifiate with classical algorithms it does not even support. \r\n\r\n",
       "createdAt": "2024-05-30T18:00:37Z",
-      "updatedAt": "2024-05-30T18:00:37Z",
+      "updatedAt": "2024-07-10T16:05:36Z",
       "closedAt": null,
       "comments": []
     },
@@ -390,6 +422,24 @@
       "body": "Without trust anchor negotiation, people sometimes do deploy multiple certificates today. It's not enough to avoid preventing PKI evolution, but it means the terminology is a little bit confusing.",
       "createdAt": "2024-06-11T17:06:14Z",
       "updatedAt": "2024-06-11T17:06:14Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 41,
+      "id": "I_kwDOKigz-s6PHsH9",
+      "title": "Add a copy of the ASN.1 module to an appendix",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/41",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "trust-anchor-ids"
+      ],
+      "body": "Requested by Russ Housley. There's not much ASN.1 here, but we do have an X.509 extension.",
+      "createdAt": "2024-07-10T16:05:54Z",
+      "updatedAt": "2024-07-10T16:06:10Z",
       "closedAt": null,
       "comments": []
     }
@@ -1902,6 +1952,51 @@
       "mergeCommit": null,
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 40,
+      "id": "PR_kwDOKigz-s503yN-",
+      "title": "There are three trust anchor ID representations, not two",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/40",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Adding on to https://github.com/davidben/tls-trust-expressions/pull/37, also based on feedback from Russ Housley.\r\n\r\n(Whether we actually want three reprs, I dunno. This is perhaps excessive. We could just decide there are only binary and text reprs and that, if you stick them in an ASN.1 structure, forget their OID heritage and put it in an OCTET STRING. It just changes the tag. But, for now, just describe the thing we got. This is not a particular important bikeshed.)",
+      "createdAt": "2024-07-09T18:47:21Z",
+      "updatedAt": "2024-07-10T13:01:45Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "fe7adb6f0fe3a23ef26e93a2eb8b6b9874dc52bf",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "trust-anchor-id-reprs",
+      "headRefOid": "94b050e0e7161f5971e5de440dd3f8852720ae16",
+      "closedAt": "2024-07-10T13:01:42Z",
+      "mergedAt": "2024-07-10T13:01:42Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "9c6f0126aa4ba5b19dcbb60eb31cded81708702e"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6BOzBb",
+          "commit": {
+            "abbreviatedOid": "94b050e"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-10T06:27:04Z",
+          "updatedAt": "2024-07-10T06:27:04Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
