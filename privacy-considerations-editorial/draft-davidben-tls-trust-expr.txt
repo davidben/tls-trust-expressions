@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 3 January 2025                                       Google LLC
-                                                             2 July 2024
+Expires: 12 January 2025                                      Google LLC
+                                                            11 July 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 January 2025.
+   This Internet-Draft will expire on 12 January 2025.
 
 Copyright Notice
 
@@ -385,9 +385,9 @@ Table of Contents
    the text form, these are written in dotted decimal notation, such as
    32473.1.  In a binary protocol, such as TLS, this is encoded as the
    contents octets of the relative object identifier's DER encoding, as
-   described in Section 8.20 of [X690].  For example, the binary
-   encoding of 32473.1 would be the four-octet sequence {0x81, 0xfd,
-   0x59, 0x01}.
+   described in Section 8.20 of [X690].  Note this omits the tag and
+   length portion of the encoding.  For example, the binary encoding of
+   32473.1 would be the four-octet sequence {0x81, 0xfd, 0x59, 0x01}.
 
 4.2.  Trust Store Entry Expiration
 
