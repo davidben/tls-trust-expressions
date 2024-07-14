@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-11T01:35:18.457155+00:00",
+  "timestamp": "2024-07-14T01:41:52.765875+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -1929,7 +1929,7 @@
       "id": "PR_kwDOKigz-s50P8Pv",
       "title": "Slightly tweak Privacy Considerations",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/39",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -1939,19 +1939,35 @@
       "labels": [],
       "body": "Using a parallel wording between all three cases seems clearer. Also emphasize \"unconditionally\" and \"conditionally\" since we're basically defining terms.\r\n\r\nAlso fix a few places where double spaces snuck in from the Markdown export.",
       "createdAt": "2024-07-02T21:11:59Z",
-      "updatedAt": "2024-07-02T21:11:59Z",
+      "updatedAt": "2024-07-11T14:02:38Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
-      "baseRefOid": "6f407031d56ce84177de9ab4b557d2635d71c1e5",
+      "baseRefOid": "9c6f0126aa4ba5b19dcbb60eb31cded81708702e",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "privacy-considerations-editorial",
-      "headRefOid": "c975240c47f4a8b85e2de51d9aa6c80c81516523",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "b89507679eeededbdfd1b6288babf2981e6a7a5d",
+      "closedAt": "2024-07-11T14:02:34Z",
+      "mergedAt": "2024-07-11T14:02:34Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "f7dffcdaa98f77d8aa8a3bb77f0fe9ddca1f745e"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6BZ1gZ",
+          "commit": {
+            "abbreviatedOid": "c975240"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-11T06:35:44Z",
+          "updatedAt": "2024-07-11T06:35:44Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 40,
