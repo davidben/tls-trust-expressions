@@ -45,8 +45,8 @@ Our goals in doing so are:
 
 * PKIs can evolve over time, to meet user security needs, without conflicting with availability.
 * Subscribers can configure multiple TLS certificates, with TLS software automatically sending the right one on each connection.
-* CAs, via automated protocols like ACME, can transparently provision subscribers with multiple TLS certificates.
 * As much as possible, minimize manual changes by server operators. Most ongoing decisions should instead come from TLS software, ACME client software, and ACME servers.
+* To achieve this, CAs, via automated protocols like ACME, can transparently provision subscribers with multiple TLS certificates.
 * Minimal bandwidth cost to the TLS handshake.
 
 We discuss the motivations for a multi-certificate deployment model in more
