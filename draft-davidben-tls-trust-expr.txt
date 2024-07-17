@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 12 January 2025                                      Google LLC
-                                                            11 July 2024
+Expires: 18 January 2025                                      Google LLC
+                                                            17 July 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 January 2025.
+   This Internet-Draft will expire on 18 January 2025.
 
 Copyright Notice
 
@@ -108,6 +108,7 @@ Table of Contents
      11.1.  Relying Party Policies and Agility
      11.2.  Incorrect Selection Metadata
      11.3.  Serving Multiple Certificates
+     11.4.  Targetting TLS Interception
    12. IANA Considerations
      12.1.  TLS ExtensionType Updates
      12.2.  Media Type Updates
@@ -1414,6 +1415,34 @@ Table of Contents
    critical process, the full considerations of which are outside the
    scope of this document.
 
+11.4.  Targetting TLS Interception
+
+   Trust Expressions, like certificate_authorities, enables a TLS server
+   to differentiate between clients that do and do not trust some CA.
+   If this CA mis-issued a certificate, this could be used by a network
+   attacker to only enable TLS interception with clients that trust the
+   CA.  The network attacker may wish to do this reduce the odds of
+   detection.  Clients which do not trust the CA will not accept the
+   mis-issued certificate, which may be user-visible.
+
+   However, the attacker could also use any existing mechanism for
+   differentiating clients.  In TLS parameter negotiation, the client
+   offers all its available TLS features, including cipher suites and
+   other extensions, in the TLS ClientHello.  This means any variation
+   in any client TLS policies, related or unrelated to trust anchors,
+   may be used as an implementation fingerprint to differentiate
+   clients.  While fingerprinting's heuristic nature makes it not viable
+   for a broad, diverse set of TLS servers, it is viable for a network
+   attacker's single interception service.  Trust Expressions only
+   impacts detection where this differentiation was not already
+   possible.
+
+   If the attacker targets any clients that enforce Certificate
+   Transparency [RFC6962], the mis-issued certificates will need to be
+   publicly logged.  In this case, detection is more robust, and client
+   differentiation, with or without Trust Expressions, has no
+   significant impact.
+
 12.  IANA Considerations
 
 12.1.  TLS ExtensionType Updates
@@ -1596,6 +1625,10 @@ Table of Contents
               Extensions: Extension Definitions", RFC 6066,
               DOI 10.17487/RFC6066, January 2011,
               <https://www.rfc-editor.org/rfc/rfc6066>.
+
+   [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
+              Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
+              <https://www.rfc-editor.org/rfc/rfc6962>.
 
    [RFC8610]  Birkholz, H., Vigano, C., and C. Bormann, "Concise Data
               Definition Language (CDDL): A Notational Convention to
