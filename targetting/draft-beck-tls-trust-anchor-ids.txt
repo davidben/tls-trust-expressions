@@ -697,7 +697,7 @@ Table of Contents
    network attacker to only enable TLS interception with clients that
    trust the CA.  The network attacker may wish to do this reduce the
    odds of detection.  Clients which do not trust the CA will not accept
-   the mis-issued certificate.
+   the mis-issued certificate, which may be user-visible.
 
    However, the attacker could also use any existing mechanism for
    differentiating clients.  In TLS parameter negotiation, the client
