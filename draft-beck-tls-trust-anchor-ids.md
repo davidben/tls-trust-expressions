@@ -347,7 +347,7 @@ However, the subscriber presenting a certificate is not an endorsement of the CA
 
 ## Targetting TLS Interception
 
-Trust Anchor Identifiers, like `certificate_authorities`, enables a TLS implementation to differentiate between clients that do and do not trust some CA. If this CA mis-issued a certificate, this could be used by a network attacker to only enable TLS interception with clients that trust the CA. The network attacker may wish to do this reduce the odds of detection. Clients which do not trust the CA will not accept the mis-issued certificate.
+Trust Anchor Identifiers, like `certificate_authorities`, enables a TLS server to differentiate between clients that do and do not trust some CA. If this CA mis-issued a certificate, this could be used by a network attacker to only enable TLS interception with clients that trust the CA. The network attacker may wish to do this reduce the odds of detection. Clients which do not trust the CA will not accept the mis-issued certificate.
 
 However, the attacker could also use any existing mechanism for differentiating clients. In TLS parameter negotiation, the client offers all its available TLS features, including cipher suites and other extensions, in the TLS ClientHello. This means any variation in any client TLS policies, related or unrelated to trust anchors, may be used as an implementation fingerprint to differentiate clients. While fingerprinting's heuristic nature makes it not viable for a broad, diverse set of TLS servers, it is viable for a network attacker's single interception service. Trust Anchor Identifiers only impacts detection where this differentiation was not already possible.
 
