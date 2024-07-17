@@ -1417,13 +1417,13 @@ Table of Contents
 
 11.4.  Targetting TLS Interception
 
-   Trust Expressions, like certificate_authorities, enables a TLS
-   implementation to differentiate between clients that do and do not
-   trust some CA.  If this CA mis-issued a certificate, this could be
-   used by a network attacker to only enable TLS interception with
-   clients that trust the CA.  The network attacker may wish to do this
-   reduce the odds of detection.  Clients which do not trust the CA will
-   not accept the mis-issued certificate.
+   Trust Expressions, like certificate_authorities, enables a TLS server
+   to differentiate between clients that do and do not trust some CA.
+   If this CA mis-issued a certificate, this could be used by a network
+   attacker to only enable TLS interception with clients that trust the
+   CA.  The network attacker may wish to do this reduce the odds of
+   detection.  Clients which do not trust the CA will not accept the
+   mis-issued certificate.
 
    However, the attacker could also use any existing mechanism for
    differentiating clients.  In TLS parameter negotiation, the client
