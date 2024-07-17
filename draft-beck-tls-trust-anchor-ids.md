@@ -345,6 +345,14 @@ In a multi-certificate deployment, subscribers have a collection of certificates
 
 However, the subscriber presenting a certificate is not an endorsement of the CA. The subscriber's role is to present a certificate which will convince the relying party of the correct subscriber information. Subscribers do not vet CAs for trustworthiness, only the correctness of their specific, configured certificates and the CA's ability to meet the subscriber's requirements, such as availability, compatibility, and performance. It is the responsibility of the relying party, and its corresponding root program, to determine the set of trusted CAs. Trusting a CA means trusting _all_ certificates issued by that CA, so it is not enough to observe subscribers serving correct certificates. An untrustworthy CA may sign one correct certificate, but also sign incorrect certificates, possibly in the future, that can attack the relying party. Root program management is a complex, security-critical process, the full considerations of which are outside the scope of this document.
 
+## Targetting TLS Interception
+
+Trust Anchor Identifiers, like `certificate_authorities`, enables a TLS server to differentiate between clients that do and do not trust some CA. If this CA mis-issued a certificate, this could be used by a network attacker to only enable TLS interception with clients that trust the CA. The network attacker may wish to do this reduce the odds of detection. Clients which do not trust the CA will not accept the mis-issued certificate, which may be user-visible.
+
+However, the attacker could also use any existing mechanism for differentiating clients. In TLS parameter negotiation, the client offers all its available TLS features, including cipher suites and other extensions, in the TLS ClientHello. This means any variation in any client TLS policies, related or unrelated to trust anchors, may be used as an implementation fingerprint to differentiate clients. While fingerprinting's heuristic nature makes it not viable for a broad, diverse set of TLS servers, it is viable for a network attacker's single interception service. Trust Anchor Identifiers only impacts detection where this differentiation was not already possible.
+
+If the attacker targets any clients that enforce Certificate Transparency {{?RFC6962}}, the mis-issued certificates will need to be publicly logged. In this case, detection is more robust, and client differentiation, with or without Trust Anchor Identifiers, has no significant impact.
+
 # IANA Considerations
 
 ## TLS ExtensionType Updates
