@@ -144,6 +144,8 @@ Depending on the protocol, trust anchor identifiers may be represented in one of
 
 * For use in ASCII-compatible text protocols, a trust anchor identifier's ASCII representation is the relative object identifier in dotted decimal notation. The example identifier's ASCII representation is `32473.1`.
 
+Trust anchor identifiers SHOULD be allocated by the CA operator and common among relying parties that trust the CA. They MAY be allocated by another party, e.g. when bootstrapping an existing ecosystem, if all parties agree on the identifier. In particular, the protocol requires relying parties and subscribers to agree, and subscriber configuration typically comes from the CA.
+
 ## Relying Party Configuration
 
 Relying parties are configured with one or more supported trust anchors. Each trust anchor which participates in this protocol must have an associated trust anchor identifier.
