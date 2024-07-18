@@ -614,10 +614,20 @@ Table of Contents
    If the subscriber is a server, the mechanisms in Section 5 and
    Section 4.3 enumerate the trust anchors for the server’s available
    certification paths.  This mechanism assumes they are not sensitive.
-   Servers SHOULD NOT use this mechanism to negotiate sensitive trust
-   anchors.
+   Servers SHOULD NOT use this mechanism to negotiate certification
+   paths with sensitive trust anchors.
 
-   This does not apply if the subscriber is a client.
+   In servers that host multiple services, this protocol only enumerates
+   certification paths for the requested service.  If, for example, a
+   server uses the server_name extension to select services, the
+   addition to EncryptedExtensions in Section 4.3 is expected to be
+   filtered by server_name.  Likewise, the DNS parameter in Section 5
+   only contains information for the corresponding service.  In both
+   cases, co-located services are not revealed.
+
+   The above does not apply if the subscriber is a client.  This
+   protocol does not enumerate the available certification paths for a
+   client.
 
 9.  Security Considerations
 
