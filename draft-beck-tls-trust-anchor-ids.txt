@@ -668,9 +668,11 @@ Table of Contents
    party is out of date but still important for the subscriber to
    support.  If a certificate asserts the correct information about the
    subscriber (TLS key, DNS names, etc.), the subscriber can safely
-   present it, even if the CA is otherwise untrustworthy.  In
-   particular, doing so does not allow the CA to decrypt or intercept
-   the connection.
+   present it, even if the CA is otherwise untrustworthy.  Issuing a
+   certificate for the subscriber's public key does not grant the CA
+   access to the corresponding private key.  Presenting such a
+   certificate does not enable the CA decrypt or intercept the
+   connection.
 
    However, the subscriber presenting a certificate is not an
    endorsement of the CA.  The subscriber's role is to present a
