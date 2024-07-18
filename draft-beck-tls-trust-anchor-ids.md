@@ -321,9 +321,11 @@ Additionally, a relying party that computes the `trust_anchors` extension based 
 
 ## Subscribers
 
-If the subscriber is a server, the mechanisms in {{dns-service-parameter}} and {{retry-mechanism}} enumerate the trust anchors for the server’s available certification paths. This mechanism assumes they are not sensitive. Servers SHOULD NOT use this mechanism to negotiate sensitive trust anchors.
+If the subscriber is a server, the mechanisms in {{dns-service-parameter}} and {{retry-mechanism}} enumerate the trust anchors for the server’s available certification paths. This mechanism assumes they are not sensitive. Servers SHOULD NOT use this mechanism to negotiate certification paths with sensitive trust anchors.
 
-This does not apply if the subscriber is a client.
+In servers that host multiple services, this protocol only enumerates certification paths for the requested service. If, for example, a server uses the `server_name` extension to select services, the addition to EncryptedExtensions in {{retry-mechanism}} is expected to be filtered by `server_name`. Likewise, the DNS parameter in {{dns-service-parameter}} only contains information for the corresponding service. In both cases, co-located services are not revealed.
+
+The above does not apply if the subscriber is a client. This protocol does not enumerate the available certification paths for a client.
 
 # Security Considerations
 
