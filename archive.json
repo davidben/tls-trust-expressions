@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-16T01:37:02.131032+00:00",
+  "timestamp": "2024-07-18T01:34:00.223996+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -2010,6 +2010,77 @@
           "body": "",
           "createdAt": "2024-07-10T06:27:04Z",
           "updatedAt": "2024-07-10T06:27:04Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 42,
+      "id": "PR_kwDOKigz-s51j7wn",
+      "title": "Switch a couple lines in the explainer",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/42",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The ability to transparently provision multiple certificates is less a goal from first principles and more a direct corrollary of minimizing server operator burden.",
+      "createdAt": "2024-07-16T21:05:15Z",
+      "updatedAt": "2024-07-16T21:05:15Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "f7dffcdaa98f77d8aa8a3bb77f0fe9ddca1f745e",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "explainer-switch-lines",
+      "headRefOid": "f1852f26144f3469c4f55451acdc1f3dcb8bb3c7",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 43,
+      "id": "PR_kwDOKigz-s51rrbT",
+      "title": "Add a discussion of targetting attacks to Security Considerations",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/43",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-07-17T19:08:51Z",
+      "updatedAt": "2024-07-17T19:23:52Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "f7dffcdaa98f77d8aa8a3bb77f0fe9ddca1f745e",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "targetting",
+      "headRefOid": "334d1291f1a3bab23f30ef29185549bb5414e42f",
+      "closedAt": "2024-07-17T19:23:50Z",
+      "mergedAt": "2024-07-17T19:23:50Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "7d1e507ed75fa0fa149c62243afdb0df1ec09279"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6CKrf5",
+          "commit": {
+            "abbreviatedOid": "e583eb7"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-17T19:18:55Z",
+          "updatedAt": "2024-07-17T19:18:55Z",
           "comments": []
         }
       ]
