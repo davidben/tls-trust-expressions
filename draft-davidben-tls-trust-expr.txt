@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 18 January 2025                                      Google LLC
-                                                            17 July 2024
+Expires: 19 January 2025                                      Google LLC
+                                                            18 July 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 January 2025.
+   This Internet-Draft will expire on 19 January 2025.
 
 Copyright Notice
 
@@ -108,7 +108,7 @@ Table of Contents
      11.1.  Relying Party Policies and Agility
      11.2.  Incorrect Selection Metadata
      11.3.  Serving Multiple Certificates
-     11.4.  Targetting TLS Interception
+     11.4.  Targeting TLS Interception
    12. IANA Considerations
      12.1.  TLS ExtensionType Updates
      12.2.  Media Type Updates
@@ -1415,7 +1415,7 @@ Table of Contents
    critical process, the full considerations of which are outside the
    scope of this document.
 
-11.4.  Targetting TLS Interception
+11.4.  Targeting TLS Interception
 
    Trust Expressions, like certificate_authorities, enables a TLS server
    to differentiate between clients that do and do not trust some CA.
