@@ -117,7 +117,6 @@ Should the entity operating this trust anchor be caught mis-issuing certificates
 
 
 
-*   Proposed argument 2c discusses the tangentially-related possibility of compliance with trust mandates leading towards TLS private key and connection secret escrow requirements, though such a mandate would likely result in the removal of trust anchors operated by this entity.
 *   Proposed argument 3 further discusses the impacts of trust anchor negotiation on the detectability of active interception in TLS. This is particularly relevant to this scenario, since distrust is allowed upon detection of misbehavior.
 
 
@@ -168,7 +167,6 @@ Such a course of action would have significant security consequences, and would 
 
 
 
-*   Proposed argument 2c discusses the tangentially-related possibility of compliance with trust mandates leading towards TLS private key and connection secret escrow requirements.
 *   Proposed argument 3 further discusses the impacts of trust anchor negotiation on the detectability of active interception in TLS. The detectability is less significant for this scenario since distrust is forbidden.
 
 
@@ -212,7 +210,7 @@ This outcome relies on root programs subverting their own trust anchor inclusion
 
 Contrary to this proposed argument, TLS Trust Expressions removes some pressure on TLS clients adding new trust anchors due to their broad deployment. Today, a root program might heavily consider the interoperability concerns of not adding a widely-trusted trust anchor due to web servers’ inability to distinguish TLS client trust. If instead, the root program knew that web servers could use trust expressions to deliver TLS client -specific certificates, there is no longer an interoperability need to trust the same set of trust anchors as all other TLS clients.
 
-This is further explored in the Security Considerations section of the draft.
+This is further explored in the [Security Considerations](https://github.com/davidben/tls-trust-expressions/blob/main/draft-davidben-tls-trust-expr.md#security-considerations) section of the draft.
 
 
 ### Proposed Argument 2a: Pre-provisioning untrusted certificates increases the chances of mandated client trust 
