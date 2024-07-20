@@ -20,6 +20,7 @@ This repository contains a pair of draft mechanisms for negotiating certificate 
 
 * [Explainer](explainer.md)
 * [PKI Transition Strategies](pki-transition-strategies.md)
+* [Surveillance and Trust Anchor Negotiation](surveillance-and-trust-anchor-negotiation.md)
 
 ## Contributing
 
