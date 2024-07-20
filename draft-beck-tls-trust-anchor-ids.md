@@ -186,7 +186,7 @@ This section defines the `trust_anchors` extension, which is sent in the ClientH
 
 ## Overview
 
-The `trust_anchors` extension is sent in ClientHello, CertificateRequest, or Certificate messages, defined using the structures below:
+The `trust_anchors` extension is defined using the structures below:
 
 ~~~
 enum { trust_anchors(TBD), (2^16-1) } ExtensionType;
