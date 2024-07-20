@@ -293,7 +293,7 @@ In order for Trust Expressions to meaningfully change the decision calculus on m
 
 ### Proposed Argument 3: Mandated deployment of certificates makes misbehavior more difficult to detect
 
-The mandated trust and deployment of certificates from the government-issued trust anchor makes it harder to detect whether a connection is being intercepted since Trust Expressions support allows for broader negotiation and use of certificates from this trust anchor.
+_The mandated trust and deployment of certificates from the government-issued trust anchor makes it harder to detect whether a connection is being intercepted since Trust Expressions support allows for broader negotiation and use of certificates from this trust anchor._
 
 Malicious activity or intention to surveil a connection cannot be deduced from the certification authority that issued a certificate used in TLS. If certificates from a specific trust anchor were de facto malicious, that trust anchor should have not been added or removed if already present. Scenario 5 explores the consequences of being unable to distrust a misbehaving trust anchor. 
 
