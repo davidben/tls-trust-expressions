@@ -229,7 +229,7 @@ To accommodate this, when receiving a ClientHello with `trust_anchors`, the serv
 
 If this collection is non-empty, the server sends a `trust_anchors` extension in EncryptedExtensions, containing the corresponding trust anchor identifiers in preference order.
 
-When a client sends a subset or empty list in `trust anchors`, it SHOULD implement the following retry mechanism:
+When a client sends a subset or empty list in `trust_anchors`, it SHOULD implement the following retry mechanism:
 
 If the client receives either a connection error or an untrusted certificate, the client looks in server’s EncryptedExtensions for a trust anchor identifier that it trusts. If there are multiple, it selects an option based on the server’s preference order and its local preferences. It then makes a new connection to the same endpoint, sending only the selected trust anchor identifier in the ClientHello `trust_anchors` extension. If the EncryptedExtensions had no `trust_anchor` extension, or no match was found, the client returns the error to the application.
 
