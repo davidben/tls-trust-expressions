@@ -427,7 +427,7 @@ Table of Contents
    extension in EncryptedExtensions, containing the corresponding trust
    anchor identifiers in preference order.
 
-   When a client sends a subset or empty list in trust anchors, it
+   When a client sends a subset or empty list in trust_anchors, it
    SHOULD implement the following retry mechanism:
 
    If the client receives either a connection error or an untrusted
