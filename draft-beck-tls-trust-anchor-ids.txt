@@ -386,7 +386,7 @@ Table of Contents
    fallback certificate selection.
 
    If the subscriber sends a certification path that matches the relying
-   party’strust_anchors extension, as described in Section 4.2, the
+   party’s trust_anchors extension, as described in Section 4.2, the
    subscriber MUST send an empty trust_anchors extension in the first
    CertificateEntry of the Certificate message.  In this case, the
    certificate_list flexibility described in Section 4.4.2 of [RFC8446]
