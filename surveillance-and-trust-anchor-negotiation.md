@@ -204,7 +204,7 @@ The primary purpose of a TLS client’s root program is to assess the trustworth
 *   **Dedication:** undertaking thorough incident response and remediation, adopting advances in PKI technology, timely and transparent communication
 *   **Value Proposition:** demonstrating that the benefits of inclusion outweigh the significant risk of adding new trust anchors
 
-Broad deployment of certificates issued by a given trust anchor is, at best, only a slightly meaningful signal in determining the value proposition of including that trust anchor, such as when other transparently-operated root programs have already vetted the trust anchor’s operator and deemed them trustworthy. Such initial vetting relied on other clear signals of trustworthiness including ability to comply with technical requirements, complete and accurate policy and process documentation, transparent certificate issuance, timely revocation, and so on. The value of existing pre-deployment vanishes when such deployment was forced upon server operators via mandate, and could even be reasonably interpreted as a sign of untrustworthiness. 
+Broad deployment of certificates issued by a given trust anchor is, at best, only a slightly meaningful signal in determining the value proposition of including that trust anchor, and has no bearing on the trustworthiness, competency, or dedication of its operator. The value of existing pre-deployment vanishes when such deployment was forced upon server operators via mandate, and could even be reasonably interpreted as a sign of untrustworthiness. 
 
 This outcome relies on root programs subverting their own trust anchor inclusion process based on the government-mandated popularity of unused TLS certificates on the web. This process subversion would be highly visible to external parties, risking significant blowback from users, regulators from other jurisdictions, and other members of the TLS ecosystem.
 
@@ -291,7 +291,7 @@ In order for Trust Expressions to meaningfully change the decision calculus on m
 *   The government would mandate software providers to change clients to self identify as being in jurisdiction, but not outright mandate a change to directly include surveillance measures (e.g. a custom browser extension, disclosing [SSLKEYLOGFILE](https://www.ietf.org/archive/id/draft-thomson-tls-keylogfile-00.html) contents)
 
 
-### Proposed Argument 3: 
+### Proposed Argument 3: Mandated deployment of certificates makes misbehavior more difficult to detect
 
 The mandated trust and deployment of certificates from the government-issued trust anchor makes it harder to detect whether a connection is being intercepted since Trust Expressions support allows for broader negotiation and use of certificates from this trust anchor.
 
