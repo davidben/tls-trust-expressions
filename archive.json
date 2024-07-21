@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-18T01:34:00.223996+00:00",
+  "timestamp": "2024-07-21T01:41:12.181291+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -875,7 +875,7 @@
       "labels": [],
       "body": "Fixes #19. The changes made here are:\r\n\r\n1. Don't prescribe an exact selection algorithm. Only prescribe the matching procedure.\r\n\r\n2. Move the expiry check into the matching procedure, because it's part of the process. (Version skew depends on this.)\r\n\r\n3. Although we don't prescribe it, give an example selection algorithm that also incorporates certificate_authorities, in response to feedback. This example is also structured differently, because it more closely aligns with how we anticipate implementing it.",
       "createdAt": "2024-05-28T17:48:51Z",
-      "updatedAt": "2024-05-30T18:02:17Z",
+      "updatedAt": "2024-07-18T21:25:40Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "b3d7b31a968b739ab15bb8e809106d46d083600d",
@@ -2019,26 +2019,42 @@
       "id": "PR_kwDOKigz-s51j7wn",
       "title": "Switch a couple lines in the explainer",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/42",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The ability to transparently provision multiple certificates is less a goal from first principles and more a direct corrollary of minimizing server operator burden.",
       "createdAt": "2024-07-16T21:05:15Z",
-      "updatedAt": "2024-07-16T21:05:15Z",
+      "updatedAt": "2024-07-18T15:39:47Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "f7dffcdaa98f77d8aa8a3bb77f0fe9ddca1f745e",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "explainer-switch-lines",
       "headRefOid": "f1852f26144f3469c4f55451acdc1f3dcb8bb3c7",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-07-18T15:39:43Z",
+      "mergedAt": "2024-07-18T15:39:42Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "74bba0f8a759712aee51a34117057096a29bcfa5"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6CTsBz",
+          "commit": {
+            "abbreviatedOid": "f1852f2"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-18T15:30:29Z",
+          "updatedAt": "2024-07-18T15:30:29Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 43,
@@ -2084,6 +2100,228 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 44,
+      "id": "PR_kwDOKigz-s51tv2A",
+      "title": "Clarify the Serving Multiple Certificates section",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/44",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Spell out a bit more explicitly that issuing certificates and escrowing private keys are not the same thing.",
+      "createdAt": "2024-07-18T02:29:58Z",
+      "updatedAt": "2024-07-18T02:31:47Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "221e2c2866c3732c521be7b5b2f3d399b61c6e03",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "issuance-is-not-escrow",
+      "headRefOid": "104597b55c6625172b21d64a0ac104a44ae00774",
+      "closedAt": "2024-07-18T02:31:43Z",
+      "mergedAt": "2024-07-18T02:31:43Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "4b0c7091a3419ba0f485b8f5d9f51497b5027902"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6CNHTs",
+          "commit": {
+            "abbreviatedOid": "104597b"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-18T02:31:33Z",
+          "updatedAt": "2024-07-18T02:31:33Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 45,
+      "id": "PR_kwDOKigz-s51yrya",
+      "title": "Clarify that we don't enumerate colocated services",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/45",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-07-18T14:48:36Z",
+      "updatedAt": "2024-07-18T19:56:24Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "4b0c7091a3419ba0f485b8f5d9f51497b5027902",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "hidden-services-are-fine",
+      "headRefOid": "e542bb876a7a6eede6390060ef25dad956f825cf",
+      "closedAt": "2024-07-18T19:56:21Z",
+      "mergedAt": "2024-07-18T19:56:21Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "be4a37e795f0db3476b845114466c0ae1ee8b6d0"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6CVwei",
+          "commit": {
+            "abbreviatedOid": "e542bb8"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-18T19:53:02Z",
+          "updatedAt": "2024-07-18T19:53:02Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 46,
+      "id": "PR_kwDOKigz-s510q_l",
+      "title": "Clarify who allocates trust anchor IDs",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/46",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "It's pretty clear from the rest of the document that there is no downside to coordinating on these IDs (in fact the CertificatePropertyList extension presumes they are global), but say it explicitly for folks who did not follow this.",
+      "createdAt": "2024-07-18T19:50:37Z",
+      "updatedAt": "2024-07-18T21:25:18Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "74bba0f8a759712aee51a34117057096a29bcfa5",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "id-allocation",
+      "headRefOid": "291f033c69d7d7d2b05a22c0f6930000b0a1f3a5",
+      "closedAt": "2024-07-18T19:56:29Z",
+      "mergedAt": "2024-07-18T19:56:29Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "a0827b777a96e5e537f7fd2395a5d4f9e11563c0"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6CVwHW",
+          "commit": {
+            "abbreviatedOid": "291f033"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-18T19:51:59Z",
+          "updatedAt": "2024-07-18T19:51:59Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 47,
+      "id": "PR_kwDOKigz-s519kgU",
+      "title": "Add surveillance-and-trust-anchor-negotiation.md",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/47",
+      "state": "MERGED",
+      "author": "devonobrien",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-07-20T00:52:42Z",
+      "updatedAt": "2024-07-20T00:58:01Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "a0827b777a96e5e537f7fd2395a5d4f9e11563c0",
+      "headRepository": "devonobrien/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "1bf7683b9831b9ac4da3d5219f1ad2cb80253f8d",
+      "closedAt": "2024-07-20T00:58:01Z",
+      "mergedAt": "2024-07-20T00:58:01Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "a1e3b259113c8f9d0334264b8279dead3c8a512e"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 48,
+      "id": "PR_kwDOKigz-s519laa",
+      "title": "Add link to surveillance analysis to README.md",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/48",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-07-20T01:02:49Z",
+      "updatedAt": "2024-07-20T01:03:38Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "a1e3b259113c8f9d0334264b8279dead3c8a512e",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "f6639d35475b544567a3405ff01c8a19baa2b432",
+      "closedAt": "2024-07-20T01:03:38Z",
+      "mergedAt": "2024-07-20T01:03:38Z",
+      "mergedBy": "devonobrien",
+      "mergeCommit": {
+        "oid": "a8117bafc5dee0c5ed1482ace89c2f839bf4a7b3"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 49,
+      "id": "PR_kwDOKigz-s51-Eze",
+      "title": "Don't list the TLS messages twice",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/49",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "We list the TLS messages that carry the extension twice in a row, and the second time we got it wrong. Dedup them.",
+      "createdAt": "2024-07-20T04:54:20Z",
+      "updatedAt": "2024-07-20T20:23:50Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "24d91689c620e30b6d1f5277232aa2e385c59c7f",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "dedup-msg-list",
+      "headRefOid": "1703b26c165587fa01b13c46a92c8e7c95914cd4",
+      "closedAt": "2024-07-20T20:22:05Z",
+      "mergedAt": "2024-07-20T20:22:05Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "9fa4aa7956ec56ba0344757dfd45ca4ce607aeda"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
