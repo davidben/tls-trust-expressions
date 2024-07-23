@@ -148,7 +148,45 @@ This means:
 
 ## Overview
 
-The two protocols have very different approaches, so see the [Trust Expressions](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-overview) and [Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html#name-introduction) drafts for overviews of the two protocols.
+[RFC 8446](https://www.rfc-editor.org/rfc/rfc8446.html) defines the [Certificate Authorities](https://www.rfc-editor.org/rfc/rfc8446.html#section-4.2.4) extension which allows clients (and servers) to send the list of supported CAs as a list of X.509 names. This mechanism is sufficient to negotiate trust anchors, but is an inefficient use of bandwidth. Web PKIs often have over 100 CAs, whose names average 100 bytes each.
+
+The two protocols use different approaches to address these bandwidth concerns, with different tradeoffs.
+
+### Trust Expressions
+
+Trust Expressions compresses the certificate authorities list be referencing "trust stores", maintained by root programs. Clients send "trust expressions", which reference these trust stores by name and version, and optionally subset them down by excluding portions of them. The full CA list is then the union of the trust expressions sent by the client.
+
+When CAs issue certificates to servers, they include "trust store inclusion" metadata, which contain sufficient information for servers to evaluate trust expressions and determine whether their candidate certificates match the trust expression.
+
+To support this compression scheme, participating CAs and root programs must coordinate to ensure all the information configured at clients and servers is consistent. This coordination is in the form of a "trust store manifest" structure, published by the root program and periodically fetched by the CA. The protocol additionally must accommodate a "version skew" problem where the client references a newer trust store version than the server has available. Most of the protocol's complexity comes from these two parts.
+
+### Trust Anchor Identifiers
+
+The TLS extension in Trust Anchor Identifiers consists of three parts:
+
+1. To mitigate large X.509 names, we introduce short "trust anchor identifiers" to uniquely identify each participating CA, an estimated 5 bytes per CA. These are sent in a `trust_anchors` extension, which is analogous to `certificate_authorities`, but uses these much shorter identifiers.
+
+2. At 5 bytes per CA, bandwidth and privacy constraints may still prevent a client from enumerating its CA list. We thus define an extension to [HTTPS/SVCB](https://www.rfc-editor.org/rfc/rfc9460.html) DNS records for servers to list their supported trust anchors by ID. The client fetches this, selects the desired option, and requests it in `trust_anchors`.
+
+3. To accommodate stale DNS records, or cases where the DNS mechanism does not work, servers send a list of available trust anchors in the TLS handshake. If the client rejects the certificate, it can retry with more definitive information from the server and send a more accurate `trust_anchors` request.
+
+### Comparison
+
+Although they aim to solve the same problem, the two proposals work in very different ways:
+
+* Trust Anchor IDs are usable by more kinds of PKIs. Trust Expressions express trust anchor lists relative to named “trust stores”, maintained by root programs. Arbitrary lists may not be easily expressible. Trust Anchor IDs does not have this restriction.
+
+* When used with large trust stores, the retry mechanism in Trust Anchor IDs requires a new connection. In most applications, this must be implemented outside the TLS stack, so more components must be changed and redeployed. In deployments that are limited by client changes, this may be a more difficult transition. (The draft also sketches out an alternate retry scheme that avoids this.)
+
+* Trust Expressions works with static server configuration. An ideal Trust Anchor IDs deployment requires automation to synchronize a server’s DNS and TLS configuration. [draft-ietf-tls-wkech](https://datatracker.ietf.org/doc/draft-ietf-tls-wkech/) could be a starting point for this automation. In deployments that are limited by server changes, this may be a more difficult transition.
+
+* Trust Expressions require that CAs continually fetch information from manifests that are published by root programs, while Trust Anchor IDs rely only on static pre-assigned trust anchor identifiers.
+
+* Trust Anchor IDs, when trust anchors are conditionally sent, have different fingerprinting properties. See [Privacy Considerations](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html#name-privacy-considerations).
+
+* Trust Anchor IDs can only express large client trust stores (for server certificates), not large server trust stores. Large trust stores rely on the retry mechanism described in [the draft](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html#name-retry-mechanism), which is not available to client certificates.
+
+The two mechanisms can be deployed together. A subscriber can have metadata for both mechanisms available, and a relying party can advertise both.
 
 ## Key Scenarios
 
