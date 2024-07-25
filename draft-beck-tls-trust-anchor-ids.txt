@@ -92,21 +92,23 @@ Table of Contents
      5.2.  Configuring Services
      5.3.  Client Behavior
    6.  ACME Extension
-   7.  Use Cases
-   8.  Privacy Considerations
-     8.1.  Relying Parties
-     8.2.  Subscribers
-   9.  Security Considerations
-     9.1.  Relying Party Policies and Agility
-     9.2.  Incorrect Selection Metadata
-     9.3.  Serving Multiple Certificates
-     9.4.  Targeting TLS Interception
-   10. IANA Considerations
-     10.1.  TLS ExtensionType Updates
-     10.2.  CertificatePropertyType Registry
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
+   7.  Media Type
+   8.  Use Cases
+   9.  Privacy Considerations
+     9.1.  Relying Parties
+     9.2.  Subscribers
+   10. Security Considerations
+     10.1.  Relying Party Policies and Agility
+     10.2.  Incorrect Selection Metadata
+     10.3.  Serving Multiple Certificates
+     10.4.  Targeting TLS Interception
+   11. IANA Considerations
+     11.1.  TLS ExtensionType Updates
+     11.2.  Media Type Updates
+     11.3.  CertificatePropertyType Registry
+   12. References
+     12.1.  Normative References
+     12.2.  Informative References
    Appendix A.  Comparison to TLS Trust Expressions
    Acknowledgements
    Authors' Addresses
@@ -441,7 +443,7 @@ Table of Contents
 
    When the relying party is a client, it may choose not to send its
    full trust anchor identifier list due to fingerprinting risks (see
-   Section 8), or because the list is too large.  The client MAY send a
+   Section 9), or because the list is too large.  The client MAY send a
    subset of supported trust anchors, or an empty list.  This subset may
    be determined by, possibly outdated, prior knowledge about the
    server, such as Section 5 or past connections.
@@ -571,24 +573,87 @@ Table of Contents
 
 6.  ACME Extension
 
-   We reuse the ACME extension defined in Section 7 of
-   [I-D.davidben-tls-trust-expr], except that each
-   CertificatePropertyList will contain a trust_anchor_identifier
-   property.
+   This section extends ACME [RFC8555] to be able to issue certificate
+   paths, each with an associated CertificatePropertyList by defining a
+   new media type in Section 7.
 
-   [[TODO: Move this over from the trust expressions draft, if this ends
-   up being the canonical one.]]
+   When an ACME server processes an order object, it MAY issue multiple
+   certification paths, each with an associated Trust Anchor Identifier.
+   The ACME server encodes each certification path using the
+   application/pem-certificate-chain-with-properties format, defined in
+   Section 7).  Note this format is required to form a complete
+   certification path.  The CA MUST return a result that may be verified
+   by relying parties without path building [RFC4158].
 
-7.  Use Cases
+   The ACME server provides additional results to the client with the
+   link relation header fields described in Section 7.4.2 of [RFC8555].
+   When fetching certificates, the ACME client includes application/pem-
+   certificate-chain-with-properties in its Accept header to indicate it
+   supports the new format.  Unlike the original mechanism described in
+   [RFC8555], these certification paths do not require heuristics to be
+   used.  Instead, the server uses the associated Trust Anchor
+   Identifiers to select a path when requested.
+
+   When the ACME client wishes to renew any of the certification paths
+   issued in this order, it repeats this process to renew each path
+   concurrently.  Thus this extension is suitable when the CA is willing
+   to issue and renew all paths together.  It may not be appropriate if
+   the paths have significantly different processing times or lifetimes.
+   Future enhancements to ACME may be defined to address these cases,
+   e.g. by allowing the ACME client to make independent orders.
+
+7.  Media Type
+
+   A certification path with its associated CertificationPropertyList
+   may be represented in a PEM [RFC7468] structure in a file of type
+   "application/pem-certificate-chain-with-properties".  Files of this
+   type MUST use the strict encoding and MUST NOT include explanatory
+   text.  The ABNF [RFC5234] for this format is as follows, where
+   "stricttextualmsg" and "eol" are as defined in Section 3 of
+   [RFC7468]:
+
+   certchainwithproperties = stricttextualmsg eol stricttextualmsg
+                             *(eol stricttextualmsg)
+
+   The first element MUST be the encoded CertificatePropertyList.  The
+   second element MUST be an end-entity certificate.  Each following
+   certificate MUST directly certify the one preceding it.  The
+   certificate representing the trust anchor MUST be omitted from the
+   path.
+
+   CertificatePropertyLists are encoded using the "CERTIFICATE
+   PROPERTIES" label.  The encoded data is a serialized
+   CertificatePropertyList, defined in Section 3.1.
+
+   Certificates are encoded as in Section 5.1 of [RFC7468], except DER
+   [X690] MUST be used.
+
+   The following is an example file with a certification path containing
+   an end-entity certificate and an intermediate certificate.
+
+   -----BEGIN CERTIFICATE PROPERTIES-----
+   TODO fill in an example
+   -----END CERTIFICATE PROPERTIES-----
+   -----BEGIN CERTIFICATE-----
+   TODO fill in an example
+   -----END CERTIFICATE-----
+   -----BEGIN CERTIFICATE-----
+   TODO fill in an example
+   -----END CERTIFICATE-----
+
+   The IANA registration for this media type is described in
+   Section 11.2.
+
+8.  Use Cases
 
    See Section 9 of [I-D.davidben-tls-trust-expr].
 
    [[TODO: Move the text here if this document ends up being the
    canonical one.]]
 
-8.  Privacy Considerations
+9.  Privacy Considerations
 
-8.1.  Relying Parties
+9.1.  Relying Parties
 
    The negotiation mechanism described in this document is analogous to
    the certificate_authorities extension (Section 4.2.4 of [RFC8446]),
@@ -648,7 +713,7 @@ Table of Contents
    implementing the DNS service parameter can avoid a round-trip penalty
    without such state.
 
-8.2.  Subscribers
+9.2.  Subscribers
 
    If the subscriber is a server, the mechanisms in Section 5 and
    Section 4.3 enumerate the trust anchors for the server’s available
@@ -668,16 +733,16 @@ Table of Contents
    protocol does not enumerate the available certification paths for a
    client.
 
-9.  Security Considerations
+10.  Security Considerations
 
-9.1.  Relying Party Policies and Agility
+10.1.  Relying Party Policies and Agility
 
    The negotiation mechanism described in this document facilitates
    which certification path is served to relying parties, but has no
    impact on the relying party's trust preferences themselves.
 
    As a result, this enables a more flexible and agile PKI, which can
-   better mitigate security risks to users.  Section 7 discusses some
+   better mitigate security risks to users.  Section 8 discusses some
    scenarios which benefit from the multi-certificate deployment this
    document enables.  In general, robust trust anchor negotiation helps
    subscribers navigate differences in relying party requirements.  This
@@ -698,7 +763,7 @@ Table of Contents
    the ecosystem to improve interoperability, while still meeting
    relying party B's user-security goals.
 
-9.2.  Incorrect Selection Metadata
+10.2.  Incorrect Selection Metadata
 
    If the subscriber has incorrect information about trust anchor
    identifiers, it may send an untrusted certification path.  This will
@@ -707,7 +772,7 @@ Table of Contents
    is provisioned by the CA, which is already expected to provide
    accurate information.
 
-9.3.  Serving Multiple Certificates
+10.3.  Serving Multiple Certificates
 
    In a multi-certificate deployment, subscribers have a collection of
    certificates available to satisfy relying parties with potentially
@@ -740,7 +805,7 @@ Table of Contents
    critical process, the full considerations of which are outside the
    scope of this document.
 
-9.4.  Targeting TLS Interception
+10.4.  Targeting TLS Interception
 
    Trust Anchor Identifiers, like certificate_authorities, enables a TLS
    server to differentiate between clients that do and do not trust some
@@ -768,9 +833,9 @@ Table of Contents
    differentiation, with or without Trust Anchor Identifiers, has no
    significant impact.
 
-10.  IANA Considerations
+11.  IANA Considerations
 
-10.1.  TLS ExtensionType Updates
+11.1.  TLS ExtensionType Updates
 
    IANA is requested to create the following entry in the TLS
    ExtensionType Values registry, defined by [RFC8446]:
@@ -787,20 +852,56 @@ Table of Contents
 
                                  Table 1
 
-10.2.  CertificatePropertyType Registry
+11.2.  Media Type Updates
+
+   IANA is requested to create the following entry in the "Media Types"
+   registry, defined in [RFC6838]:
+
+   Type name:  application
+
+   Subtype name:  pem-certificate-chain-with-properties
+
+   Required parameters:  None
+
+   Optional parameters:  None
+
+   Encoding considerations:  7bit
+
+   Security considerations:  Carries a cryptographic certificate and its
+      associated certificate chain and additional properties.  This
+      media type carries no active content.
+
+   Interoperability considerations:  None
+
+   Published specification:  [this-RFC, Section 7]
+
+   Applications that use this media type:  ACME clients and servers,
+      HTTP servers, other applications that need to be configured with a
+      certificate chain
+
+   Additional information:  Deprecated alias names for this type:  n/a
+                            Magic number(s):  n/a
+                            File extension(s):  .pem
+                            Macintosh file type code(s):  n/a
+
+   Person & email address to contact for further information:  See
+      Authors' Addresses section.
+
+   Intended usage:  COMMON
+
+   Restrictions on usage:  n/a
+
+   Author:  See Authors' Addresses section.
+
+   Change controller:  IETF
+
+11.3.  CertificatePropertyType Registry
 
    [[TODO: Establish / add to the CertificatePropertyType registry]]
 
-11.  References
+12.  References
 
-11.1.  Normative References
-
-   [I-D.davidben-tls-trust-expr]
-              Benjamin, D., O'Brien, D., and B. Beck, "TLS Trust
-              Expressions", Work in Progress, Internet-Draft, draft-
-              davidben-tls-trust-expr-04, 28 June 2024,
-              <https://datatracker.ietf.org/doc/html/draft-davidben-tls-
-              trust-expr-04>.
+12.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -813,17 +914,31 @@ Table of Contents
               DOI 10.17487/RFC4158, September 2005,
               <https://www.rfc-editor.org/rfc/rfc4158>.
 
+   [RFC5234]  Crocker, D., Ed. and P. Overell, "Augmented BNF for Syntax
+              Specifications: ABNF", STD 68, RFC 5234,
+              DOI 10.17487/RFC5234, January 2008,
+              <https://www.rfc-editor.org/rfc/rfc5234>.
+
    [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key
               Infrastructure Certificate and Certificate Revocation List
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/rfc/rfc5280>.
 
+   [RFC6838]  Freed, N., Klensin, J., and T. Hansen, "Media Type
+              Specifications and Registration Procedures", BCP 13,
+              RFC 6838, DOI 10.17487/RFC6838, January 2013,
+              <https://www.rfc-editor.org/rfc/rfc6838>.
+
    [RFC6973]  Cooper, A., Tschofenig, H., Aboba, B., Peterson, J.,
               Morris, J., Hansen, M., and R. Smith, "Privacy
               Considerations for Internet Protocols", RFC 6973,
               DOI 10.17487/RFC6973, July 2013,
               <https://www.rfc-editor.org/rfc/rfc6973>.
+
+   [RFC7468]  Josefsson, S. and S. Leonard, "Textual Encodings of PKIX,
+              PKCS, and CMS Structures", RFC 7468, DOI 10.17487/RFC7468,
+              April 2015, <https://www.rfc-editor.org/rfc/rfc7468>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -857,7 +972,14 @@ Table of Contents
               Encoding Rules (CER) and Distinguished Encoding Rules
               (DER)", ISO/IEC 8825-1:2021, 2021.
 
-11.2.  Informative References
+12.2.  Informative References
+
+   [I-D.davidben-tls-trust-expr]
+              Benjamin, D., O'Brien, D., and B. Beck, "TLS Trust
+              Expressions", Work in Progress, Internet-Draft, draft-
+              davidben-tls-trust-expr-04, 28 June 2024,
+              <https://datatracker.ietf.org/doc/html/draft-davidben-tls-
+              trust-expr-04>.
 
    [I-D.ietf-tls-wkech]
               Farrell, S., Salz, R., and B. M. Schwartz, "A well-known
@@ -906,7 +1028,7 @@ Appendix A.  Comparison to TLS Trust Expressions
       identifiers.
 
    *  trust_anchors, when trust anchors are conditionally sent, has
-      different fingerprinting properties.  See Section 8.
+      different fingerprinting properties.  See Section 9.
 
    *  trust_anchors can only express large client trust stores (for
       server certificates), not large server trust stores.  Large trust
