@@ -252,7 +252,7 @@ When the extension is sent in EncryptedExtensions, the `extension_data` is a Tru
 
 When the extension is sent in Certificate, the `extension_data` MUST be empty and indicates that the sender sent the certificate because the certificate matched a trust anchor identifier sent by the peer. When used in this form, the extension may only be sent in the first CertificateEntry. It MUST NOT be sent in subsequent ones.
 
-## Certificate Selection {#certificate-selection}
+## Certificate Selection
 
 A `trust_anchors` extension in the ClientHello or CertificateRequest is processed similarly to the `certificate_authorities` extension. The relying party indicates some set of supported trust anchors in the ClientHello or CertificateRequest `trust_anchors` extension. The subscriber then selects a certificate from its candidate certification paths (see {{subscriber-configuration}}), as described in {{Section 4.4.2.2 of RFC8446}} and {{Section 4.4.2.3 of RFC8446}}. This process is extended as follows:
 
