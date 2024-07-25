@@ -1509,7 +1509,7 @@ TrustAnchorIdentifier TrustAnchorIdentifierList&lt;0..2^16-1&gt;;
 <p id="section-4.3-5">When a client sends a subset or empty list in <code>trust_anchors</code>, it SHOULD implement the following retry mechanism:<a href="#section-4.3-5" class="pilcrow">¶</a></p>
 <p id="section-4.3-6">If the client receives either a connection error or an untrusted certificate, the client looks in server’s EncryptedExtensions for a trust anchor identifier that it trusts. If there are multiple, it selects an option based on the server’s preference order and its local preferences. It then makes a new connection to the same endpoint, sending only the selected trust anchor identifier in the ClientHello <code>trust_anchors</code> extension. If the EncryptedExtensions had no <code>trust_anchor</code> extension, or no match was found, the client returns the error to the application.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
 <p id="section-4.3-7">Clients SHOULD retry at most once per connection attempt.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
-<p id="section-4.3-8">[[TODO: Retrying in a new connection is expensive and cannot be done from within the TLS stack in most implementations. Consider handshake modifications to instead retry within the same connection.]]<a href="#section-4.3-8" class="pilcrow">¶</a></p>
+<p id="section-4.3-8">[[TODO: Retrying in a new connection is expensive and cannot be done from within the TLS stack in most implementations. Consider handshake modifications to instead retry within the same connection. https://github.com/davidben/tls-trust-expressions/issues/53 ]]<a href="#section-4.3-8" class="pilcrow">¶</a></p>
 <p id="section-4.3-9">This mechanism allows the connection to recover from a certificate selection failure, e.g. due to the client not revealing its full preference list, at additional latency cost. <a href="#dns-service-parameter" class="auto internal xref">Section 5</a> describes an optimization which can avoid this cost.<a href="#section-4.3-9" class="pilcrow">¶</a></p>
 <p id="section-4.3-10">This mechanism also allows servers to safely send fallback certificates that may not be as ubiquitously acceptable. Without some form of trust anchor negotiation, servers are limited to selecting certification paths that are ubiquitously trusted in all supported clients. This often means sending extra cross-certificates to target the lowest common denominator at a bandwidth cost. If the ClientHello contains <code>trust_anchors</code>, the server MAY opportunistically send a less ubiquitous, more bandwidth-efficient path based on local heuristics, with the expectation that the client will retry when the heuristics fail.<a href="#section-4.3-10" class="pilcrow">¶</a></p>
 </section>
@@ -2080,7 +2080,7 @@ TODO fill in an example
 </li>
       </ul>
 <p id="appendix-A-3">The two mechanisms can be deployed together. A subscriber can have metadata for both mechanisms available, and a relying party can advertise both.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
-<p id="appendix-A-4">[[TODO: remove this or move to supporting documentation if this becomes the canonical thing]]<a href="#appendix-A-4" class="pilcrow">¶</a></p>
+<p id="appendix-A-4">[[TODO: remove this or move to supporting documentation after more working group consensus]]<a href="#appendix-A-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="acknowledgements">

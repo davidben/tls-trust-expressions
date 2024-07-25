@@ -476,8 +476,8 @@ Table of Contents
 
    [[TODO: Retrying in a new connection is expensive and cannot be done
    from within the TLS stack in most implementations.  Consider
-   handshake modifications to instead retry within the same
-   connection.]]
+   handshake modifications to instead retry within the same connection.
+   https://github.com/davidben/tls-trust-expressions/issues/53 ]]
 
    This mechanism allows the connection to recover from a certificate
    selection failure, e.g. due to the client not revealing its full
@@ -1226,8 +1226,8 @@ Appendix A.  Comparison to TLS Trust Expressions
    metadata for both mechanisms available, and a relying party can
    advertise both.
 
-   [[TODO: remove this or move to supporting documentation if this
-   becomes the canonical thing]]
+   [[TODO: remove this or move to supporting documentation after more
+   working group consensus]]
 
 Acknowledgements
 
