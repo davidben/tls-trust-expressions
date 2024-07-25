@@ -445,6 +445,14 @@ A subscriber may obtain certificate paths from multiple CAs for redundancy in th
 
 To support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the union of the certificate paths returned by each ACME server.
 
+## Public Key Pinning
+
+To reduce the risk of attacks from misissued certificates, relying parties sometimes employ public key pinning {{?RFC7469}}. This enforces that one of some set of public keys appear in the final certificate path. This effectively reduces a relying party's trust anchor list to a subset of the original set.
+
+As other relying parties in the PKI evolve, the pinning relying party limits the subscriber to satisfy both the pinning constraint and newer constraints in the PKI. This can lead to conflicts if, for example, the pinned CA is distrusted by a newer relying party. The subscriber is then forced to either break the pinning relying party, or break the newer ones.
+
+This protocol reduces this conflict if the pinning relying party uses its effective, reduced trust anchor list. The subscriber can then, as needed, use a certificate from the pinned CA with the pinning relying party, and another CA with newer relying parties.
+
 # Privacy Considerations
 
 ## Relying Parties
