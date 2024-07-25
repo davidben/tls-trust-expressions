@@ -285,7 +285,7 @@ If the client receives either a connection error or an untrusted certificate, th
 
 Clients SHOULD retry at most once per connection attempt.
 
-[[TODO: Retrying in a new connection is expensive and cannot be done from within the TLS stack in most implementations. Consider handshake modifications to instead retry within the same connection.]]
+[[TODO: Retrying in a new connection is expensive and cannot be done from within the TLS stack in most implementations. Consider handshake modifications to instead retry within the same connection. https://github.com/davidben/tls-trust-expressions/issues/53 ]]
 
 This mechanism allows the connection to recover from a certificate selection failure, e.g. due to the client not revealing its full preference list, at additional latency cost. {{dns-service-parameter}} describes an optimization which can avoid this cost.
 
@@ -595,7 +595,7 @@ Change controller:
 
 The two mechanisms can be deployed together. A subscriber can have metadata for both mechanisms available, and a relying party can advertise both.
 
-[[TODO: remove this or move to supporting documentation if this becomes the canonical thing]]
+[[TODO: remove this or move to supporting documentation after more working group consensus]]
 
 # Acknowledgements
 {:numbered="false"}
