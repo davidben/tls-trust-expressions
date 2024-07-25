@@ -101,6 +101,7 @@ Table of Contents
      8.5.  Intermediate Elision
      8.6.  Conflicting Relying Party Requirements
      8.7.  Backup Certificates
+     8.8.  Public Key Pinning
    9.  Privacy Considerations
      9.1.  Relying Parties
      9.2.  Subscribers
@@ -818,6 +819,26 @@ Table of Contents
    configure multiple ACME endpoints and select from the union of the
    certificate paths returned by each ACME server.
 
+8.8.  Public Key Pinning
+
+   To reduce the risk of attacks from misissued certificates, relying
+   parties sometimes employ public key pinning [RFC7469].  This enforces
+   that one of some set of public keys appear in the final certificate
+   path.  This effectively reduces a relying party's trust anchor list
+   to a subset of the original set.
+
+   As other relying parties in the PKI evolve, the pinning relying party
+   limits the subscriber to satisfy both the pinning constraint and
+   newer constraints in the PKI.  This can lead to conflicts if, for
+   example, the pinned CA is distrusted by a newer relying party.  The
+   subscriber is then forced to either break the pinning relying party,
+   or break the newer ones.
+
+   This protocol reduces this conflict if the pinning relying party uses
+   its effective, reduced trust anchor list.  The subscriber can then,
+   as needed, use a certificate from the pinned CA with the pinning
+   relying party, and another CA with newer relying parties.
+
 9.  Privacy Considerations
 
 9.1.  Relying Parties
@@ -1182,6 +1203,10 @@ Table of Contents
    [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
               Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
               <https://www.rfc-editor.org/rfc/rfc6962>.
+
+   [RFC7469]  Evans, C., Palmer, C., and R. Sleevi, "Public Key Pinning
+              Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
+              2015, <https://www.rfc-editor.org/rfc/rfc7469>.
 
 Appendix A.  Comparison to TLS Trust Expressions
 
