@@ -150,11 +150,7 @@ Trust anchor identifiers SHOULD be allocated by the CA operator and common among
 
 ## Certificate Properties {#certificate-properties}
 
-In order to evaluate references to trust anchors, e.g. in {{trust-anchor-ids}}, subscribers require information about which trust stores contain each candidate certification path's trust anchor. This document introduces an extensible CertificatePropertyList structure to carry this information.
-
-CertificatePropertyLists are constructed by CAs and sent to subscribers, alongside the certification path itself. They contain a list of properties the subscriber may use when presenting the certificate, e.g. as an input to certificate negotiation ({{subscriber-configuration}}).
-
-A CertificatePropertyList is defined using the TLS presentation language ({{Section 3 of !RFC8446}}) below:
+This document introduces an extensible CertificatePropertyList structure for CAs to communicate additional information to subscribers, such as associated trust anchor identifiers. A CertificatePropertyList is defined using the TLS presentation language ({{Section 3 of !RFC8446}}) below:
 
 ~~~
 enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
