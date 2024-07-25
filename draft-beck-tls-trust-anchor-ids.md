@@ -573,7 +573,7 @@ Change controller:
 
 ## CertificatePropertyType Registry
 
-[[TODO: Establish / add to the CertificatePropertyType registry]]
+[[TODO: Establish a CertificatePropertyType registry.]]
 
 --- back
 
