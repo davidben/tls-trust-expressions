@@ -57,12 +57,49 @@ normative:
 
 informative:
 
+  CHROME-ROOTS:
+    title: Chrome Root Store
+    target: https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store
+    date: 2023-08-30
+    author:
+    - org: Chromium
+
   MOZILLA-ROOTS:
     title: Mozilla Included CA Certificate List
     target: https://wiki.mozilla.org/CA/Included_Certificates
     date: 2023-08-30
     author:
     - org: Mozilla
+
+  Dilithium:
+    title: CRYSTALS-Dilithium Algorithm Specifications and Supporting Documentation
+    target: https://pq-crystals.org/dilithium/data/dilithium-specification-round3-20210208.pdf
+    date: 2021-02-08
+    author:
+    -
+      ins: "S. Bai"
+      name: "Shi Bai"
+    -
+      ins: "L. Ducas"
+      name: "Léo Ducas"
+    -
+      ins: "E. Kiltz"
+      name: "Eike Kiltz"
+    -
+      ins: "T. Lepoint"
+      name: "Tancrède Lepoint"
+    -
+      ins: "V. Lyubashevsky"
+      name: "Vadim Lyubashevsky"
+    -
+      ins: "P. Schwabe"
+      name: "Peter Schwabe"
+    -
+      ins: "G. Seiler"
+      name: "Gregor Seiler"
+    -
+      ins: "D. Stehlé"
+      name: "Damien Stehlé"
 
 --- abstract
 
@@ -342,10 +379,71 @@ The IANA registration for this media type is described in {{media-type-updates}}
 
 # Use Cases
 
-See {{Section 9 of ?I-D.davidben-tls-trust-expr}}.
+## Key Rotation
 
-[[TODO: Move the text here if this document ends up being the canonical one.]]
+In most X.509 deployments, a compromise of _any_ root CA's private key compromises the entire PKI. Yet key rotation in PKIs is rare. In 2023, the oldest root in {{CHROME-ROOTS}} and {{MOZILLA-ROOTS}} was 25 years old, dating to 1998. Key rotation is challenging in a single-certificate deployment model. As long as any older relying party requires the old root, subscribers cannot switch to the new root, which in turn means relying parties cannot distrust the old root, leaving them vulnerable.
 
+A multi-certificate deployment model avoids these transition problems. Key rotation may proceed as follows:
+
+1. The CA operator generates a new root CA with a separate key, but continues operating the old root CA.
+
+2. Root programs begin trusting the new root CA alongside the old one. They update their root store manifests.
+
+3. When subscribers request certificates, the CA issues certificates from both roots and provisions the subscriber with both certificates.
+
+4. Relying parties send trust expressions that evaluate to either the old or new root, and are served the appropriate option.
+
+5. Once subscribers have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator continues to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.
+
+This process requires no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party.
+
+## Adding CAs
+
+In the single-certificate model, subscribers cannot use TLS certificates issued from a new root CA until all supported relying parties have been updated to trust the new root CA. This can take years or more. Some relying parties, such as IoT devices, may never receive trust store updates at all.
+
+As a result, it is very difficult for subscribers that serve a wide variety of relying parties to use a newly-trusted root CA. When trust stores diverge too far, subscribers often must partition their services into multiple TLS endpoints (i.e. different DNS names) and direct different relying parties to different endpoints. Subscribers sometimes resort to TLS fingerprinting, to detect particular relying parties. But, as this repurposes other TLS fields for unintended purposes, this is unreliable and usually requires writing custom service-specific logic.
+
+In a multi-certificate deployment model, subscribers can begin serving certificates from new root CAs without interrupting relying parties that depend on existing ones.
+
+In some contexts, it may be possible to use other fields to select the new CA. For example, post-quantum-capable clients may be detected with the `signature_algorithms` and `signature_algorithms_cert` extensions. However, this assumes all post-quantum CAs are added at the same time. A multi-certificate model avoids this problem and allows for a more gradual deployment of post-quantum CAs.
+
+## Removing CAs
+
+Subscribers in a single-certificate model are limited to CAs in the intersection of their supported relying parties. As newer relying parties remove untrusted CAs over time,the intersection with older relying parties shrinks. Moreover, the subscriber may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For subscribers that serve many diverse relying parties, this is a disruptive and risky process.
+
+The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certificate for each relying party.
+
+## Other Root Transitions
+
+The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a CA operator may generate a postquantum root CA and use the mechanism in {{acme-extension}} to issue from the classical and postquantum roots concurrently. The subscriber will then, transparently and with no configuration change, serve both. As in {{key-rotation}}, newer relying parties can then remove the classical roots, while older relying parties continue to function.
+
+This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.
+
+[[TODO: There's one missing piece, which is that some servers may attempt to parse the signature algorithms out of the certificate chain. See https://github.com/davidben/tls-trust-expressions/issues/9 ]]
+
+## Intermediate Elision
+
+Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties.
+
+This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate, which includes a public key, signature, and X.509 metadata. An average X.509 name in the Chrome Root Store {{CHROME-ROOTS}} or Mozilla CA Certificate Program {{MOZILLA-ROOTS}} is around 100 bytes alone. Post-quantum signature algorithms will dramatically shift this tradeoff. Dilithium3 {{Dilithium}}, for example, has a total public key and signature size of 5,245 bytes.
+
+{{?I-D.ietf-tls-cert-abridge}} proposes to predistribute known intermediate certificates to relying parties, as a compression scheme. A multi-certificate deployment model provides another way to achieve this effect. To relying parties, a predistributed intermediate certificate is functionally equivalent to a root certificate. PKIs use intermediate certificates because changing root certificates requires updating relying parties, but predistributed intermediates already presume updated relying parties.
+
+A CA operator could provide subscribers with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. The negotiation mechanism in {{tls-certificate-negotiation}} would then send the shorter path to up-to-date relying parties, and the longer path to older relying parties.
+
+This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived roots may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.
+
+## Conflicting Relying Party Requirements
+
+A subscriber may need to support relying parties with different requirements. For example, in contexts where online revocation checks are expensive, unreliable, or privacy-sensitive, user security is best served by short-lived certificates. In other contexts, long-lived certificates may be more appropriate for, e.g., systems that are offline for long periods of time or have unreliable clocks.
+
+A single-certificate deployment model forces subscribers to find a single certificate that meets all requirements. User security then suffers in all contexts, as the PKI may not quite meet anyone's needs. In a multi-certificate deployment model, different contexts may use different trust anchors. A subscriber that supports multiple contexts would provision certificates for each, with certificate negotiation logic directing the right one to each relying party.
+
+## Backup Certificates
+
+A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.
+
+To support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the union of the certificate paths returned by each ACME server.
 
 # Privacy Considerations
 
@@ -481,7 +579,7 @@ Change controller:
 
 # Comparison to TLS Trust Expressions
 
-{{I-D.davidben-tls-trust-expr}} describes Trust Expressions, another trust anchor negotiation mechanism that aims to solve similar problems. The mechanisms differ in the following ways:
+{{?I-D.davidben-tls-trust-expr}} describes Trust Expressions, another trust anchor negotiation mechanism that aims to solve similar problems. The mechanisms differ in the following ways:
 
 * `trust_anchors` is usable by more kinds of PKIs. Trust Expressions express trust anchor lists relative to named “trust stores”, maintained by root programs. Arbitrary lists may not be easily expressible. `trust_anchors` does not have this restriction.
 
