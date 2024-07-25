@@ -301,13 +301,52 @@ Although this service parameter is intended to reduce trust anchor mismatches, m
 
 # ACME Extension
 
-We reuse the ACME extension defined in {{Section 7 of !I-D.davidben-tls-trust-expr}}, except that each CertificatePropertyList will contain a `trust_anchor_identifier` property.
+This section extends ACME {{!RFC8555}} to be able to issue certificate paths, each with an associated CertificatePropertyList by defining a new media type in {{media-type}}.
 
-[[TODO: Move this over from the trust expressions draft, if this ends up being the canonical one.]]
+When an ACME server processes an order object, it MAY issue multiple certification paths, each with an associated Trust Anchor Identifier. The ACME server encodes each certification path using the application/pem-certificate-chain-with-properties format, defined in {{media-type}}).  Note this format is required to form a complete certification path. The CA MUST return a result that may be verified by relying parties without path building {{?RFC4158}}.
+
+The ACME server provides additional results to the client with the link relation header fields described in {{Section 7.4.2 of !RFC8555}}. When fetching certificates, the ACME client includes application/pem-certificate-chain-with-properties in its Accept header to indicate it supports the new format. Unlike the original mechanism described in {{RFC8555}}, these certification paths do not require heuristics to be used. Instead, the server uses the associated Trust Anchor Identifiers to select a path when requested.
+
+When the ACME client wishes to renew any of the certification paths issued in this order, it repeats this process to renew each path concurrently. Thus this extension is suitable when the CA is willing to issue and renew all paths together. It may not be appropriate if the paths have significantly different processing times or lifetimes. Future enhancements to ACME may be defined to address these cases, e.g. by allowing the ACME client to make independent orders.
+
+# Media Type
+
+A certification path with its associated CertificationPropertyList may be represented in a PEM {{!RFC7468}} structure in a file of type "application/pem-certificate-chain-with-properties". Files of this type MUST use the strict encoding and MUST NOT include explanatory text.  The ABNF {{!RFC5234}} for this format is
+as follows, where "stricttextualmsg" and "eol" are as defined in
+{{Section 3 of !RFC7468}}:
+
+~~~
+certchainwithproperties = stricttextualmsg eol stricttextualmsg
+                          *(eol stricttextualmsg)
+~~~
+
+The first element MUST be the encoded CertificatePropertyList.
+The second element MUST be an end-entity certificate.  Each following
+certificate MUST directly certify the one preceding it. The certificate representing the trust anchor MUST be omitted from the path.
+
+CertificatePropertyLists are encoded using the "CERTIFICATE PROPERTIES" label. The encoded data is a serialized CertificatePropertyList, defined in {{certificate-properties}}.
+
+Certificates are encoded as in {{Section 5.1 of !RFC7468}}, except DER {{X690}} MUST be used.
+
+The following is an example file with a certification path containing an end-entity certificate and an intermediate certificate.
+
+~~~
+-----BEGIN CERTIFICATE PROPERTIES-----
+TODO fill in an example
+-----END CERTIFICATE PROPERTIES-----
+-----BEGIN CERTIFICATE-----
+TODO fill in an example
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+TODO fill in an example
+-----END CERTIFICATE-----
+~~~
+
+The IANA registration for this media type is described in {{media-type-updates}}.
 
 # Use Cases
 
-See {{Section 9 of I-D.davidben-tls-trust-expr}}.
+See {{Section 9 of ?I-D.davidben-tls-trust-expr}}.
 
 [[TODO: Move the text here if this document ends up being the canonical one.]]
 
@@ -383,6 +422,60 @@ IANA is requested to create the following entry in the TLS ExtensionType Values 
 | Value | Extension Name | TLS 1.3        | DTLS-Only | Recommended | Reference  |
 |-------|----------------|----------------|-----------|-------------|------------|
 | TBD   | trust_anchors  | CH, EE, CR, CT | N         | Y           | [this-RFC] |
+
+## Media Type Updates
+
+IANA is requested to create the following entry in the "Media Types" registry, defined in {{!RFC6838}}:
+
+Type name:
+: application
+
+Subtype name:
+: pem-certificate-chain-with-properties
+
+Required parameters:
+: None
+
+Optional parameters:
+: None
+
+Encoding considerations:
+: 7bit
+
+Security considerations:
+: Carries a cryptographic certificate and its associated certificate chain and additional properties. This media type carries no active content.
+
+Interoperability considerations:
+: None
+
+Published specification:
+: [this-RFC, {{media-type}}]
+
+Applications that use this media type:
+: ACME clients and servers, HTTP servers, other applications that need to be configured with a certificate chain
+
+Additional information:
+: <dl spacing="compact">
+  <dt>Deprecated alias names for this type:</dt><dd>n/a</dd>
+  <dt>Magic number(s):</dt><dd>n/a</dd>
+  <dt>File extension(s):</dt><dd>.pem</dd>
+  <dt>Macintosh file type code(s):</dt><dd>n/a</dd>
+  </dl>
+
+Person & email address to contact for further information:
+: See Authors' Addresses section.
+
+Intended usage:
+: COMMON
+
+Restrictions on usage:
+: n/a
+
+Author:
+: See Authors' Addresses section.
+
+Change controller:
+: IETF
 
 ## CertificatePropertyType Registry
 
