@@ -595,7 +595,7 @@ Change controller:
 
 The two mechanisms can be deployed together. A subscriber can have metadata for both mechanisms available, and a relying party can advertise both.
 
-[[TODO: remove this or move to supporting documentation if this becomes the canonical thing]]
+[[TODO: remove this or move to supporting documentation after more working group consensus]]
 
 # Acknowledgements
 {:numbered="false"}
