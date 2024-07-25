@@ -1379,10 +1379,8 @@ when, and only when, they appear in all capitaIs, as shown here.<a href="#sectio
         <h3 id="name-certificate-properties">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-certificate-properties" class="section-name selfRef">Certificate Properties</a>
         </h3>
-<p id="section-3.1-1">In order to evaluate references to trust anchors, e.g. in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>, subscribers require information about which trust stores contain each candidate certification path's trust anchor. This document introduces an extensible CertificatePropertyList structure to carry this information.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">CertificatePropertyLists are constructed by CAs and sent to subscribers, alongside the certification path itself. They contain a list of properties the subscriber may use when presenting the certificate, e.g. as an input to certificate negotiation (<a href="#subscriber-configuration" class="auto internal xref">Section 3.3</a>).<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">A CertificatePropertyList is defined using the TLS presentation language (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-3" class="relref">Section 3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>) below:<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-4">
+<p id="section-3.1-1">This document introduces an extensible CertificatePropertyList structure for CAs to communicate additional information to subscribers, such as associated trust anchor identifiers. A CertificatePropertyList is defined using the TLS presentation language (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-3" class="relref">Section 3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>) below:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-2">
 <pre>
 enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
 
@@ -1392,11 +1390,11 @@ struct {
 } CertificateProperty;
 
 CertificateProperty CertificatePropertyList&lt;0..2^16-1&gt;;
-</pre><a href="#section-3.1-4" class="pilcrow">¶</a>
+</pre><a href="#section-3.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-5">The entries in a CertificatePropertyList MUST be sorted numerically by <code>type</code> and MUST NOT contain values with a duplicate <code>type</code>. Inputs that do not satisfy these invariants are syntax errors and MUST be rejected by parsers.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
-<p id="section-3.1-6">This document defines a single property, <code>trust_anchor_identifier</code>. The <code>data</code> field of the property contains the binary representation of the trust anchor identifier of the certification path’s trust anchor, as described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. Future documents may define other properties for use with other mechanisms.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
-<p id="section-3.1-7">Subscribers MUST ignore unrecognized properties with CertificatePropertyType values. If ignoring a property would cause such subscribers to misinterpret the structure, the document defining the CertificatePropertyType SHOULD include a mechanism for CAs to negotiate the new property with the subscriber in certificate management protocols such as ACME <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>.<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">The entries in a CertificatePropertyList MUST be sorted numerically by <code>type</code> and MUST NOT contain values with a duplicate <code>type</code>. Inputs that do not satisfy these invariants are syntax errors and MUST be rejected by parsers.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">This document defines a single property, <code>trust_anchor_identifier</code>. The <code>data</code> field of the property contains the binary representation of the trust anchor identifier of the certification path’s trust anchor, as described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. Future documents may define other properties for use with other mechanisms.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.1-5">Subscribers MUST ignore unrecognized properties with CertificatePropertyType values. If ignoring a property would cause such subscribers to misinterpret the structure, the document defining the CertificatePropertyType SHOULD include a mechanism for CAs to negotiate the new property with the subscriber in certificate management protocols such as ACME <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="relying-party-configuration">
