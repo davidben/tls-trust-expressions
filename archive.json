@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-23T01:36:16.079374+00:00",
+  "timestamp": "2024-07-25T01:35:36.204021+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -440,6 +440,24 @@
       "body": "Requested by Russ Housley. There's not much ASN.1 here, but we do have an X.509 extension.",
       "createdAt": "2024-07-10T16:05:54Z",
       "updatedAt": "2024-07-10T16:06:10Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 51,
+      "id": "I_kwDOKigz-s6QwuPD",
+      "title": "Make trust anchor IDs document standalone ",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/51",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "trust-anchor-ids"
+      ],
+      "body": "The parts that were incorporated by reference from TE should be moved in as the canonical versions.",
+      "createdAt": "2024-07-25T00:20:18Z",
+      "updatedAt": "2024-07-25T00:20:18Z",
       "closedAt": null,
       "comments": []
     }
@@ -2319,6 +2337,37 @@
       "mergedBy": "bob-beck",
       "mergeCommit": {
         "oid": "9fa4aa7956ec56ba0344757dfd45ca4ce607aeda"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 50,
+      "id": "PR_kwDOKigz-s52RfPP",
+      "title": "Add an actual overview for the two drafts",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/50",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "When I originally wrote this, I was lazy and just referenced the other documents' intros. Write some text inline so the explainer works more standalone.",
+      "createdAt": "2024-07-23T23:24:35Z",
+      "updatedAt": "2024-07-23T23:39:27Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "9fa4aa7956ec56ba0344757dfd45ca4ce607aeda",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "explainer-overview",
+      "headRefOid": "db0b55683d0dec605923228b10bcf58f36755722",
+      "closedAt": "2024-07-23T23:38:46Z",
+      "mergedAt": "2024-07-23T23:38:46Z",
+      "mergedBy": "devonobrien",
+      "mergeCommit": {
+        "oid": "cb3f9c9072e913e3829902701c1441c317cbed3d"
       },
       "comments": [],
       "reviews": []
