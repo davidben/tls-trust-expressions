@@ -129,6 +129,8 @@ Trust anchor:
 Certification path:
 : An ordered list of X.509 certificates starting with the target certificate. Each certificate is issued by the next certificate, except the last, which is issued by a trust anchor.
 
+CertificatePropertyList:
+: A structure associated with a certification path, containing additional information from the CA, for use by the subscriber when presenting the certification path.
 
 # Trust Anchor Identifiers {#trust-anchor-ids}
 
@@ -145,6 +147,31 @@ Depending on the protocol, trust anchor identifiers may be represented in one of
 * For use in ASCII-compatible text protocols, a trust anchor identifier's ASCII representation is the relative object identifier in dotted decimal notation. The example identifier's ASCII representation is `32473.1`.
 
 Trust anchor identifiers SHOULD be allocated by the CA operator and common among relying parties that trust the CA. They MAY be allocated by another party, e.g. when bootstrapping an existing ecosystem, if all parties agree on the identifier. In particular, the protocol requires relying parties and subscribers to agree, and subscriber configuration typically comes from the CA.
+
+## Certificate Properties {#certificate-properties}
+
+In order to evaluate references to trust anchors, e.g. in {{trust-anchor-ids}}, subscribers require information about which trust stores contain each candidate certification path's trust anchor. This document introduces an extensible CertificatePropertyList structure to carry this information.
+
+CertificatePropertyLists are constructed by CAs and sent to subscribers, alongside the certification path itself. They contain a list of properties the subscriber may use when presenting the certificate, e.g. as an input to certificate negotiation ({{subscriber-configuration}}).
+
+A CertificatePropertyList is defined using the TLS presentation language ({{Section 3 of !RFC8446}}) below:
+
+~~~
+enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
+
+struct {
+    CertificatePropertyType type;
+    opaque data<0..2^16-1>;
+} CertificateProperty;
+
+CertificateProperty CertificatePropertyList<0..2^16-1>;
+~~~
+
+The entries in a CertificatePropertyList MUST be sorted numerically by `type` and MUST NOT contain values with a duplicate `type`. Inputs that do not satisfy these invariants are syntax errors and MUST be rejected by parsers.
+
+This document defines a single property, `trust_anchor_identifier`. The `data` field of the property contains the binary representation of the trust anchor identifier of the certification path’s trust anchor, as described in {{trust-anchor-ids}}. Future documents may define other properties for use with other mechanisms.
+
+Subscribers MUST ignore unrecognized properties with CertificatePropertyType values. If ignoring a property would cause such subscribers to misinterpret the structure, the document defining the CertificatePropertyType SHOULD include a mechanism for CAs to negotiate the new property with the subscriber in certificate management protocols such as ACME {{?RFC8555}}.
 
 ## Relying Party Configuration
 
@@ -166,19 +193,9 @@ Relying parties MAY support trust anchors without associated trust anchor identi
 
 Subscribers are configured with one or more candidate certification paths to present in TLS, in some preference order. This preference order is used when multiple candidate paths are usable for a connection. For example, the subscriber may prefer candidates that minimize message size or have more performant private keys.
 
-Each candidate path which participates in this protocol must be provisioned with the trust anchor identifier for its corresponding trust anchor.
-
-To carry this information, this document defines the `trust_anchor_identifier` property for a CertificatePropertyList {{Section 5 of !I-D.davidben-tls-trust-expr}}. This `data` field of the property contains the binary representation of the trust anchor identifier of the certification path’s trust anchor, as described in {{trust-anchor-ids}}.
-
-~~~
-enum {
-    trust_anchor_identifier(TBD), (2^16-1)
-} CertificatePropertyType;
-~~~
+Each candidate path which participates in this protocol must be provisioned with the trust anchor identifier for its corresponding trust anchor in the CertificatePropertlyList.
 
 Subscribers MAY have candidate certification paths without associated trust anchor identifiers, but such paths will not participate in this protocol. Those paths MAY participate in other trust anchor negotiation protocols, such as the `certificate_authorities` extension.
-
-[[TODO: Move the definition of CertificatePropertyList from the trust expressions draft to here, if this ends up being the canonical one. When doing so, also import media type definition.]]
 
 # TLS Extension
 
