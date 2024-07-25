@@ -1085,7 +1085,7 @@ Table of Contents
 
 11.3.  CertificatePropertyType Registry
 
-   [[TODO: Establish / add to the CertificatePropertyType registry]]
+   [[TODO: Establish a CertificatePropertyType registry.]]
 
 12.  References
 
