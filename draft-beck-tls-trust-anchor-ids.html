@@ -1197,6 +1197,29 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-use-cases" class="internal xref">Use Cases</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-key-rotation" class="internal xref">Key Rotation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-adding-cas" class="internal xref">Adding CAs</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-removing-cas" class="internal xref">Removing CAs</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.4">
+                <p id="section-toc.1-1.8.2.4.1"><a href="#section-8.4" class="auto internal xref">8.4</a>.  <a href="#name-other-root-transitions" class="internal xref">Other Root Transitions</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.5">
+                <p id="section-toc.1-1.8.2.5.1"><a href="#section-8.5" class="auto internal xref">8.5</a>.  <a href="#name-intermediate-elision" class="internal xref">Intermediate Elision</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.6">
+                <p id="section-toc.1-1.8.2.6.1"><a href="#section-8.6" class="auto internal xref">8.6</a>.  <a href="#name-conflicting-relying-party-r" class="internal xref">Conflicting Relying Party Requirements</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.7">
+                <p id="section-toc.1-1.8.2.7.1"><a href="#section-8.7" class="auto internal xref">8.7</a>.  <a href="#name-backup-certificates" class="internal xref">Backup Certificates</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
             <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
@@ -1597,8 +1620,93 @@ TODO fill in an example
       <h2 id="name-use-cases">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-use-cases" class="section-name selfRef">Use Cases</a>
       </h2>
-<p id="section-8-1">See <span><a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04#section-9" class="relref">Section 9</a> of [<a href="#I-D.davidben-tls-trust-expr" class="cite xref">I-D.davidben-tls-trust-expr</a>]</span>.<a href="#section-8-1" class="pilcrow">¶</a></p>
-<p id="section-8-2">[[TODO: Move the text here if this document ends up being the canonical one.]]<a href="#section-8-2" class="pilcrow">¶</a></p>
+<div id="key-rotation">
+<section id="section-8.1">
+        <h3 id="name-key-rotation">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-key-rotation" class="section-name selfRef">Key Rotation</a>
+        </h3>
+<p id="section-8.1-1">In most X.509 deployments, a compromise of <em>any</em> root CA's private key compromises the entire PKI. Yet key rotation in PKIs is rare. In 2023, the oldest root in <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> and <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> was 25 years old, dating to 1998. Key rotation is challenging in a single-certificate deployment model. As long as any older relying party requires the old root, subscribers cannot switch to the new root, which in turn means relying parties cannot distrust the old root, leaving them vulnerable.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">A multi-certificate deployment model avoids these transition problems. Key rotation may proceed as follows:<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-8.1-3">
+<li id="section-8.1-3.1">
+            <p id="section-8.1-3.1.1">The CA operator generates a new root CA with a separate key, but continues operating the old root CA.<a href="#section-8.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-8.1-3.2">
+            <p id="section-8.1-3.2.1">Root programs begin trusting the new root CA alongside the old one. They update their root store manifests.<a href="#section-8.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-8.1-3.3">
+            <p id="section-8.1-3.3.1">When subscribers request certificates, the CA issues certificates from both roots and provisions the subscriber with both certificates.<a href="#section-8.1-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-8.1-3.4">
+            <p id="section-8.1-3.4.1">Relying parties send trust expressions that evaluate to either the old or new root, and are served the appropriate option.<a href="#section-8.1-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-8.1-3.5">
+            <p id="section-8.1-3.5.1">Once subscribers have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator continues to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.<a href="#section-8.1-3.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-8.1-4">This process requires no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party.<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="adding-cas">
+<section id="section-8.2">
+        <h3 id="name-adding-cas">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-adding-cas" class="section-name selfRef">Adding CAs</a>
+        </h3>
+<p id="section-8.2-1">In the single-certificate model, subscribers cannot use TLS certificates issued from a new root CA until all supported relying parties have been updated to trust the new root CA. This can take years or more. Some relying parties, such as IoT devices, may never receive trust store updates at all.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">As a result, it is very difficult for subscribers that serve a wide variety of relying parties to use a newly-trusted root CA. When trust stores diverge too far, subscribers often must partition their services into multiple TLS endpoints (i.e. different DNS names) and direct different relying parties to different endpoints. Subscribers sometimes resort to TLS fingerprinting, to detect particular relying parties. But, as this repurposes other TLS fields for unintended purposes, this is unreliable and usually requires writing custom service-specific logic.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-3">In a multi-certificate deployment model, subscribers can begin serving certificates from new root CAs without interrupting relying parties that depend on existing ones.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
+<p id="section-8.2-4">In some contexts, it may be possible to use other fields to select the new CA. For example, post-quantum-capable clients may be detected with the <code>signature_algorithms</code> and <code>signature_algorithms_cert</code> extensions. However, this assumes all post-quantum CAs are added at the same time. A multi-certificate model avoids this problem and allows for a more gradual deployment of post-quantum CAs.<a href="#section-8.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="removing-cas">
+<section id="section-8.3">
+        <h3 id="name-removing-cas">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-removing-cas" class="section-name selfRef">Removing CAs</a>
+        </h3>
+<p id="section-8.3-1">Subscribers in a single-certificate model are limited to CAs in the intersection of their supported relying parties. As newer relying parties remove untrusted CAs over time,the intersection with older relying parties shrinks. Moreover, the subscriber may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For subscribers that serve many diverse relying parties, this is a disruptive and risky process.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-2">The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certificate for each relying party.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="other-root-transitions">
+<section id="section-8.4">
+        <h3 id="name-other-root-transitions">
+<a href="#section-8.4" class="section-number selfRef">8.4. </a><a href="#name-other-root-transitions" class="section-name selfRef">Other Root Transitions</a>
+        </h3>
+<p id="section-8.4-1">The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a CA operator may generate a postquantum root CA and use the mechanism in <a href="#acme-extension" class="auto internal xref">Section 6</a> to issue from the classical and postquantum roots concurrently. The subscriber will then, transparently and with no configuration change, serve both. As in <a href="#key-rotation" class="auto internal xref">Section 8.1</a>, newer relying parties can then remove the classical roots, while older relying parties continue to function.<a href="#section-8.4-1" class="pilcrow">¶</a></p>
+<p id="section-8.4-2">This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.<a href="#section-8.4-2" class="pilcrow">¶</a></p>
+<p id="section-8.4-3">[[TODO: There's one missing piece, which is that some servers may attempt to parse the signature algorithms out of the certificate chain. See https://github.com/davidben/tls-trust-expressions/issues/9 ]]<a href="#section-8.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="intermediate-elision">
+<section id="section-8.5">
+        <h3 id="name-intermediate-elision">
+<a href="#section-8.5" class="section-number selfRef">8.5. </a><a href="#name-intermediate-elision" class="section-name selfRef">Intermediate Elision</a>
+        </h3>
+<p id="section-8.5-1">Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties.<a href="#section-8.5-1" class="pilcrow">¶</a></p>
+<p id="section-8.5-2">This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate, which includes a public key, signature, and X.509 metadata. An average X.509 name in the Chrome Root Store <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> or Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> is around 100 bytes alone. Post-quantum signature algorithms will dramatically shift this tradeoff. Dilithium3 <span>[<a href="#Dilithium" class="cite xref">Dilithium</a>]</span>, for example, has a total public key and signature size of 5,245 bytes.<a href="#section-8.5-2" class="pilcrow">¶</a></p>
+<p id="section-8.5-3"><span>[<a href="#I-D.ietf-tls-cert-abridge" class="cite xref">I-D.ietf-tls-cert-abridge</a>]</span> proposes to predistribute known intermediate certificates to relying parties, as a compression scheme. A multi-certificate deployment model provides another way to achieve this effect. To relying parties, a predistributed intermediate certificate is functionally equivalent to a root certificate. PKIs use intermediate certificates because changing root certificates requires updating relying parties, but predistributed intermediates already presume updated relying parties.<a href="#section-8.5-3" class="pilcrow">¶</a></p>
+<p id="section-8.5-4">A CA operator could provide subscribers with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. A server that prioritizes the shorter path would then send the shorter path to up-to-date relying parties and the longer path to older relying parties.<a href="#section-8.5-4" class="pilcrow">¶</a></p>
+<p id="section-8.5-5">This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived roots may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.<a href="#section-8.5-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="conflicting-relying-party-requirements">
+<section id="section-8.6">
+        <h3 id="name-conflicting-relying-party-r">
+<a href="#section-8.6" class="section-number selfRef">8.6. </a><a href="#name-conflicting-relying-party-r" class="section-name selfRef">Conflicting Relying Party Requirements</a>
+        </h3>
+<p id="section-8.6-1">A subscriber may need to support relying parties with different requirements. For example, in contexts where online revocation checks are expensive, unreliable, or privacy-sensitive, user security is best served by short-lived certificates. In other contexts, long-lived certificates may be more appropriate for, e.g., systems that are offline for long periods of time or have unreliable clocks.<a href="#section-8.6-1" class="pilcrow">¶</a></p>
+<p id="section-8.6-2">A single-certificate deployment model forces subscribers to find a single certificate that meets all requirements. User security then suffers in all contexts, as the PKI may not quite meet anyone's needs. In a multi-certificate deployment model, different contexts may use different trust anchors. A subscriber that supports multiple contexts would provision certificates for each, with certificate negotiation logic directing the right one to each relying party.<a href="#section-8.6-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="backup-certificates">
+<section id="section-8.7">
+        <h3 id="name-backup-certificates">
+<a href="#section-8.7" class="section-number selfRef">8.7. </a><a href="#name-backup-certificates" class="section-name selfRef">Backup Certificates</a>
+        </h3>
+<p id="section-8.7-1">A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.<a href="#section-8.7-1" class="pilcrow">¶</a></p>
+<p id="section-8.7-2">To support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the union of the certificate paths returned by each ACME server.<a href="#section-8.7-2" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="privacy-considerations">
@@ -1912,9 +2020,21 @@ TODO fill in an example
 <a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
+<dt id="CHROME-ROOTS">[CHROME-ROOTS]</dt>
+        <dd>
+<span class="refAuthor">Chromium</span>, <span class="refTitle">"Chrome Root Store"</span>, <time datetime="2023-08-30" class="refDate">30 August 2023</time>, <span>&lt;<a href="https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store">https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Dilithium">[Dilithium]</dt>
+        <dd>
+<span class="refAuthor">Bai, S.</span>, <span class="refAuthor">Ducas, L.</span>, <span class="refAuthor">Kiltz, E.</span>, <span class="refAuthor">Lepoint, T.</span>, <span class="refAuthor">Lyubashevsky, V.</span>, <span class="refAuthor">Schwabe, P.</span>, <span class="refAuthor">Seiler, G.</span>, and <span class="refAuthor">D. Stehlé</span>, <span class="refTitle">"CRYSTALS-Dilithium Algorithm Specifications and Supporting Documentation"</span>, <time datetime="2021-02-08" class="refDate">8 February 2021</time>, <span>&lt;<a href="https://pq-crystals.org/dilithium/data/dilithium-specification-round3-20210208.pdf">https://pq-crystals.org/dilithium/data/dilithium-specification-round3-20210208.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="I-D.davidben-tls-trust-expr">[I-D.davidben-tls-trust-expr]</dt>
         <dd>
 <span class="refAuthor">Benjamin, D.</span>, <span class="refAuthor">O'Brien, D.</span>, and <span class="refAuthor">B. Beck</span>, <span class="refTitle">"TLS Trust Expressions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-davidben-tls-trust-expr-04</span>, <time datetime="2024-06-28" class="refDate">28 June 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04">https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-tls-cert-abridge">[I-D.ietf-tls-cert-abridge]</dt>
+        <dd>
+<span class="refAuthor">Jackson, D.</span>, <span class="refTitle">"Abridged Compression for WebPKI Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-cert-abridge-01</span>, <time datetime="2024-03-16" class="refDate">16 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-01">https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-01</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-wkech">[I-D.ietf-tls-wkech]</dt>
         <dd>
