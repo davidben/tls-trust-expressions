@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-25T01:35:36.204021+00:00",
+  "timestamp": "2024-07-28T01:42:08.807375+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -352,7 +352,7 @@
       "id": "I_kwDOKigz-s6KeZWJ",
       "title": "Packing trust_expressions into certificate_authorities",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/23",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
@@ -361,8 +361,8 @@
       ],
       "body": "@martinschmatz wrote the following on https://github.com/davidben/tls-trust-expressions/issues/19#issuecomment-2137282741\r\n\r\n> Just FYI: I was playing around with the idea to pack the information intended to be transported in the proposed new `trust_expressions` extension in \"fake\" root certs which can be sent to the subscriber using the _existing_ `certificate_authorities` extension \"which SHOULD be used by the receiving endpoint to guide certificate selection\" as per [RFC](https://datatracker.ietf.org/doc/html/rfc8446#section-4.2.4) (read: The server is free how to use the information). \r\n>\r\n> It is easy to create a self signed \"root cert\" with some base64 encoded information in CN etc fields to help the subscriber in the selection of the certificate chain to use for authentication. \r\n\r\nMoving this to a separate issue as issue #19 is about something completely unrelated.\r\n\r\n@martinschmatz, could you perhaps expand on this? I don't see what benefit it would have, but some of the details don't make sense to me, so perhaps I am misunderstanding.\r\n\r\nFirst, the `certificate_authorities` extension doesn't carry certificates but names. So there wouldn't be a root certificate in the first place. Base64 encoding also sounds like unnecessarily wasteful (keep in mind we want a compact scheme), though one could use a new OCTET-STRING-carrying attribute. That would still be wasteful with the rest of the ASN.1 structure, but much less so.\r\n\r\nSecond, even though RFC 8446 does not prescribe a precise way to use the information, no one implements a trust expressions matching algorithm with it today. They'll all do some variation of checking for a matching issuer among the relying party's list, because those are the semantics of the field. The allowance is because there are lots of ways to do that and integrate it with other processes.\r\n\r\nIf we were to imbue an existing field with new semantics, we're going to need a code change in the TLS stack anyway. (And, to reduce server operator burden, I think it's important that the matching algorithm be in the TLS stack, at least long-term.) At that point, there is no cost to using a new extension, so we may as well define an extension with the right semantics.\r\n\r\nFinally, there is a real cost to jamming new semantics into existing fields. In addition to the wasteful encoding, this risks weird behaviors when existing software interprets the field according to its existing semantics.",
       "createdAt": "2024-05-29T12:39:09Z",
-      "updatedAt": "2024-07-10T16:05:35Z",
-      "closedAt": null,
+      "updatedAt": "2024-07-25T20:42:27Z",
+      "closedAt": "2024-07-25T20:42:27Z",
       "comments": [
         {
           "author": "martinschmatz",
@@ -370,6 +370,13 @@
           "body": "While I value your effort towards better [crypto-]agility, I'm concerned that it'll take many years for those features to reach OS dist packages. I most certainly support your view that a server should have several cert chains available and adaptively select one pending information received by the client during TLS handshake. \r\n\r\nI therefore played around with a [much] simpler approach by sneaking information into the `certificate_authorities` extension. This explicitly not with the desire to increase agility, but to nevertheless help in the selection of the several available cert chains.\r\n\r\nAs a super simplified example, let's assume a \"fake\" root cert is built like this: \r\n```\r\nSIGALG_default=prime256v1\r\nopenssl ecparam -genkey \\\r\n                -name $SIGALG_default \\\r\n                -noout \\\r\n                -out CA_default.key \\\r\n&& \\\r\nopenssl req \\\r\n                -config /etc/pki/tls/openssl.cnf \\\r\n                -key CA_default.key \\\r\n                -subj '/ST=I want purely QSC cert chain/L=Please use Germany as geo/CN=I want sec level 5' \\\r\n                -new \\\r\n                -x509 \\\r\n                -days 7300 \\\r\n                -extensions v3_ca \\\r\n                -out CA_default.crt\r\n```\r\n\r\nThe `-subj` line is the place where cert-chain-selection-hints are added. As you can see, I expect a reasonably small, highly pragmatic set of selection parameters\r\n- Legacy, QSC, Hybrid sigalgs\r\n- The geo will give a good hint about mandated algs \r\n- The security level is key for interactions with gov\r\n- Potentially some very few more \r\n\r\nFew comments to the above: \r\n- 'cost' is small: The above adds 110 Bytes to a `ClientHello` in the `certificate_authorities` extension and can be further reduced quite a bit by anyway preferred \"code points\" (`-subj '/ST=0x2345/L=Ox4444/CN=0x0005'` adds 57 bytes only) \r\n- Per request specification of `signature_algorithms` extension can not be expected to be easily supported by the gazillion of client apps, while a general description of what the client expects will not necessarily change between requests.\r\n- Implicitly, I'm expecting a gradual, but at least initially slow growth of CAs to support Q-safe root certs. Clients will then have two cert bundles, one legacy and one Q-safe. And it'll be the clients responsibility to have the 'usual suspects' CA for the features the client is asking in its cert bundle.\r\n- Yes, servers must implement code changes, but the clients not. \r\n\r\nAs for the specific use of \"fake root certs\" for the `certificate_authorities` extension in the TE context: In the mean time, I have the suspicion that the entries in your `trust_expressions` extensions might quite likely exceed (?) the max number of characters for the x509 fields transported via `certificate_authorities` extension. It would therefore not be a valid option for TE. \r\n",
           "createdAt": "2024-05-29T16:31:37Z",
           "updatedAt": "2024-05-29T16:32:36Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Closing this as I don't think we want to overload the existing `certificate_authorities` extension with completely different semantics.",
+          "createdAt": "2024-07-25T20:42:27Z",
+          "updatedAt": "2024-07-25T20:42:27Z"
         }
       ]
     },
@@ -460,6 +467,71 @@
       "updatedAt": "2024-07-25T00:20:18Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 53,
+      "id": "I_kwDOKigz-s6Q5KMx",
+      "title": "Design an in-handshake retry for trust anchor IDs",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/53",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "enhancement",
+        "trust-anchor-ids"
+      ],
+      "body": "This is better figured out post-adoption, but if we could do the retry in-handshake, rather than on a new connection, it would be easier for clients to deploy because the retry could be done inside the TLS stack.\r\n\r\nPossible directions:\r\n\r\n1. Add a new message, somewhere after the ServerHello, to trigger an extra roundtrip under handshake encryption.\r\n2. Use HelloRetryRequest. The challenge is that ECH did not opt to encrypt HelloRetryRequest, so that might leak information about the target service. We could potentially define some way to start encrypting that.",
+      "createdAt": "2024-07-25T20:10:58Z",
+      "updatedAt": "2024-07-25T23:07:45Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 54,
+      "id": "I_kwDOKigz-s6Q5Pny",
+      "title": "Negotiate SCTs alongside roots, etc.",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/54",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "enhancement",
+        "trust-anchor-ids"
+      ],
+      "body": "Sometimes X.509 credentials are accompanied with SCTs in the `signed_certificate_timestamp` extension. This isn't widely deployed, but being able to negotiate SCTs would be valuable for much the same reasons. Future credential types may also have a need for separately negotiable sub-parts.\r\n\r\nA brief sketch:\r\n\r\nFirst, allocate a trust anchor ID for each CT log.\r\n\r\nNext, define a `signed_certificate_timestamp` certificate property. It contains something like this. (Replace structure names with something more sensible.)\r\n\r\n```\r\nenum {\r\n    signed_certificate_timestamps(TBD), (2^16-1)\r\n} CertificatePropertyType;\r\n\r\nopaque SerializedSCT<1..2^16-1>;  // From RFC 6962\r\n\r\nstruct {\r\n    SerializedSCT sct;\r\n    TrustAnchorIdentifier trust_anchor;\r\n} SCTTrustAnchorPair;\r\n\r\nSCTTrustAnchorPair SCTTrustAnchorPairList<1..2^16-1>;\r\n```\r\n\r\nNext, we make the trust anchors extension slightly richer. The client can send something like \"I want one of these, two of these, one of these\", etc. The server's advertisement should also be more structured (list of lists of trust anchors), because it needs to communicate \"I have one credential with proofs from A, B, C, another credential with proofs from C, D, E, and another with proofs from D, E, F\".\r\n\r\n\r\n```\r\n// The client's half:\r\nstruct {\r\n    // Semantics: please give me some request_count of trust_anchors\r\n    uint8 request_count;\r\n    TrustAnchorIdentifier trust_anchors<1..2^16-1>;\r\n} TrustAnchorRequest;\r\n\r\n// Semantics: please satisfy *all* of these requests\r\nTrustAnchorRequest TrustAnchorRequestList<1..2^16-1>;\r\n\r\n// The server's half:\r\nstruct {\r\n    // Semantics: I have a credential with associated proofs from each of these trust anchors.\r\n    TrustAnchorIdentifier trust_anchors<1..2^8-1>;\r\n} AvailableCredential;\r\n\r\n// Semantics: I have each of these credentials available.\r\nAvailableCredential AvailableCredentialList<1..2^16-1>;\r\n```\r\n\r\nWe can also go with a more bespoke SCT design, but the nice thing about this it enables other credential types (X.509 is very bad at it) to also have separately negotiable sub-parts.",
+      "createdAt": "2024-07-25T20:27:14Z",
+      "updatedAt": "2024-07-25T23:07:37Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 62,
+      "id": "I_kwDOKigz-s6Q_n5I",
+      "title": "Allow one certificate to match multiple trust anchor IDs",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/62",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "enhancement",
+        "trust-anchor-ids"
+      ],
+      "body": "See the discussion beginning https://github.com/davidben/merkle-tree-certs/issues/80#issuecomment-2252439958. In looking at rebasing MTCs atop this, we realized that MTCs, since it induces many many individual trust anchors, will effectively only be deployable with the DNS mechanism.\r\n\r\nI think this isn't the end of the world, as MTCs are sufficiently long term that we may have gotten the DNS bits to work. But the original design sketch in MTCs had an extra component. Every certificate had not just an actual trust anchor ID but also a list of trust anchor aliases that also matched it.\r\n\r\nEssentially we were saying that [as long as the certificate isn't expired], any relying party that trusts this other ID can also be assumed to trust this ID. This is kind of a weird scenario for X.509 CAs, but it exactly fits the invariant for MTCs: a client that knows batch number 42 can be assumed to also know batch number 41, 40, etc., down to whatever batches have since expired.\r\n\r\nWe also don't have to do this in this draft and can instead introduce it in the MTCs draft. But it is a little tidier if we do it in the main one.\r\n\r\n(Design history: These aliases eventually grew into trust stores in trust expressions, but got those a lot more complicated to accommodate trust stores changing over time. The trust anchor IDs design tries to avoid that with the retry + DNS dance.)",
+      "createdAt": "2024-07-26T16:47:13Z",
+      "updatedAt": "2024-07-26T16:47:44Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "CC @bwesterb ",
+          "createdAt": "2024-07-26T16:47:42Z",
+          "updatedAt": "2024-07-26T16:47:42Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -2368,6 +2440,446 @@
       "mergedBy": "devonobrien",
       "mergeCommit": {
         "oid": "cb3f9c9072e913e3829902701c1441c317cbed3d"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 52,
+      "id": "PR_kwDOKigz-s52fpLe",
+      "title": "Bring In CertificatePropertyList from Trust Expressions.",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/52",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Bring in CertificatePropertyList from Trust Expressions.\r\n\r\nIssue: 51",
+      "createdAt": "2024-07-25T17:15:02Z",
+      "updatedAt": "2024-07-25T20:34:16Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "cb3f9c9072e913e3829902701c1441c317cbed3d",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "c77e8b00ae1607ddde59c889b837c5cb82643675",
+      "closedAt": "2024-07-25T19:53:44Z",
+      "mergedAt": "2024-07-25T19:53:44Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "d7fb9b90ff273ab62ae085e9b7a785b8cb9fddfa"
+      },
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Linking to issue #51. (`Issue: 51` doesn't work in GitHub.)",
+          "createdAt": "2024-07-25T20:34:15Z",
+          "updatedAt": "2024-07-25T20:34:15Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6DJRRP",
+          "commit": {
+            "abbreviatedOid": "f8c6213"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-25T19:38:32Z",
+          "updatedAt": "2024-07-25T19:39:50Z",
+          "comments": [
+            {
+              "originalPosition": 49,
+              "body": "We end up defining this enum twice, one time with value zero and another time with value TBD. :-) Perhaps we just delete this copy?",
+              "createdAt": "2024-07-25T19:38:32Z",
+              "updatedAt": "2024-07-25T19:39:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6DJdSE",
+          "commit": {
+            "abbreviatedOid": "f8c6213"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-07-25T19:53:17Z",
+          "updatedAt": "2024-07-25T19:53:18Z",
+          "comments": [
+            {
+              "originalPosition": 49,
+              "body": "yeah removed this one and hoisted some of the text up. ",
+              "createdAt": "2024-07-25T19:53:17Z",
+              "updatedAt": "2024-07-25T19:53:18Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "id": "PR_kwDOKigz-s52gww4",
+      "title": "Bring in Media Type and ACME discussion from Trust Expressions.",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/55",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Bring in Media Type and ACME discussion from Trust Expressions.\r\n\r\nIssue: 51",
+      "createdAt": "2024-07-25T20:28:04Z",
+      "updatedAt": "2024-07-25T20:47:22Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "d7fb9b90ff273ab62ae085e9b7a785b8cb9fddfa",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "20cb90a58c58aace2b2770dfbc2ec40702445c36",
+      "closedAt": "2024-07-25T20:47:22Z",
+      "mergedAt": "2024-07-25T20:47:22Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "67d748f0c839612eb332a50400fe4242ee32bfd9"
+      },
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Leaving this comment to link to issue #51. (`Issue: 51` doesn't work in GitHub.)",
+          "createdAt": "2024-07-25T20:34:44Z",
+          "updatedAt": "2024-07-25T20:34:59Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yeah I was in the middle of trying to discern the warnings from errors to fix it ;)\r\n",
+          "createdAt": "2024-07-25T20:38:32Z",
+          "updatedAt": "2024-07-25T20:38:32Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "I think you need to replace \"See {{Section 9 of I-D.davidben-tls-trust-expr}}.\" with \"See {{Section 9 of ?I-D.davidben-tls-trust-expr}}\".\r\n\r\n(At least one reference needs to specify `!` for normative or `?` for informative. We've dropped the last normative use, so I guess it's just informative now.)",
+          "createdAt": "2024-07-25T20:38:33Z",
+          "updatedAt": "2024-07-25T20:38:33Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "body": "fun.. of course I'm just about to remove that in the next pr.. :) \r\n",
+          "createdAt": "2024-07-25T20:40:21Z",
+          "updatedAt": "2024-07-25T20:40:21Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6DJ87j",
+          "commit": {
+            "abbreviatedOid": "e202972"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-25T20:36:28Z",
+          "updatedAt": "2024-07-25T20:36:28Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKigz-s6DJ9NI",
+          "commit": {
+            "abbreviatedOid": "c229df3"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "CHANGES_REQUESTED",
+          "body": "Oh actually this doesn't build...\r\nhttps://github.com/davidben/tls-trust-expressions/actions/runs/10101106704/job/27933936650?pr=55",
+          "createdAt": "2024-07-25T20:37:11Z",
+          "updatedAt": "2024-07-25T20:37:11Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKigz-s6DKA9G",
+          "commit": {
+            "abbreviatedOid": "20cb90a"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-25T20:47:11Z",
+          "updatedAt": "2024-07-25T20:47:11Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 56,
+      "id": "PR_kwDOKigz-s52g3js",
+      "title": "Fix up the first paragraph of CertificatePropertyList",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/56",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "The intro made sense for trust expressions, but trust anchor IDs has no reference to trust stores.\r\n\r\nIssue #51.",
+      "createdAt": "2024-07-25T20:51:26Z",
+      "updatedAt": "2024-07-25T21:12:54Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "67d748f0c839612eb332a50400fe4242ee32bfd9",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "cert-props-fixup",
+      "headRefOid": "72c2635271f987b7bdd58e42b14f8e0635d5b125",
+      "closedAt": "2024-07-25T20:57:59Z",
+      "mergedAt": "2024-07-25T20:57:59Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "67e6ab52d5b738ec1fdccc799941230041714873"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6DKEsx",
+          "commit": {
+            "abbreviatedOid": "72c2635"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-25T20:57:47Z",
+          "updatedAt": "2024-07-25T20:57:47Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 57,
+      "id": "PR_kwDOKigz-s52g57q",
+      "title": "Bring in use cases from Trust Expressions.",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/57",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Bring in use cases from Trust Expressions.",
+      "createdAt": "2024-07-25T20:59:55Z",
+      "updatedAt": "2024-07-25T21:14:05Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "67e6ab52d5b738ec1fdccc799941230041714873",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "3724b8be7ae3c6c8d5d664b7053494b3fc2464e5",
+      "closedAt": "2024-07-25T21:14:05Z",
+      "mergedAt": "2024-07-25T21:14:05Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "92b3ee34e60c62b23b8b66851920a6cddebf86d5"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6DKKIE",
+          "commit": {
+            "abbreviatedOid": "3724b8b"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-25T21:13:57Z",
+          "updatedAt": "2024-07-25T21:13:57Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 58,
+      "id": "PR_kwDOKigz-s52hBq1",
+      "title": "Add a discussion of pinning to trust anchor IDs",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/58",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Trust expressions weren't as good at this, but trust anchor IDs can handle it just fine.",
+      "createdAt": "2024-07-25T21:29:53Z",
+      "updatedAt": "2024-07-25T23:41:59Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "3f31f212208d37becd7067f0cf5e83862c95f181",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "pinning",
+      "headRefOid": "59702ed6f0bd3e7f07e5a107c1346e0f8693c47b",
+      "closedAt": "2024-07-25T23:41:53Z",
+      "mergedAt": "2024-07-25T23:41:53Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "0183c5e96bf935509630d1d761eade5bb0bdc7c0"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6DKja_",
+          "commit": {
+            "abbreviatedOid": "59702ed"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-25T22:50:17Z",
+          "updatedAt": "2024-07-25T22:50:17Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 59,
+      "id": "PR_kwDOKigz-s52hP8u",
+      "title": "fix build",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/59",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-07-25T22:27:17Z",
+      "updatedAt": "2024-07-25T22:38:51Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "92b3ee34e60c62b23b8b66851920a6cddebf86d5",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "c235ddf2b31fcfdba82240922e8eeed1a0f95c76",
+      "closedAt": "2024-07-25T22:38:51Z",
+      "mergedAt": "2024-07-25T22:38:50Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "3f31f212208d37becd7067f0cf5e83862c95f181"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6DKfsj",
+          "commit": {
+            "abbreviatedOid": "156cc2e"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-25T22:31:39Z",
+          "updatedAt": "2024-07-25T22:38:03Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Nit: You only need this if you're changing from the default label. (Default label is lowercase with hyphens.)\r\n\r\n",
+              "createdAt": "2024-07-25T22:31:39Z",
+              "updatedAt": "2024-07-25T22:38:03Z"
+            },
+            {
+              "originalPosition": 5,
+              "body": "```suggestion\r\n## Certificate Selection\r\n```",
+              "createdAt": "2024-07-25T22:33:22Z",
+              "updatedAt": "2024-07-25T22:38:04Z"
+            },
+            {
+              "originalPosition": 14,
+              "body": "Super nitpicky nitpick: it's really the whole protocol, not just the selection algorithm, since sometimes we effectively invert selection. TBH since it's clearly in the context of this (much shorter) document, I think we can just write...\r\n\r\n```suggestion\r\nA CA operator could provide subscribers with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. A server that prioritizes the shorter path would then send the shorter path to up-to-date relying parties and the longer path to older relying parties.\r\n```",
+              "createdAt": "2024-07-25T22:37:58Z",
+              "updatedAt": "2024-07-25T22:38:04Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 60,
+      "id": "PR_kwDOKigz-s52hXiu",
+      "title": "Clarify todo",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/60",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Clarify todo",
+      "createdAt": "2024-07-25T23:10:46Z",
+      "updatedAt": "2024-07-25T23:39:12Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "3f31f212208d37becd7067f0cf5e83862c95f181",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "f9b7ddd392f13ab51d65663d8b1efd4eccb8a902",
+      "closedAt": "2024-07-25T23:39:12Z",
+      "mergedAt": "2024-07-25T23:39:12Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "9105535e46743ea35aa2da2c6423484ea8985336"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6DKsP0",
+          "commit": {
+            "abbreviatedOid": "f9b7ddd"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-07-25T23:39:05Z",
+          "updatedAt": "2024-07-25T23:39:05Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 61,
+      "id": "PR_kwDOKigz-s52hZZW",
+      "title": "Update TODO with CertificatePropertyList move",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/61",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Issue #51",
+      "createdAt": "2024-07-25T23:22:39Z",
+      "updatedAt": "2024-07-25T23:42:54Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "3f31f212208d37becd7067f0cf5e83862c95f181",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "update-todo",
+      "headRefOid": "e91b913dc6bac844e66e24178b74d0340cef3808",
+      "closedAt": "2024-07-25T23:42:54Z",
+      "mergedAt": "2024-07-25T23:42:54Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "5e978b6070b08968b6bffc6894e25f15689adbc6"
       },
       "comments": [],
       "reviews": []
