@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-07-28T01:42:08.807375+00:00",
+  "timestamp": "2024-07-30T01:36:10.090432+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -532,6 +532,55 @@
           "updatedAt": "2024-07-26T16:47:42Z"
         }
       ]
+    },
+    {
+      "number": 63,
+      "id": "I_kwDOKigz-s6RIkpc",
+      "title": "What is the rationale for allowing handshake failure when no anchors match?",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/63",
+      "state": "OPEN",
+      "author": "bwesterb",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [
+        "trust-anchor-ids"
+      ],
+      "body": "> If no certification paths satisfy either extension, the subscriber MAY return a `handshake_failure` alert\r\n\r\nAn alternative would be to mandate that the subscriber always needs to respond with some certificate and its trust anchors as described in \u00a74.3. What is the advantage of the former? There is a clear disadvantage: a client might actually support a trust anchor that the subscriber has available, but it might not have sent it, due to size or privacy constraints.",
+      "createdAt": "2024-07-29T09:40:28Z",
+      "updatedAt": "2024-07-29T12:02:08Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Sending _something_ requires an explicit choice of fallback certificate somewhere, and the server might not have configured one. The intention was that, whether you send a `handshake_failure` or a certificate, the EncryptedExtensions message still comes in and triggers the retry.\r\n\r\n(This will be moot if we do #53)",
+          "createdAt": "2024-07-29T11:54:13Z",
+          "updatedAt": "2024-07-29T11:54:13Z"
+        },
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "> The intention was that, whether you send a `handshake_failure` or a certificate, the EncryptedExtensions message still comes in and triggers the retry.\r\n\r\nThat intention would work. I don't see that in the text now, and I could imagine an implementor just failing early with `handshake_failure` without sending `EncryptedExtensions`.\r\n\r\n> Sending something requires an explicit choice of fallback certificate somewhere, and the server might not have configured one.\r\n\r\nWhen would this happen? That means the server also doesn't know what to send if the client doesn't send any trust anchors.",
+          "createdAt": "2024-07-29T12:02:07Z",
+          "updatedAt": "2024-07-29T12:02:07Z"
+        }
+      ]
+    },
+    {
+      "number": 64,
+      "id": "I_kwDOKigz-s6RJEYF",
+      "title": "How much could we compress the list of trust anchors?",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/64",
+      "state": "OPEN",
+      "author": "bwesterb",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I do not think clients should send a lot of trust anchors. Nor do I think we should complicate the standard with a compression mechanism like this. It's good to think about though.\r\n\r\n### Coding subsets of integers\r\n\r\n#### Theoretical limit\r\nFor the moment, let's simplify and assume trust anchors are numbers instead of OIDs. Say there are k=200 anchors with maximum value N=62,203 (number of PENs today). There are N *choose* k possible subsets of anchors to communicate. Thus, we cannot expect to code every subset with less than lg N choose k bits. We can approximate this well using [Stirling's approximation](https://en.wikipedia.org/wiki/Stirling%27s_approximation): 243 bytes.\r\n\r\n#### Rice coding\r\nWe can get quite close to this limit using a very simple method: [Rice coding](https://en.wikipedia.org/wiki/Golomb_coding) of differences. For each delta we compute *q = floor(d / 2^b)* and *r = d mod 2^b*, where *b = round(-lg(-lg(1-k/N))) = 8*. *q* is encoded in unary and *r* in binary, so 600 would be encoded as `0b11001011000`. The `110` encodes *q=2*; the remainder is the remainder *r*. The average size using Rice coding for random subsets is about 244.3 bytes with a 95th percentile of 244.8 bytes.\r\n\r\nRice coding doesn't take advantage of big gaps. If we want to code *{N-200, N-199, ..., N-1}* that takes 255.25 bytes.\r\n\r\n#### Huffman bitlength\r\nA different approach is to write each delta in two parts: first code its bitlength, and then to write the delta (without its most significant bit). For the bitlengths we can use a Huffman code, which can be compressed efficiently using canonical trees and delta coding of the code lengths as in bzip2. (Here is [an implementation](https://github.com/bwesterb/go-ncrlite).)\r\n\r\nFor random subsets this performs worse than Rice coding: 253 bytes on average with a 95th percentile of 255 bytes. However, it encodes *{N-200, N-199, ..., N-1}* in only 50 bytes, and there is room for improvement.\r\n\r\n\r\n\r\n",
+      "createdAt": "2024-07-29T10:43:49Z",
+      "updatedAt": "2024-07-29T10:43:49Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
