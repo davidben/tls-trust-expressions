@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-08-04T01:42:16.449069+00:00",
+  "timestamp": "2024-08-06T01:36:32.976076+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -575,12 +575,47 @@
       "author": "bwesterb",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "trust-anchor-ids"
+      ],
       "body": "I do not think clients should send a lot of trust anchors. Nor do I think we should complicate the standard with a compression mechanism like this. It's good to think about though.\r\n\r\n### Coding subsets of integers\r\n\r\n#### Theoretical limit\r\nFor the moment, let's simplify and assume trust anchors are numbers instead of OIDs. Say there are k=200 anchors with maximum value N=62,203 (number of PENs today). There are N *choose* k possible subsets of anchors to communicate. Thus, we cannot expect to code every subset with less than lg N choose k bits. We can approximate this well using [Stirling's approximation](https://en.wikipedia.org/wiki/Stirling%27s_approximation): 243 bytes.\r\n\r\n#### Rice coding\r\nWe can get quite close to this limit using a very simple method: [Rice coding](https://en.wikipedia.org/wiki/Golomb_coding) of differences. For each delta we compute *q = floor(d / 2^b)* and *r = d mod 2^b*, where *b = round(-lg(-lg(1-k/N))) = 8*. *q* is encoded in unary and *r* in binary, so 600 would be encoded as `0b11001011000`. The `110` encodes *q=2*; the remainder is the remainder *r*. The average size using Rice coding for random subsets is about 244.3 bytes with a 95th percentile of 244.8 bytes.\r\n\r\nRice coding doesn't take advantage of big gaps. If we want to code *{N-200, N-199, ..., N-1}* that takes 255.25 bytes.\r\n\r\n#### Huffman bitlength\r\nA different approach is to write each delta in two parts: first code its bitlength, and then to write the delta (without its most significant bit). For the bitlengths we can use a Huffman code, which can be compressed efficiently using canonical trees and delta coding of the code lengths as in bzip2. (Here is [an implementation](https://github.com/bwesterb/go-ncrlite).)\r\n\r\nFor random subsets this performs worse than Rice coding: 253 bytes on average with a 95th percentile of 255 bytes. However, it encodes *{N-200, N-199, ..., N-1}* in only 50 bytes, and there is room for improvement.\r\n\r\n\r\n\r\n",
       "createdAt": "2024-07-29T10:43:49Z",
-      "updatedAt": "2024-07-29T10:43:49Z",
+      "updatedAt": "2024-08-05T13:43:17Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 65,
+      "id": "I_kwDOKigz-s6R6z06",
+      "title": "Trust anchor identifier is limited to 255 bytes",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/65",
+      "state": "OPEN",
+      "author": "bwesterb",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [
+        "trust-anchor-ids"
+      ],
+      "body": "If defined as a relative OID to PEN, then the maximum length is 610 bytes (128-6 max depth times 5 bytes for 2^32-1). Implicitly, you restrict to 255 bytes by its TLS encoding. Better make that requirement explicit in \u00a73 or lift it.",
+      "createdAt": "2024-08-05T09:47:42Z",
+      "updatedAt": "2024-08-05T14:25:43Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "I'm not sure OIDs are actually limited, in either depth or component size. Implementations often apply limits for practicality and DoS, but my understanding was that the data type itself is unbounded.\r\n\r\nTLS doesn't really do variable-length length prefixes, and keeping the length prefix at 1 byte is useful, so I don't think we should raise the limit. Also if you get anywhere near 255 bytes, you're probably doing something wrong. But yeah, we could include a sentence to the effect of \"there's a protocol limit in TLS of 255 bytes but really you shouldn't get anywhere close to this\".",
+          "createdAt": "2024-08-05T13:35:53Z",
+          "updatedAt": "2024-08-05T13:35:53Z"
+        },
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "You're right\u00a0\u2014 the limit quoted is SMIv2.",
+          "createdAt": "2024-08-05T14:25:42Z",
+          "updatedAt": "2024-08-05T14:25:42Z"
+        }
+      ]
     }
   ],
   "pulls": [
