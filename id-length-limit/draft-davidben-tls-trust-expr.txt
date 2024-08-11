@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 3 January 2025                                       Google LLC
-                                                             2 July 2024
+Expires: 12 February 2025                                     Google LLC
+                                                          11 August 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 January 2025.
+   This Internet-Draft will expire on 12 February 2025.
 
 Copyright Notice
 
@@ -108,6 +108,7 @@ Table of Contents
      11.1.  Relying Party Policies and Agility
      11.2.  Incorrect Selection Metadata
      11.3.  Serving Multiple Certificates
+     11.4.  Targeting TLS Interception
    12. IANA Considerations
      12.1.  TLS ExtensionType Updates
      12.2.  Media Type Updates
@@ -385,9 +386,9 @@ Table of Contents
    the text form, these are written in dotted decimal notation, such as
    32473.1.  In a binary protocol, such as TLS, this is encoded as the
    contents octets of the relative object identifier's DER encoding, as
-   described in Section 8.20 of [X690].  For example, the binary
-   encoding of 32473.1 would be the four-octet sequence {0x81, 0xfd,
-   0x59, 0x01}.
+   described in Section 8.20 of [X690].  Note this omits the tag and
+   length portion of the encoding.  For example, the binary encoding of
+   32473.1 would be the four-octet sequence {0x81, 0xfd, 0x59, 0x01}.
 
 4.2.  Trust Store Entry Expiration
 
@@ -1394,8 +1395,10 @@ Table of Contents
    for the subscriber to support.  If a certificate asserts the correct
    information about the subscriber (TLS key, DNS names, etc.), the
    subscriber can safely present it, even if the CA is otherwise
-   untrustworthy.  In particular, doing so does not allow the CA decrypt
-   or intercept the connection.
+   untrustworthy.  Issuing a certificate for the subscriber's public key
+   does not grant the CA access to the corresponding private key.
+   Presenting such a certificate does not enable the CA decrypt or
+   intercept the connection.
 
    However, the subscriber presenting a certificate is not an
    endorsement of the CA.  The subscriber's role is to present a
@@ -1413,6 +1416,34 @@ Table of Contents
    relying party.  Root program management is a complex, security-
    critical process, the full considerations of which are outside the
    scope of this document.
+
+11.4.  Targeting TLS Interception
+
+   Trust Expressions, like certificate_authorities, enables a TLS server
+   to differentiate between clients that do and do not trust some CA.
+   If this CA mis-issued a certificate, this could be used by a network
+   attacker to only enable TLS interception with clients that trust the
+   CA.  The network attacker may wish to do this reduce the odds of
+   detection.  Clients which do not trust the CA will not accept the
+   mis-issued certificate, which may be user-visible.
+
+   However, the attacker could also use any existing mechanism for
+   differentiating clients.  In TLS parameter negotiation, the client
+   offers all its available TLS features, including cipher suites and
+   other extensions, in the TLS ClientHello.  This means any variation
+   in any client TLS policies, related or unrelated to trust anchors,
+   may be used as an implementation fingerprint to differentiate
+   clients.  While fingerprinting's heuristic nature makes it not viable
+   for a broad, diverse set of TLS servers, it is viable for a network
+   attacker's single interception service.  Trust Expressions only
+   impacts detection where this differentiation was not already
+   possible.
+
+   If the attacker targets any clients that enforce Certificate
+   Transparency [RFC6962], the mis-issued certificates will need to be
+   publicly logged.  In this case, detection is more robust, and client
+   differentiation, with or without Trust Expressions, has no
+   significant impact.
 
 12.  IANA Considerations
 
@@ -1596,6 +1627,10 @@ Table of Contents
               Extensions: Extension Definitions", RFC 6066,
               DOI 10.17487/RFC6066, January 2011,
               <https://www.rfc-editor.org/rfc/rfc6066>.
+
+   [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
+              Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
+              <https://www.rfc-editor.org/rfc/rfc6962>.
 
    [RFC8610]  Birkholz, H., Vigano, C., and C. Bormann, "Concise Data
               Definition Language (CDDL): A Notational Convention to

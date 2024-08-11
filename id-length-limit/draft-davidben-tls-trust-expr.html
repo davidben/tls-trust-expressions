@@ -1025,11 +1025,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS Trust Expressions</td>
-<td class="right">July 2024</td>
+<td class="right">August 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin, et al.</td>
-<td class="center">Expires 10 January 2025</td>
+<td class="center">Expires 12 February 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1042,12 +1042,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-davidben-tls-trust-expr-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-07-09" class="published">9 July 2024</time>
+<time datetime="2024-08-11" class="published">11 August 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-01-10">10 January 2025</time></dd>
+<dd class="expires"><time datetime="2025-02-12">12 February 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1105,7 +1105,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 10 January 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 12 February 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1250,6 +1250,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
                 <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-serving-multiple-certificat" class="internal xref">Serving Multiple Certificates</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
+                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-targeting-tls-interception" class="internal xref">Targeting TLS Interception</a></p>
 </li>
             </ul>
 </li>
@@ -2223,8 +2226,18 @@ How to compute this set depends on the root program's label allocation scheme (<
         <h3 id="name-serving-multiple-certificat">
 <a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-serving-multiple-certificat" class="section-name selfRef">Serving Multiple Certificates</a>
         </h3>
-<p id="section-11.3-1">In a multi-certificate deployment, subscribers have a collection of certificates available to satisfy relying parties with potentially different security policies. It is possible that some of these policies will only be satisifed by certificates from less trustworthy CAs, such as if the relying party is out of date but still important for the subscriber to support. If a certificate asserts the correct information about the subscriber (TLS key, DNS names, etc.), the subscriber can safely present it, even if the CA is otherwise untrustworthy. In particular, doing so does not allow the CA decrypt or intercept the connection.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
+<p id="section-11.3-1">In a multi-certificate deployment, subscribers have a collection of certificates available to satisfy relying parties with potentially different security policies. It is possible that some of these policies will only be satisifed by certificates from less trustworthy CAs, such as if the relying party is out of date but still important for the subscriber to support. If a certificate asserts the correct information about the subscriber (TLS key, DNS names, etc.), the subscriber can safely present it, even if the CA is otherwise untrustworthy. Issuing a certificate for the subscriber's public key does not grant the CA access to the corresponding private key. Presenting such a certificate does not enable the CA decrypt or intercept the connection.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
 <p id="section-11.3-2">However, the subscriber presenting a certificate is not an endorsement of the CA. The subscriber's role is to present a certificate which will convince the relying party of the correct subscriber information. Subscribers do not vet CAs for trustworthiness, only the correctness of their specific, configured certificates and the CA's ability to meet the subscriber's requirements, such as availability, compatibility, and performance. It is the responsibility of the relying party, and its corresponding root program, to determine the set of trusted CAs. Trusting a CA means trusting <em>all</em> certificates issued by that CA, so it is not enough to observe subscribers serving correct certificates. An untrustworthy CA may sign one correct certificate, but also sign incorrect certificates, possibly in the future, that can attack the relying party. Root program management is a complex, security-critical process, the full considerations of which are outside the scope of this document.<a href="#section-11.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="targeting-tls-interception">
+<section id="section-11.4">
+        <h3 id="name-targeting-tls-interception">
+<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-targeting-tls-interception" class="section-name selfRef">Targeting TLS Interception</a>
+        </h3>
+<p id="section-11.4-1">Trust Expressions, like <code>certificate_authorities</code>, enables a TLS server to differentiate between clients that do and do not trust some CA. If this CA mis-issued a certificate, this could be used by a network attacker to only enable TLS interception with clients that trust the CA. The network attacker may wish to do this reduce the odds of detection. Clients which do not trust the CA will not accept the mis-issued certificate, which may be user-visible.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+<p id="section-11.4-2">However, the attacker could also use any existing mechanism for differentiating clients. In TLS parameter negotiation, the client offers all its available TLS features, including cipher suites and other extensions, in the TLS ClientHello. This means any variation in any client TLS policies, related or unrelated to trust anchors, may be used as an implementation fingerprint to differentiate clients. While fingerprinting's heuristic nature makes it not viable for a broad, diverse set of TLS servers, it is viable for a network attacker's single interception service. Trust Expressions only impacts detection where this differentiation was not already possible.<a href="#section-11.4-2" class="pilcrow">¶</a></p>
+<p id="section-11.4-3">If the attacker targets any clients that enforce Certificate Transparency <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>, the mis-issued certificates will need to be publicly logged. In this case, detection is more robust, and client differentiation, with or without Trust Expressions, has no significant impact.<a href="#section-11.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2377,6 +2390,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 </div>
 </section>
 </div>
+<div id="sec-combined-references">
 <section id="section-13">
       <h2 id="name-references">
 <a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
@@ -2484,6 +2498,10 @@ How to compute this set depends on the root program's label allocation scheme (<
         <dd>
 <span class="refAuthor">Eastlake 3rd, D.</span>, <span class="refTitle">"Transport Layer Security (TLS) Extensions: Extension Definitions"</span>, <span class="seriesInfo">RFC 6066</span>, <span class="seriesInfo">DOI 10.17487/RFC6066</span>, <time datetime="2011-01" class="refDate">January 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6066">https://www.rfc-editor.org/rfc/rfc6066</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC6962">[RFC6962]</dt>
+        <dd>
+<span class="refAuthor">Laurie, B.</span>, <span class="refAuthor">Langley, A.</span>, and <span class="refAuthor">E. Kasper</span>, <span class="refTitle">"Certificate Transparency"</span>, <span class="seriesInfo">RFC 6962</span>, <span class="seriesInfo">DOI 10.17487/RFC6962</span>, <time datetime="2013-06" class="refDate">June 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6962">https://www.rfc-editor.org/rfc/rfc6962</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC8610">[RFC8610]</dt>
       <dd>
 <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Vigano, C.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"Concise Data Definition Language (CDDL): A Notational Convention to Express Concise Binary Object Representation (CBOR) and JSON Data Structures"</span>, <span class="seriesInfo">RFC 8610</span>, <span class="seriesInfo">DOI 10.17487/RFC8610</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8610">https://www.rfc-editor.org/rfc/rfc8610</a>&gt;</span>. </dd>
@@ -2492,6 +2510,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 </section>
 </div>
 </section>
+</div>
 <div id="cddl-schema">
 <section id="appendix-A">
       <h2 id="name-cddl-schema">
