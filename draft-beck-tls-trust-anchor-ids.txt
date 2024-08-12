@@ -5,8 +5,8 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 30 January 2025                                      Google LLC
-                                                            29 July 2024
+Expires: 13 February 2025                                     Google LLC
+                                                          12 August 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 January 2025.
+   This Internet-Draft will expire on 13 February 2025.
 
 Copyright Notice
 
@@ -269,6 +269,10 @@ Table of Contents
    ecosystem, if all parties agree on the identifier.  In particular,
    the protocol requires relying parties and subscribers to agree, and
    subscriber configuration typically comes from the CA.
+
+   The length of a trust anchor identifier's binary representation MUST
+   NOT exceed 255 bytes.  It SHOULD be significantly shorter, for
+   bandwidth efficiency.
 
 3.1.  Certificate Properties
 
