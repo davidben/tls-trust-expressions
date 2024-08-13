@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-08-11T01:44:02.289791+00:00",
+  "timestamp": "2024-08-13T01:39:29.250504+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -589,7 +589,7 @@
       "id": "I_kwDOKigz-s6R6z06",
       "title": "Trust anchor identifier is limited to 255 bytes",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/65",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bwesterb",
       "authorAssociation": "NONE",
       "assignees": [],
@@ -598,8 +598,8 @@
       ],
       "body": "If defined as a relative OID to PEN, then the maximum length is 610 bytes (128-6 max depth times 5 bytes for 2^32-1). Implicitly, you restrict to 255 bytes by its TLS encoding. Better make that requirement explicit in \u00a73 or lift it.",
       "createdAt": "2024-08-05T09:47:42Z",
-      "updatedAt": "2024-08-05T14:25:43Z",
-      "closedAt": null,
+      "updatedAt": "2024-08-12T17:16:09Z",
+      "closedAt": "2024-08-12T17:16:09Z",
       "comments": [
         {
           "author": "davidben",
@@ -614,6 +614,13 @@
           "body": "You're right\u00a0\u2014 the limit quoted is SMIv2.",
           "createdAt": "2024-08-05T14:25:42Z",
           "updatedAt": "2024-08-05T14:25:42Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "https://github.com/davidben/tls-trust-expressions/pull/66",
+          "createdAt": "2024-08-11T23:50:35Z",
+          "updatedAt": "2024-08-11T23:50:35Z"
         }
       ]
     }
@@ -2967,6 +2974,51 @@
       },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 66,
+      "id": "PR_kwDOKigz-s54C0MQ",
+      "title": "Cap trust anchor IDs to 255 bytes",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/66",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "So that the 1-byte length prefix works. Fixes #65. 255 bytes should be far more than enough; if you're anywhere near that, you could have just used a SHA-256 hash of something.\r\n\r\n(Admittedly, the OID idea does not lend itself well to SHA-256 hashes. You can encode them but it's a little fussy. Probably the most straightforward is to use 37 7-bit components.)",
+      "createdAt": "2024-08-11T23:50:27Z",
+      "updatedAt": "2024-08-12T17:16:11Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "ca27e6fb20f1baf6850c9b092a794784a79cefc5",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "id-length-limit",
+      "headRefOid": "cc11aa19de407c97cc69d58c51123320ec030cda",
+      "closedAt": "2024-08-12T17:16:08Z",
+      "mergedAt": "2024-08-12T17:16:08Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "8d62b492566d8f1af6bcd56e24d170aa899b2106"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6FC0ox",
+          "commit": {
+            "abbreviatedOid": "cc11aa1"
+          },
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-08-12T06:12:21Z",
+          "updatedAt": "2024-08-12T06:12:21Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
