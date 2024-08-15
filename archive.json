@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-08-13T01:39:29.250504+00:00",
+  "timestamp": "2024-08-15T01:26:10.564776+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -3019,6 +3019,85 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 67,
+      "id": "PR_kwDOKigz-s54Z0dF",
+      "title": "Link the explainer first",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/67",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "That's probably a better place to start.",
+      "createdAt": "2024-08-14T20:07:24Z",
+      "updatedAt": "2024-08-14T20:33:48Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "8d62b492566d8f1af6bcd56e24d170aa899b2106",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "reorder-readme",
+      "headRefOid": "0a1b64f6c1230845aa6a4e5d2591c8715eac08dd",
+      "closedAt": "2024-08-14T20:33:46Z",
+      "mergedAt": "2024-08-14T20:33:46Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "38cedfedc3694f63ed2cfa932a0f8db8722eee58"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6FdgjM",
+          "commit": {
+            "abbreviatedOid": "0a1b64f"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-08-14T20:13:53Z",
+          "updatedAt": "2024-08-14T20:13:53Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 68,
+      "id": "PR_kwDOKigz-s54akcg",
+      "title": "Small cleanups I forgot to pr",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/68",
+      "state": "OPEN",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-08-14T22:54:13Z",
+      "updatedAt": "2024-08-15T00:56:49Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "38cedfedc3694f63ed2cfa932a0f8db8722eee58",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "5bd5a96ffc381e50727a8b07561664a1e64c3375",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "For some reason GitHub is telling me the diff is empty. Did the merge commit clobber things somehow?",
+          "createdAt": "2024-08-15T00:56:48Z",
+          "updatedAt": "2024-08-15T00:56:48Z"
+        }
+      ],
+      "reviews": []
     }
   ]
 }
