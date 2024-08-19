@@ -954,18 +954,18 @@ Table of Contents
    requirements may be satisfied without compatibility risk to the
    other.  Section 8 discusses such scenarios in more detail.
 
-   Negotiation also reduces pressures on new relying parties to
-   sacrifice user security for compatibility.  Suppose a subscriber
-   currently uses some CA, but a relying party deems trusting that CA to
-   pose an unacceptable security risk to its users.  In a single-
-   certificate deployment, those subscribers may be unwilling to adopt a
-   CA trusted by the relying party, as switching CAs risks compatibility
-   problems elsewhere.  The relying party then faces compatibility
-   pressure and adds this CA, sacrificing user security.  However, in a
-   multi-certificate deployment, the subscriber can use its existing CA
-   _in addition to_ another CA trusted by relying party B.  This allows
-   the ecosystem to improve interoperability, while still meeting
-   relying party B's user-security goals.
+   Negotiation also reduces pressures on relying parties to sacrifice
+   user security for compatibility.  Suppose a subscriber currently uses
+   some CA, but a relying party deems trusting that CA to pose an
+   unacceptable security risk to its users.  In a single-certificate
+   deployment, those subscribers may be unwilling to adopt a CA trusted
+   by the relying party, as switching CAs risks compatibility problems
+   elsewhere.  The relying party then faces compatibility pressure and
+   adds this CA, sacrificing user security.  However, in a multi-
+   certificate deployment, the subscriber can use its existing CA _in
+   addition to_ another CA trusted by relying party B.  This allows the
+   ecosystem to improve interoperability, while still meeting relying
+   party B's user-security goals.
 
 10.3.  Incorrect Selection Metadata
 
