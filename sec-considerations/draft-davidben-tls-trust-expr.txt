@@ -1351,8 +1351,8 @@ Table of Contents
    PKI-based TLS authentication depends on the relying party's
    certificate policies.  If the relying party trusts an untrustworthy
    CA, that CA can intercept TLS connections made by that relying party
-   by issuing certificates associating the target DNS name, etc., with
-   the wrong TLS key.
+   by issuing certificates associating the target name with the wrong
+   TLS key.
 
    This attack vector is available with or without trust anchor
    negotiation.  The negotiation mechanism described in this document

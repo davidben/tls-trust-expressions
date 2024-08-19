@@ -2211,7 +2211,7 @@ How to compute this set depends on the root program's label allocation scheme (<
         <h3 id="name-relying-party-policies">
 <a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-relying-party-policies" class="section-name selfRef">Relying Party Policies</a>
         </h3>
-<p id="section-11.1-1">PKI-based TLS authentication depends on the relying party's certificate policies. If the relying party trusts an untrustworthy CA, that CA can intercept TLS connections made by that relying party by issuing certificates associating the target DNS name, etc., with the wrong TLS key.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1">PKI-based TLS authentication depends on the relying party's certificate policies. If the relying party trusts an untrustworthy CA, that CA can intercept TLS connections made by that relying party by issuing certificates associating the target name with the wrong TLS key.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
 <p id="section-11.1-2">This attack vector is available with or without trust anchor negotiation. The negotiation mechanism described in this document allows certificate selection to reflect a relying party's certificate policies. It does not determine the certificate policies themselves. Relying parties remain responsible for trusting only trustworthy CAs, and untrustworthy CAs remain a security risk when trusted.<a href="#section-11.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
