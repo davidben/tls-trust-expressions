@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-08-18T01:42:13.857453+00:00",
+  "timestamp": "2024-08-20T01:36:52.137911+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -3098,6 +3098,70 @@
         }
       ],
       "reviews": []
+    },
+    {
+      "number": 69,
+      "id": "PR_kwDOKigz-s54x8ND",
+      "title": "Editorial changes to security considerations",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/69",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "This says the same thing, but tries to be bit clearer in spelling out standard properties of all PKI-based schemes.",
+      "createdAt": "2024-08-19T20:49:10Z",
+      "updatedAt": "2024-08-19T21:04:20Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "38cedfedc3694f63ed2cfa932a0f8db8722eee58",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "sec-considerations",
+      "headRefOid": "05e7e267100bb458b44007ad5940493ca0abcb17",
+      "closedAt": "2024-08-19T21:04:17Z",
+      "mergedAt": "2024-08-19T21:04:17Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "08f55bff1c15b4877d614859d6b8ab0ac6ec6975"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6F5eYL",
+          "commit": {
+            "abbreviatedOid": "7adbaba"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-08-19T20:51:06Z",
+          "updatedAt": "2024-08-19T20:57:12Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "I might just say \"name\" instead of \"DNS name, etc.\"",
+              "createdAt": "2024-08-19T20:51:06Z",
+              "updatedAt": "2024-08-19T20:57:12Z"
+            },
+            {
+              "originalPosition": 8,
+              "body": "( or do something to get rid of the etc.)",
+              "createdAt": "2024-08-19T20:54:42Z",
+              "updatedAt": "2024-08-19T20:57:12Z"
+            },
+            {
+              "originalPosition": 8,
+              "body": "Same as above.",
+              "createdAt": "2024-08-19T20:56:26Z",
+              "updatedAt": "2024-08-19T20:57:12Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
