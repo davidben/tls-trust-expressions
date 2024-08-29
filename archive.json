@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-08-27T01:39:40.412214+00:00",
+  "timestamp": "2024-08-29T01:41:30.248447+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -580,9 +580,17 @@
       ],
       "body": "I do not think clients should send a lot of trust anchors. Nor do I think we should complicate the standard with a compression mechanism like this. It's good to think about though.\r\n\r\n### Coding subsets of integers\r\n\r\n#### Theoretical limit\r\nFor the moment, let's simplify and assume trust anchors are numbers instead of OIDs. Say there are k=200 anchors with maximum value N=62,203 (number of PENs today). There are N *choose* k possible subsets of anchors to communicate. Thus, we cannot expect to code every subset with less than lg N choose k bits. We can approximate this well using [Stirling's approximation](https://en.wikipedia.org/wiki/Stirling%27s_approximation): 243 bytes.\r\n\r\n#### Rice coding\r\nWe can get quite close to this limit using a very simple method: [Rice coding](https://en.wikipedia.org/wiki/Golomb_coding) of differences. For each delta we compute *q = floor(d / 2^b)* and *r = d mod 2^b*, where *b = round(-lg(-lg(1-k/N))) = 8*. *q* is encoded in unary and *r* in binary, so 600 would be encoded as `0b11001011000`. The `110` encodes *q=2*; the remainder is the remainder *r*. The average size using Rice coding for random subsets is about 244.3 bytes with a 95th percentile of 244.8 bytes.\r\n\r\nRice coding doesn't take advantage of big gaps. If we want to code *{N-200, N-199, ..., N-1}* that takes 255.25 bytes.\r\n\r\n#### Huffman bitlength\r\nA different approach is to write each delta in two parts: first code its bitlength, and then to write the delta (without its most significant bit). For the bitlengths we can use a Huffman code, which can be compressed efficiently using canonical trees and delta coding of the code lengths as in bzip2. (Here is [an implementation](https://github.com/bwesterb/go-ncrlite).)\r\n\r\nFor random subsets this performs worse than Rice coding: 253 bytes on average with a 95th percentile of 255 bytes. However, it encodes *{N-200, N-199, ..., N-1}* in only 50 bytes, and there is room for improvement.\r\n\r\n\r\n\r\n",
       "createdAt": "2024-07-29T10:43:49Z",
-      "updatedAt": "2024-08-05T13:43:17Z",
+      "updatedAt": "2024-08-27T21:17:17Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Another goofy encoding idea I had was just ranges. The old MTC scheme could be done with aliases on the issuance side (\"if the client says batch 27, assume they also know batches 10 through 26\"), but it could also be done by letting you efficiently encode things like `32473.123.{10-27}` (`32473.123` is the MTC CA prefix).\r\n\r\nI could also imagine taking some of the goofy exclusion labels that TE had and instead recasting them as some kind of sequence of ranges. If we assume we don't need to punch too many holes, splitting ranges in two isn't horrible. And you could periodically rebalance by numbers by allocating new aliases higher up the number space, trusting that newer certs are aware of it. Not sure.\r\n\r\nThe DNS mechanism does handily remove the need for all these encoding tricks, but depends on DNS, so... \ud83e\udd37 ",
+          "createdAt": "2024-08-27T21:17:15Z",
+          "updatedAt": "2024-08-27T21:17:15Z"
+        }
+      ]
     },
     {
       "number": 65,
