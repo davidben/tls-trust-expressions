@@ -5,8 +5,8 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 20 February 2025                                     Google LLC
-                                                          19 August 2024
+Expires: 3 March 2025                                         Google LLC
+                                                          30 August 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 February 2025.
+   This Internet-Draft will expire on 3 March 2025.
 
 Copyright Notice
 
@@ -668,18 +668,22 @@ Table of Contents
        continues operating the old root CA.
 
    2.  Root programs begin trusting the new root CA alongside the old
-       one.  They update their root store manifests.
+       one, as a transition state.  Both root CAs are configured to
+       participate in trust anchor negotiation.
 
-   3.  When subscribers request certificates, the CA issues certificates
-       from both roots and provisions the subscriber with both
-       certificates.
+   3.  When subscribers request certificates, the CA operator issues
+       certificates from both roots and provisions the subscriber with
+       both certificates.
 
-   4.  Relying parties send trust expressions that evaluate to either
-       the old or new root, and are served the appropriate option.
+   4.  Trust anchor negotiation selects the old root for relying parties
+       that only trust the old root, and the new root for relying
+       parties that only trust the new root.  In transition, relying
+       parties that trust both may be served either, but prioritizing
+       the new root helps monitor the transition.
 
    5.  Once subscribers have been provisioned with new certificates,
        root programs can safely distrust the old root in new relying
-       parties.  The CA operator continues to operate the old root CA
+       parties.  The CA operator may continue to operate the old root CA
        for as long as it wishes to serve subscribers that, in turn, wish
        to serve older relying parties.
 
