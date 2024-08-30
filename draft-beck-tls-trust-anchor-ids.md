@@ -389,7 +389,7 @@ A multi-certificate deployment model avoids these transition problems. Key rotat
 
 1. The CA operator generates a new root CA with a separate key, but continues operating the old root CA.
 
-2. Root programs being trusting the new root CA alongside the old one, as a transition state. Both root CAs are configured to participate in trust anchor negotiation.
+2. Root programs begin trusting the new root CA alongside the old one, as a transition state. Both root CAs are configured to participate in trust anchor negotiation.
 
 3. When subscribers request certificates, the CA operator issues certificates from both roots and provisions the subscriber with both certificates.
 
