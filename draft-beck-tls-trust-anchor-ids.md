@@ -389,13 +389,13 @@ A multi-certificate deployment model avoids these transition problems. Key rotat
 
 1. The CA operator generates a new root CA with a separate key, but continues operating the old root CA.
 
-2. Root programs begin trusting the new root CA alongside the old one. They update their root store manifests.
+2. Root programs begin trusting the new root CA alongside the old one, as a transition state. Both root CAs are configured to participate in trust anchor negotiation.
 
-3. When subscribers request certificates, the CA issues certificates from both roots and provisions the subscriber with both certificates.
+3. When subscribers request certificates, the CA operator issues certificates from both roots and provisions the subscriber with both certificates.
 
-4. Relying parties send trust expressions that evaluate to either the old or new root, and are served the appropriate option.
+4. Trust anchor negotiation selects the old root for relying parties that only trust the old root, and the new root for relying parties that only trust the new root. In transition, relying parties that trust both may be served either, but prioritizing the new root helps monitor the transition.
 
-5. Once subscribers have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator continues to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.
+5. Once subscribers have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator may continue to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.
 
 This process requires no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party.
 
