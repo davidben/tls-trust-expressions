@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-08-29T01:41:30.248447+00:00",
+  "timestamp": "2024-09-01T01:55:47.331787+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -3078,21 +3078,21 @@
       "id": "PR_kwDOKigz-s54akcg",
       "title": "Small cleanups I forgot to pr",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/68",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bob-beck",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2024-08-14T22:54:13Z",
-      "updatedAt": "2024-08-15T00:56:49Z",
+      "updatedAt": "2024-08-30T18:54:38Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
-      "baseRefOid": "38cedfedc3694f63ed2cfa932a0f8db8722eee58",
+      "baseRefOid": "08f55bff1c15b4877d614859d6b8ab0ac6ec6975",
       "headRepository": "bob-beck/tls-trust-expressions",
       "headRefName": "main",
-      "headRefOid": "5bd5a96ffc381e50727a8b07561664a1e64c3375",
-      "closedAt": null,
+      "headRefOid": "acea2077167a0600a8fa1f870d83e29a8502e59c",
+      "closedAt": "2024-08-30T18:54:38Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -3166,6 +3166,95 @@
               "body": "Same as above.",
               "createdAt": "2024-08-19T20:56:26Z",
               "updatedAt": "2024-08-19T20:57:12Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 70,
+      "id": "PR_kwDOKigz-s56A44y",
+      "title": "This language needs changing from Trust Expressions",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/70",
+      "state": "MERGED",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fix up some of this language which doesn't work for Trust Anchor Identifiers. ",
+      "createdAt": "2024-08-30T18:55:13Z",
+      "updatedAt": "2024-08-30T20:49:46Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "08f55bff1c15b4877d614859d6b8ab0ac6ec6975",
+      "headRepository": "bob-beck/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "ada36df45a3f1ddb1e328e9164e26f10f9bf3372",
+      "closedAt": "2024-08-30T20:49:46Z",
+      "mergedAt": "2024-08-30T20:49:46Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "0188581b8cc5e1a19993aeec800af1d5801512eb"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6HgONC",
+          "commit": {
+            "abbreviatedOid": "acea207"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-08-30T19:35:53Z",
+          "updatedAt": "2024-08-30T19:36:13Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "Ah, good catch. Some overall comments:\r\n\r\nFor brevity, I think we can take it as read that if you generate a new root CA, you generate a new ID if you're participating in this mechanism.\r\n\r\nWe've actually never defined the client to having a preference between trust anchors. The client *can*, but it's a little goofy because only the server knows the sizes of the proofs and the performance of the corresponding keys, which is why we have a server preference list. Also, at the end of the day, the client doesn't care as long as it got a proof from _something_ it trusts.\r\n\r\nThe other complexity is that this draft covers both `certificate_authorities`-style selection and the client-selection one. But I think we can say what we're trying to say more succinctly and more generally.\r\n\r\nHow about this?\r\n\r\n1. The CA operator generates a new root CA with a separate key, but continues operating the old root CA.\r\n2. Root programs being trusting the new root CA alongside the old one, as a transition state. Both root CAs are configured to participate in trust anchor negotiation.\r\n3. When subscribers request certificates, the CA operator issues certificates from both roots and provisions the subscriber with both certificates.\r\n4. Trust anchor negotiation selects the old root for relying parties that only trust the old root, and the new root for relying parties that only trust the new root. In transition, relying parties that trust both may be served either, but prioritizing the new root helps monitor the transition.\r\n5. Once subscribers have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator may continue to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.",
+              "createdAt": "2024-08-30T19:35:53Z",
+              "updatedAt": "2024-08-30T19:47:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6HgoFm",
+          "commit": {
+            "abbreviatedOid": "acea207"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-08-30T20:44:32Z",
+          "updatedAt": "2024-08-30T20:44:32Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "Yeah, the generic language works just fine here.  Took it. ",
+              "createdAt": "2024-08-30T20:44:32Z",
+              "updatedAt": "2024-08-30T20:44:32Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6HgpNs",
+          "commit": {
+            "abbreviatedOid": "34bda5f"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-08-30T20:49:00Z",
+          "updatedAt": "2024-08-30T20:49:15Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "```suggestion\r\n2. Root programs begin trusting the new root CA alongside the old one, as a transition state. Both root CAs are configured to participate in trust anchor negotiation.\r\n```\r\n\r\nMy fault. I introduced a typo.",
+              "createdAt": "2024-08-30T20:49:00Z",
+              "updatedAt": "2024-08-30T20:49:15Z"
             }
           ]
         }
