@@ -111,22 +111,21 @@ Additionally, to support TLS clients with many trusted certification authorities
 
 # Introduction
 
-TLS {{!RFC8446}} endpoints typically authenticate using X.509 certificates {{!RFC5280}}. These are assertions by a certification authority (CA) that associate a TLS key with DNS names or other identifiers. If the peer trusts the CA, it will accept this association. The authenticating party (usually the server) is known as the *subscriber* and the peer (usually the client) is the *relying party*.
+TLS {{!RFC8446}} authentication uses X.509 certificates {{!RFC5280}} to associate the authenticating party's, or *subscriber's*, TLS key with its application identifiers, such as DNS names. These associations are signed by some certificate authority (CA). The peer, or *relying party*, curates a set of CAs that are trusted to only sign correct associations, which allows it to rely on the TLS to authenticate application identifiers. Typically the subscriber is the server and the relying party is the client.
 
-{{Section 4.2.4 of RFC8446}} defines the `certificate_authorities` extension, which allows the subscriber, who may have multiple certificates available, to select the correct certificate for the relying party. However, this extension’s size is impractical for some applications.
+A single subscriber may need to interoperate with relying parties that trust different sets of CAs. {{Section 4.2.4 of RFC8446}} defines the `certificate_authorities` extension to accommodate this. It allows the subscriber to provision multiple certificates and select the one that will allow the relying party to accept its TLS key. This is analogous to parameter negotiation elsewhere in TLS.
 
-Without such a negotiation mechanism, the subscriber must somehow obtain certificates which simultaneously satisfy all relying parties. This is a challenge for subscribers when relying parties are diverse. This translates to analogous challenges for CAs and relying parties:
+However, `certificate_authorities`'s size is impractical for some applications. Existing PKIs may have many CAs, and existing CAs may have long X.509 names. As of August 2023, the Mozilla CA Certificate Program {{MOZILLA-ROOTS}} contained 144 CAs, with an average name length of around 100 bytes. Such TLS deployments often do not use trust anchor negotiation at all.
 
-* For a new CA to be usable by subscribers, all relying parties must trust it. This is particularly challenging for older, un-updatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.
+Without a negotiation mechanism, the subscriber must obtain a single certificate that simultaneously satisfies all relying parties. This is challenging when relying parties are diverse. PKI transitions, including those necessary for user security, naturally lead to relying party diversity, so the result is that service availability conflicts with security and overall PKI evolution:
 
-* When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.
+* For a subscriber to use a CA in its single certificate, all supported relying parties must trust the CA. PKI transitions then become difficult when subscribers support older, unupdated relying parties. This impacts both new keys from existing CA operators and new CA operators.
 
-The `certificate_authorities` extension’s size becomes impractical due to two factors. First, X.509 names are large. Second, many clients, notably web browsers, trust a large number of CAs. As of August 2023, the Mozilla CA Certificate Program {{MOZILLA-ROOTS}} contained 144 CAs, with an average name length of around 100 bytes. This document introduces Trust Anchor Identifiers, which aims to address both of these challenges.
+* When a relying party must update its policies to meet new security requirements, it adds to relying party diversity and the challenges that subscribers and CAs face. The relying party must then choose between compromising on user security or burdening the rest of the ecosystem, potentially impacting availability in the process.
 
-There are four parts to this mechanism:
+To address this, this document introduces Trust Anchor Identifiers. There are four parts to this mechanism:
 
 1. {{trust-anchor-ids}} defines *trust anchor identifiers*, which are short, unique identifiers for X.509 trust anchors.
-
 
 2. {{tls-extension}} defines a TLS extension that communicates the relying party’s requested trust anchors, and the subscriber’s available ones. When the relying party is a TLS client, it can mitigate large lists by sending a, possibly empty, subset of its trust anchors to the TLS server. The server provides its list of available trust anchors in response so that the client can retry on mismatch.
 
@@ -134,7 +133,7 @@ There are four parts to this mechanism:
 
 4. {{acme-extension}} defines an ACME {{!RFC8555}} extension for provisioning multiple certification paths, each with an associated trust anchor identifier.
 
-Together, they extend the `certificate_authorities` mechanism to a broader set of applications, enabling a more flexible and robust PKI.
+Together, they reduce the size costs of trust anchor negotiation, supporting flexible and robust PKIs for more applications.
 
 # Conventions and Definitions
 
