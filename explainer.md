@@ -266,7 +266,11 @@ See also this [more detailed discussion](pki-transition-strategies.md).
 
 ### TLS `certificate_authorities` Extension
 
-TLS already has a `certificate_authorities` extension to send the list of CAs, but it is impractical. Trust stores can be large, and the X.509 Name structure is inefficient. For example, as of August 2023, the [Mozilla CA Certificate Program](https://wiki.mozilla.org/CA/Included_Certificates) would encode 144 names totaling 14,457 bytes.
+TLS already has a `certificate_authorities` extension to send the list of CAs, but it is impractical for some applications. Existing PKIs may have many CAs, and existing CAs may have long X.509 names. For example, as of August 2023, the [Mozilla CA Certificate Program](https://wiki.mozilla.org/CA/Included_Certificates) would encode 144 names totaling 14,457 bytes.
+
+In other applications, `certificate_authorities`'s size is not a concern. `certificate_authorities` is common in client certificate deployments, which typically use smaller, deployment-specific PKIs. In general, `certificate_authorities` practical for applications wth smaller PKIs. That is, the applications may trust only a small number of CAs. They might also mitigate long X.509 names by transitioning to new CAs with short X.509 names. However, such approaches are not compatible with many existing larger PKIs, such as the Web PKI. Trust Anchor Identifiers and Trust Expressions aim to address these larger PKI use cases.
+
+If a subscriber wishes to use multiple mechanisms (e.g. if some relying parties use one and some use the other), both proposals are designed to coexist with `certificate_authorities`.
 
 ### Path Building
 
