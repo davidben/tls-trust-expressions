@@ -2,7 +2,7 @@
 
 This document is a high-level overview and [explainer](https://tag.w3.org/explainers/) for [TLS Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html) and [TLS Trust Expressions](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html). While they differ in approach, both mechanisms aim to allow the server to select certificates based on the client's trusted CAs. We refer to overall problem being solved as "trust anchor negotiation".
 
-The two drafts apply to both TLS server certificates, where the server authenticates to the client, and TLS client certificates, where the client authenticates to the server. The two cases use similar protocol mechanisms, but their PKIs are often structured differently. As most of the motivating scenarios are drawn from server certificate deployments, this explainer focuses on those roles.
+The two drafts apply to both TLS server certificates, where the server authenticates to the client, and TLS client certificates, where the client authenticates to the server. The two cases use similar protocol mechanisms, but their PKIs are often structured differently. As most of the motivating scenarios are drawn from server certificate deployments, this explainer primarily focuses on those roles, but most of it applies analogously to client certificates.
 
 ## Authors
 
@@ -17,40 +17,33 @@ The two drafts apply to both TLS server certificates, where the server authentic
 
 ## Introduction
 
-[TLS](https://www.rfc-editor.org/rfc/rfc8446) endpoints typically authenticate using [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280). These are used as assertions by a certification authority (CA) that associate some TLS key with some DNS name or other identifier. If the peer trusts the CA, it will accept this association. The authenticating party (usually the server) is known as the *subscriber* and the peer (usually the client) is the *relying party*.
+[TLS](https://www.rfc-editor.org/rfc/rfc8446) uses [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280) to associate the authenticating party's, or *subscriber's*, TLS key with its application identifiers, such as DNS names. These associations are signed by some certificate authority (CA). The peer, or *relying party*, curates a set of CAs that are trusted to only sign correct associations, which allows it to rely on the TLS to authenticate application identifiers. Typically the subscriber is the server and the relying party is the client.
 
-Today, subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. We call this a *single-certificate deployment model*. In this model, the single certificate must simultaneously satisfy all relying parties.
+A single subscriber may need to interoperate with relying parties that trust different sets of CAs. To accommodate this, TLS 1.3 defines the [`certificate_authorities` extension](https://www.rfc-editor.org/rfc/rfc8446#section-4.2.4).This allows the subscriber to provision multiple certificates and select the one that will allow the relying party to accept its TLS key. This is analogous to parameter negotiation elsewhere in TLS.
 
-This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, making it increasingly difficult for subscribers to support both. This translates to analogous costs for CAs and relying parties:
+However, this extension's size is impractical for some applications. Existing PKIs may have many CAs, and existing CAs may have long X.509 names. As of August 2023, the Mozilla CA Certificate Program {{MOZILLA-ROOTS}} contained 144 CAs, with an average name length of around 100 bytes. While applications could mitigate this with smaller PKIs and transitioning to newer CAs with shorter names, this is incompatible with existing PKIs.
 
-* For a new CA to be usable by subscribers, it must be trusted by all relying parties. This is particularly challenging for older, unupdatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.
+Without a negotiation mechanism, the subscriber must instead obtain a single certificate which simultaneously satisfies all relying parties. This is a challenge for subscribers when relying parties are diverse. PKI evolution naturally leads to relying party diversity, so this translates to analogous challenges for CAs and relying parties:
+
+* For a new CA to be usable by subscribers, all relying parties must trust it. This is particularly challenging for older, un-updatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.
 
 * When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.
 
-The two drafts aim to remove this constraint, by enabling a *multi-certificate deployment model*. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for different relying parties, including older and newer ones.
-
-There are three parts to understanding this proposal:
-
-1. The multi-certificate model itself
-2. A TLS extension for relying parties to succinctly communicate trusted CAs
-3. An [ACME](https://www.rfc-editor.org/rfc/rfc8555.html) extension for provisioning multiple certificates
-
-Together, these aim to support a more flexible and robust Public Key Infrastructure (PKI).
+These challenges lead to a conflict between security and availability. To address this, the two proposals extend the `certificate_authorities` extension to reduce the size cost, supporting flexible and robust PKIs for more applications. The proposals also define a supporting [ACME](https://www.rfc-editor.org/rfc/rfc8555.html) extension to help subscribers provision multiple certificates.
 
 ## Goals
 
-At a high level, the goal for TLS trust anchor negotiation is to enable a multi-certificate deployment model for TLS, particularly as used in HTTPS on the web.
+At a high level, the goal for these proposals is to *enable TLS servers to handle diversity in client trust, so that server availability does not conflict with PKI security and evolution*.
 
-Our goals in doing so are:
+In doing so, we aim to:
 
-* PKIs can evolve over time, to meet user security needs, without conflicting with availability.
-* Subscribers can configure multiple TLS certificates, with TLS software automatically sending the right one on each connection.
-* As much as possible, minimize manual changes by server operators. Most ongoing decisions should instead come from TLS software, ACME client software, and ACME servers.
-* To achieve this, CAs, via automated protocols like ACME, can transparently provision subscribers with multiple TLS certificates.
-* Minimal bandwidth cost to the TLS handshake.
+* Enable PKIs to evolve as needed for user security, in a timely manner and without conflicting with availability.
+* Minimize burden to server operators, particularly avoiding ongoing manual work. Most ongoing decisions should instead come from TLS software, ACME client software, and ACME servers.
+* Minimize bandwidth cost to the TLS handshake.
 
-We discuss the motivations for a multi-certificate deployment model in more
-depth below.
+Matching the standard pattern for other TLS parameters, we target a deployment model where subscribers can configure multiple TLS certificates, with TLS software automatically sending the right one on each connection. To aid in this, CAs can transparently provision subscribers with multiple TLS certificates with ACME or another automated protocol.
+
+We discuss these motivations in more depth below.
 
 ### Why Multiple Certificates?
 
