@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-05T01:42:17.701203+00:00",
+  "timestamp": "2024-09-08T01:49:03.809902+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -455,7 +455,7 @@
       "id": "I_kwDOKigz-s6QwuPD",
       "title": "Make trust anchor IDs document standalone ",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/51",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
@@ -464,9 +464,17 @@
       ],
       "body": "The parts that were incorporated by reference from TE should be moved in as the canonical versions.",
       "createdAt": "2024-07-25T00:20:18Z",
-      "updatedAt": "2024-07-25T00:20:18Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2024-09-06T13:52:49Z",
+      "closedAt": "2024-09-06T13:52:49Z",
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "This is done now. Only reference now is the appendix.",
+          "createdAt": "2024-09-06T13:52:49Z",
+          "updatedAt": "2024-09-06T13:52:49Z"
+        }
+      ]
     },
     {
       "number": 53,
@@ -3259,6 +3267,240 @@
           ]
         }
       ]
+    },
+    {
+      "number": 71,
+      "id": "PR_kwDOKigz-s56kQXf",
+      "title": "Tighten up the introductory text a bit",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/71",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-09-05T19:17:05Z",
+      "updatedAt": "2024-09-05T23:22:16Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "0188581b8cc5e1a19993aeec800af1d5801512eb",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "intro",
+      "headRefOid": "6a805cd6eaf358ea39bdc3b879f9d6818fc5d2da",
+      "closedAt": "2024-09-05T23:12:43Z",
+      "mergedAt": "2024-09-05T23:12:43Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "4f2242a410730602db7e208ccc48c25eb9f9aae3"
+      },
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Revised a bit. It's getting late so I'll go ahead and merge this after a once over so we can cut new drafts. (And if I messed something up horribly we can just cut more tomorrow. :) )",
+          "createdAt": "2024-09-05T22:58:30Z",
+          "updatedAt": "2024-09-05T22:58:30Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6IIcTX",
+          "commit": {
+            "abbreviatedOid": "c88ebb8"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-05T19:25:16Z",
+          "updatedAt": "2024-09-05T19:32:06Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "I'm not sure we want to address it here, but there is another challenge with the existing certificate authorities extension. \r\n\r\nCurrently, with path building and cross signs potentially in the mix with the CA extension if a client asks for CA \"Fred\" and a server is in possession of a cross signed gordian knot that could be signed by \"Fred\" \"George\" \"Eugene\" and \"Festus\", The server now must implement path building, find out if their bundle satisfies CA \"Fred\", and if it does then either make the choice to serve up the path built result, or send the original bundle and trust in prayer and clean living that the client will path build and find \"Fred\" rather than something else due to inconsistencies and errors in path building implementations. \r\n\r\nDo we want to mention this here or sweep it under the rug for the moment? \r\n",
+              "createdAt": "2024-09-05T19:25:17Z",
+              "updatedAt": "2024-09-05T19:32:06Z"
+            },
+            {
+              "originalPosition": 11,
+              "body": "(also fine addressing this separately from this re-word)",
+              "createdAt": "2024-09-05T19:26:09Z",
+              "updatedAt": "2024-09-05T19:32:06Z"
+            },
+            {
+              "originalPosition": 30,
+              "body": "Before a new key can be used by a subscriber, all relying parties must trust it. This prevents new keys from being used if a subscriber must support older un-updatable relying parties, or before all relying parties agree to trust the key.  This obstacle to using new keys prevents new CA's from entering the ecosystem, or existing CA's from rotating or deploying new keys. ",
+              "createdAt": "2024-09-05T19:31:07Z",
+              "updatedAt": "2024-09-05T19:32:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IIrG5",
+          "commit": {
+            "abbreviatedOid": "c88ebb8"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-05T20:02:17Z",
+          "updatedAt": "2024-09-05T20:02:18Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "Also s/smaller PKIs\" \"Trusting fewer CAs\" - to match the follow on text about transitioning to newer CA's. ",
+              "createdAt": "2024-09-05T20:02:18Z",
+              "updatedAt": "2024-09-05T20:02:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IItLO",
+          "commit": {
+            "abbreviatedOid": "c88ebb8"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2024-09-05T20:07:30Z",
+          "updatedAt": "2024-09-05T20:07:46Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "They don't define an ACME extension. The use an existing one. \r\n\r\nThe proposals also define a new media type for certificate paths with identifying information, and how this can be used in conjunction with ACME<blah blah> to help subscribers provision and use multiple certificates. ",
+              "createdAt": "2024-09-05T20:07:30Z",
+              "updatedAt": "2024-09-05T20:07:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IJMhS",
+          "commit": {
+            "abbreviatedOid": "c88ebb8"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-05T21:31:29Z",
+          "updatedAt": "2024-09-05T21:31:29Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "I don't think path-building should be mentioned. It's unrelated to the extension. It's purely how you decided to represent your server configuration. Yes, OpenSSL servers sometimes path-build to compute their own configuration, and we're envisioning that, with the ACME mechanism, servers would not do this. But this has nothing to do with the negotiation scheme:\r\n\r\n* A server that uses `certificate_authorities` could well be configured with pre-built paths and only check the last certificate against the extension.\r\n\r\n* Conversely, a server that uses `trust_anchors` could well take a bag of certificates and path-build on the fly to expand that out into a bunch of candidate paths to send.\r\n\r\nPath-building discussions are mostly a distraction here.",
+              "createdAt": "2024-09-05T21:31:29Z",
+              "updatedAt": "2024-09-05T21:33:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IJM5F",
+          "commit": {
+            "abbreviatedOid": "c88ebb8"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-05T21:32:40Z",
+          "updatedAt": "2024-09-05T21:32:40Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "Defining a new media type is defining an extension. We are extending ACME. ACME doesn't have a concrete notion of extensions the way that TLS does.",
+              "createdAt": "2024-09-05T21:32:40Z",
+              "updatedAt": "2024-09-05T21:32:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IJNAO",
+          "commit": {
+            "abbreviatedOid": "c88ebb8"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-05T21:33:03Z",
+          "updatedAt": "2024-09-05T21:33:03Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "Also \"ACME extension\" comes from the existing text. :P",
+              "createdAt": "2024-09-05T21:33:03Z",
+              "updatedAt": "2024-09-05T21:33:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IJO3-",
+          "commit": {
+            "abbreviatedOid": "c88ebb8"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-05T21:37:38Z",
+          "updatedAt": "2024-09-05T21:37:38Z",
+          "comments": [
+            {
+              "originalPosition": 30,
+              "body": "I think \"new CA\" is correct, not \"new key\". \"New key\" reads like it's specifically talking about key rotation, but this is a summary of the general \"new CA\" problem. (CA != CA operator.) But yeah this (existing) line is a little bit hard to read. I'll take a pass and incorporate bits of your text.",
+              "createdAt": "2024-09-05T21:37:38Z",
+              "updatedAt": "2024-09-05T21:37:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IJzrD",
+          "commit": {
+            "abbreviatedOid": "2b25486"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-09-05T23:04:46Z",
+          "updatedAt": "2024-09-05T23:04:46Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 72,
+      "id": "PR_kwDOKigz-s56l1Md",
+      "title": "Expand on the certificate_authorities discussion in the explainer",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/72",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "The explainer currently says the old one is impractical, which is not true without qualifications. It's perfectly practical for a large class of applications. We're just interested in the cases where it is not.\r\n\r\nAlso, for the many folks who already use certificate_authorities (client certs), it's worth emphasizing that all these extensions coexist just fine.",
+      "createdAt": "2024-09-05T23:22:26Z",
+      "updatedAt": "2024-09-05T23:22:26Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "4f2242a410730602db7e208ccc48c25eb9f9aae3",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "cert-authorities-discussion",
+      "headRefOid": "b693c1894db84860e1b58d6c59adb7cf565ae56f",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
