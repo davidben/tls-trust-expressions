@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-08T01:49:03.809902+00:00",
+  "timestamp": "2024-09-10T01:43:42.985221+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -3488,7 +3488,7 @@
       "labels": [],
       "body": "The explainer currently says the old one is impractical, which is not true without qualifications. It's perfectly practical for a large class of applications. We're just interested in the cases where it is not.\r\n\r\nAlso, for the many folks who already use certificate_authorities (client certs), it's worth emphasizing that all these extensions coexist just fine.",
       "createdAt": "2024-09-05T23:22:26Z",
-      "updatedAt": "2024-09-05T23:22:26Z",
+      "updatedAt": "2024-09-09T22:22:55Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "4f2242a410730602db7e208ccc48c25eb9f9aae3",
@@ -3500,7 +3500,28 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6IjrK_",
+          "commit": {
+            "abbreviatedOid": "b693c18"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-09-09T22:22:48Z",
+          "updatedAt": "2024-09-09T22:22:55Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "missing an \"is practical\" and spell \"with\" with an i. ",
+              "createdAt": "2024-09-09T22:22:48Z",
+              "updatedAt": "2024-09-09T22:22:55Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
