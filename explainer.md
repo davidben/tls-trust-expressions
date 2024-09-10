@@ -15,17 +15,17 @@ This document is a high-level overview and [explainer](https://tag.w3.org/explai
 
 ## Introduction
 
-While they differ in approach, both drafts aim to solve the same problem: **enable [TLS](https://www.rfc-editor.org/rfc/rfc8446) implementations to efficiently authenticate to peers with diverse [certificate](https://www.rfc-editor.org/rfc/rfc5280) policies.** This avoids a conflict between service availability and user security.
+The two drafts are different approaches to solving the same problem: **enable TLS endpoints to reliably and efficiently present certificates to peers that vary in supported trust anchors, particularly in larger PKIs like the Web PKI**.
 
-We refer to the authenticating party as the *subscriber* and the peer as the *relying party*. The common case in TLS is server certificate authentication, where the subscriber is the server, and the relying party is the client. The roles are reversed with client certificates. For clarity, this document will primarily discuss the server certificate case, but most of the motivations and solutions apply analogously to client certificates.
+This avoids a conflict between service availability and user security. As authentication requirements evolve to meet user security, the result is increased variance in the ecosystem. If TLS endpoints cannot reliably meet each supported peer's requirements, connections will fail. Often, the result is user security is deprioritized in favor of avoiding any kind of breakage.
 
-To solve this problem, the two drafts extend the existing TLS 1.3 [`certificate_authorities` extension](https://www.rfc-editor.org/rfc/rfc8446#section-4.2.4) to reduce the size cost, making it usable for more applications. They also define a supporting ACME extension to help servers provision multiple certificates. As with other internet drafts at this stage of the process, they are not final mechanisms. Rather, they are starting points, intended to demonstrate feasibility and some approaches, for the working group to build on for a complete solution.
+We approach this by following the standard TLS negotiation pattern. The existing TLS 1.3 [`certificate_authorities`](https://www.rfc-editor.org/rfc/rfc8446#section-4.2.4) extension allows endpoints to provision multiple certificates and select the appropriate one per connection. The two drafts extend this mechanism to reduce the size cost, making it usable for applications with larger PKIs. They also define a supporting ACME extension to help implementations provision multiple certificates. As with other internet drafts at this stage of the process, they are not final mechanisms. Rather, they are starting points, intended to demonstrate feasibility and some approaches, for the working group to build on for a complete solution.
 
-The remainder of this section discusses what the problem statement means, and why it is important to solve. Subsequent sections provide an overview of the two solutions, discussion on design goals and key cases, and finally some alternatives we considered.
+The remainder of this section discusses what this problem statement means, and why it is important to solve. Subsequent sections provide an overview of the two solutions, discussion on design goals and key cases, and finally some alternatives we considered, including various existing solutions (e.g. fingerprinting and cross-signing), which do not meet the requirements.
 
 ### Background
 
-TLS uses X.509 certificates to associate DNS names, or other application identifiers, with the authoritative server's TLS keys. These associations are signed by certificate authorities (CAs) and are presented by servers to clients. Each client curates a set of CAs, called *trust anchors*, whose associations the client accepts. If the client's trust anchors can be trusted to only issue correct associations, the client can rely on TLS to securely connect to servers.
+[TLS](https://www.rfc-editor.org/rfc/rfc8446) uses [X.509 certificates]((https://www.rfc-editor.org/rfc/rfc5280) to associate a TLS endpoint's DNS names, or other application identifiers, with its TLS key. These associations are signed by certificate authorities (CAs) and are presented to the peer, known as the *relying party*. Each relying party curates a set of CAs, called *trust anchors*, whose associations the relying party accepts. If the relying party's trust anchors can be trusted to only issue correct associations, the relying party can use TLS to securely connect to the authenticating party, known as the *subscriber*. The common case in TLS is server certificate authentication, where the subscriber is the server, and the relying party is the client. The roles are reversed with client certificates. For clarity, this document will primarily discuss the server certificate case, but most of the motivations and solutions apply analogously to client certificates.
 
 In this system, the client's trust anchors directly impact service availability and user security:
 
@@ -43,15 +43,15 @@ As with other TLS parameters, client populations do not have completely uniform 
 
 PKI transitions described above inherently create this diversity, if for no other reason than out-of-date clients in the ecosystem. These clients could range from unupdatable TV set-top boxes to some IoT device to an individual user's browser that has not yet, or could not, communicate with its update service.
 
-Beyond temporal divergence, different clients have different needs and make different decisions on behalf of their users. For example, within the Web PKI, root programs make trust decisions independently. Some more specialized clients, such as mobile apps, may even pin to one or two specific CAs.
+Beyond temporal divergence, different clients have different needs and make different decisions on behalf of their users. For example, within the Web PKI, root programs make trust decisions independently. Some more specialized clients, such as mobile apps, may be constrained to trusting one or two specific CAs
 
-To support a potentially diverse set of clients, the server must present an acceptable certificate to each one. TLS has a standard solution for this across its many parameters: negotiation. For client certificates, the CertificateRequest message listed trusted CAs since SSL 3.0 and TLS 1.0. TLS 1.3 generalized this to server certificates with the [`certificate_authorities` extension](https://www.rfc-editor.org/rfc/rfc8446#section-4.2.4), allowing [clients](https://www.rfc-editor.org/rfc/rfc8446#section-4.4.2.3) and [servers](https://www.rfc-editor.org/rfc/rfc8446#section-4.4.2.2) to select between available certificates by the peer's trust anchors.
+To support a potentially diverse set of clients, the server must present an acceptable certificate to each one. TLS has a standard solution for this across its many parameters: negotiation. For client certificates, the CertificateRequest message listed trusted CAs since SSL 3.0 and TLS 1.0. TLS 1.3 generalized this to server certificates with the [`certificate_authorities`](https://www.rfc-editor.org/rfc/rfc8446#section-4.2.4) extension, allowing [clients](https://www.rfc-editor.org/rfc/rfc8446#section-4.4.2.3) and [servers](https://www.rfc-editor.org/rfc/rfc8446#section-4.4.2.2) to select between available certificates by the peer's trust anchors.
 
 However, `certificate_authorities`'s size is impractical for some applications. Existing PKIs may have many CAs, and existing CAs may have long X.509 names. As of August 2023, the [Mozilla CA Certificate Program](https://wiki.mozilla.org/CA/Included_Certificates) contained 144 CAs, with an average name length of around 100 bytes. Such TLS deployments often do not use trust anchor negotiation at all.
 
 ### Security vs Availability
 
-Without a negotiation mechanism, service availability and user security conflict, with user security paying much of the cost.
+Without a negotiation mechanism, changes to client trust to improve user security directly conflict with service availability, with user security being deprioritized in favor of avoiding any kind of breakage.
 
 If the server cannot dispatch between certificates, it must obtain a single certificate that simultaneously satisfies all clients. This limits it to the intersection of supported clients' trust anchors. As servers consider a broader range of clients, that intersection shrinks. At internet scales, the oldest clients effectively last forever, so finding a suitable single CA becomes challenging if not impossible. Even using a new CA, be it a new CA operator or simply a rotated key, becomes a high risk operation for server operators, as some niche client may not accept the CA.
 
@@ -61,7 +61,7 @@ The drafts aim to relieve this conflict, in order to build a robust, secure, and
 
 ## Overview
 
-The two drafts follow the standard negotiation pattern in TLS, extending the existing TLS 1.3 [`certificate_authorities` extension](https://www.rfc-editor.org/rfc/rfc8446#section-4.2.4) to reduce the size cost. They do so with different approaches, with different tradeoffs:
+The two drafts follow the standard negotiation pattern in TLS, with different approaches and tradeoffs:
 
 ### Trust Expressions
 
@@ -79,7 +79,7 @@ Trust Anchor Identifiers consists of three parts:
 
 2. Bandwidth and privacy constraints may still prevent a client from enumerating its full CA list. Server use an extension to [HTTPS/SVCB](https://www.rfc-editor.org/rfc/rfc9460.html) to publish available trust anchors in DNS. The client fetches this, selects the desired option, and requests it in `trust_anchors`.
 
-3. To accommodate stale DNS records, or cases where the DNS mechanism does not work, servers also send available trust anchors in the TLS handshake. If the client rejects the certificate, it can use this to retry with a more accurate `trust_anchors` request.
+3. To accommodate stale or unavailable DNS records, servers also send available trust anchors in the TLS handshake. If the client rejects the certificate, it can use this to retry with a more accurate `trust_anchors` request.
 
 ### Comparison
 
@@ -127,9 +127,9 @@ We discuss these in more detail below:
 
 If a CA is compromised or otherwise considered untrustworthy, mitigating the TLS interception attacks requires that the client no longer trust the CA. This means we should minimize delays in completing PKI transitions at the client, as that delay translates to time during which users remain at risk.
 
-In other transitions, reducing delays is also valuable. If trustworthy CA is considered to provide net value to the ecosystem and added, a timely transition allows servers to make use of the CA and benefit.
+In other transitions, reducing delays is also valuable. If trustworthy CA is considered to provide net value to the ecosystem and added, a timely transition allows the ecosystem to realize those benefits sooner. For example, the new CA may provide post-quantum security or improved automation.
 
-Negotiation mechanisms naturally achieve this, following the standard TLS pattern, by letting the server serve any collection of certificates it needs to maintain availability. The server is not constrained by availability of CA cross-signs, which carry signficant risks for all parties in the PKI.
+Negotiation mechanisms naturally achieve this by letting the server serve any collection of certificates it needs to maintain availability. Compared to some [alternate solutions](#considered-alternatives), the server is not constrained to wait for CAs to cross-sign each other (if they even will, as a cross-sign certifies *all* certificates from the other CA, past and future), for a cross-sign to appear in a predistributed list, etc.
 
 The ACME multi-certificate extensions can further reduce user security risk, by allowing ACME servers to automatically manage some transitions. For example, when rotating CA keys, the ACME server can automatically provision chains for both the old and new key.
 
@@ -137,7 +137,7 @@ The ACME multi-certificate extensions can further reduce user security risk, by 
 
 We wish to minimize bandwidth cost in the TLS handshake. This includes bandwidth from the negotiation mechanism itself, and bandwidth from the certificates that are negotiated. Increased handshake bandwidth leads to delays in serving users (e.g. slower webpage loads) and consumes resources like the user's data plan.
 
-The two drafts reduce the bandwidth costs of the `certificate_authorities` extension. For PKIs where `certificate_authorities` was already viable, this is a size optimization over the existing deployment model. For PKIs where `certificate_authorities` was prohibitively large, this provides agility with minimal size cost.
+The two drafts reduce the bandwidth costs of the `certificate_authorities` extension. For PKIs where `certificate_authorities` was already viable, this is a size optimization over the existing deployment model. For PKIs where `certificate_authorities` was prohibitively large, this provides negotiation with minimal size cost.
 
 Negotiation mechanisms can additionally unlock size optimizations by skipping unnecessary intermediate certificates and cross-signs in the common case. Servers no longer need to serve a larger payload to target the lowest common denominator. This will be particularly valuable for the post-quantum transition, when signatures become [much more expensive](https://dadrian.io/blog/posts/pqc-signatures-2024/). By further tailoring solutions to different clients, [even more size savings](https://github.com/davidben/merkle-tree-certs) are possible.
 
