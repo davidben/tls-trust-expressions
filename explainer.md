@@ -103,7 +103,7 @@ The two mechanisms can be deployed together. A subscriber can have metadata for 
 
 Both drafts anticipate a model where servers provision a collection of candidate certificate paths, with some associated selection metadata, instead of a single path. When a client connect, the server software automatically selects one to send by matching the ClientHello message against the selection metadata, along with other TLS criteria such as ECDSA vs RSA. If there are multiple matches, server software chooses based on its own criteria, such as certificate size.
 
-If the negotiation mechanism is either not supported or did not match a candidate, servers should behave as they do today, possibly falling back to a single default certificate or heuristics. However, each client that deploys negotiation no longer constrains that fallback path, reducing the burden the server operator in configuring it.
+If the negotiation mechanism is either not supported or did not match a candidate, servers should behave as they do today, possibly falling back to a single default certificate or heuristics. However, each client that deploys negotiation no longer constrains that fallback path, increasing the choices available for a valid fallback certificate for the remaining clients.
 
 ### ACME Extension
 
