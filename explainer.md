@@ -21,7 +21,7 @@ This avoids a conflict between service availability and user security. As authen
 
 We approach this by following the standard TLS negotiation pattern. The existing TLS 1.3 [`certificate_authorities`](https://www.rfc-editor.org/rfc/rfc8446#section-4.2.4) extension allows endpoints to provision multiple certificates and select the appropriate one per connection. The two drafts extend this mechanism to reduce the size cost, making it usable for applications with larger PKIs. They also define a supporting ACME extension to help implementations provision multiple certificates. As with other internet drafts at this stage of the process, they are not final mechanisms. Rather, they are starting points, intended to demonstrate feasibility and some approaches, for the working group to build on for a complete solution.
 
-The remainder of this section discusses what this problem statement means, and why it is important to solve. Subsequent sections provide an overview of the two solutions, discussion on design goals and key cases, and finally some alternatives we considered, including various existing solutions (e.g. fingerprinting and cross-signing), which do not meet the requirements.
+The remainder of this section discusses what this problem statement means, and why it is important to solve. Subsequent sections provide an overview of the two solutions, discussion on design goals and key cases, and finally some alternatives we considered, including various existing solutions (e.g. fingerprinting and cross-signing), which do not meet the design goals.
 
 ### Background
 
