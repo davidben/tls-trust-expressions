@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-10T01:43:42.985221+00:00",
+  "timestamp": "2024-09-12T01:42:52.418988+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -3520,6 +3520,459 @@
               "updatedAt": "2024-09-09T22:22:55Z"
             }
           ]
+        }
+      ]
+    },
+    {
+      "number": 73,
+      "id": "PR_kwDOKigz-s56697d",
+      "title": "Reorganize the explainer a bit",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/73",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "We ended up with a lot of redundant, somewhat meandering text. I tried to take a pass to clean it up a bit. I left Key Scenarios and Considered Alternatives alone. Those could probably also take a pass, but I think the rest reads a lot better now.",
+      "createdAt": "2024-09-10T02:40:30Z",
+      "updatedAt": "2024-09-10T21:56:17Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "4f2242a410730602db7e208ccc48c25eb9f9aae3",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "reorg-explainer",
+      "headRefOid": "7d0c4bc815a4f6d99acbef33606202d442919f8e",
+      "closedAt": "2024-09-10T21:56:14Z",
+      "mergedAt": "2024-09-10T21:56:14Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "274116ce1082463992b04fcc3a85579f01ca315e"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6IrG_y",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T16:16:05Z",
+          "updatedAt": "2024-09-10T16:16:05Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "This sort of reads like a requisite lead-in paragraph was deleted, and if you squint, this still reads like the goal of a solution more than a problem statement. I think the conflict between availability and security might better be described as a corollary of the below problem statement, but I'm open to iterating over this if it's headed in the right direction.\r\n\r\n==========\r\nBackground:\r\nToday, TLS subscribers are provisioned with one or more certification paths which they use to authenticate themselves to TLS relying parties. Currently, TLS subscribers lack a reliable way of knowing which among these provisioned paths will be accepted by a given relying party, if any. Absent a clear signal, TLS subscribers are forced to guess, which causes connection failures when this guess is incorrect.\r\n\r\nIn the scenario in which a TLS subscriber wishes to authenticate itself to relying parties with distinct or mutually-exclusive trust settings, there is no single correct answer. Advanced TLS implementations may attempt to use TLS fingerprinting to make informed guesses; however, this is unreliable and client trust may change over time, causing existing fingerprinting mechanisms and the subsequent certification path selection to fail. \r\n\r\nProblem:\r\nTrust Anchor IDs and Trust Expressions present two different approaches to solve the same problem: eliminating the uncertainty around what relying parties trust so that TLS subscribers can obtain, and intelligently serve, a trusted certification path to TLS relying parties.\r\n",
+              "createdAt": "2024-09-10T16:16:05Z",
+              "updatedAt": "2024-09-10T16:19:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Iq1nE",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-09-10T15:49:08Z",
+          "updatedAt": "2024-09-10T16:17:26Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "policies here sounds a bit too fluffy and vague for the problem statement - can we stick to divers sets of trust anchors or something like that (Trust anchors can be referenced straight out of 5280 I believe)",
+              "createdAt": "2024-09-10T15:50:05Z",
+              "updatedAt": "2024-09-10T16:17:26Z"
+            },
+            {
+              "originalPosition": 29,
+              "body": "I really think the use of \"CA\" interchanably with \"key\" hurts us in this section.. I know it is sort of the \"standard\" in these documents and I hate it. ",
+              "createdAt": "2024-09-10T15:58:43Z",
+              "updatedAt": "2024-09-10T16:17:26Z"
+            },
+            {
+              "originalPosition": 81,
+              "body": "```suggestion\r\n3. To accommodate stale or missing DNS records, servers also send available trust anchors in the TLS handshake. If the client rejects the certificate, it can use this to retry with a more accurate `trust_anchors` request.\r\n```",
+              "createdAt": "2024-09-10T16:04:33Z",
+              "updatedAt": "2024-09-10T16:17:26Z"
+            },
+            {
+              "originalPosition": 104,
+              "body": "```suggestion\r\nBoth drafts anticipate a model where servers automatically provision a collection of candidate certificate paths, with some associated selection metadata, instead of a single path. When a client connect, the server software automatically selects one to send by matching the ClientHello message against the selection metadata, along with other TLS criteria such as ECDSA vs RSA. If there are multiple matches, server software chooses based on its own criteria, such as certificate size.\r\n```",
+              "createdAt": "2024-09-10T16:06:02Z",
+              "updatedAt": "2024-09-10T16:17:26Z"
+            },
+            {
+              "originalPosition": 107,
+              "body": "```suggestion\r\nIf the negotiation mechanism is either not supported or did not match a candidate, servers should behave as they do today, possibly falling back to a single default certificate or heuristics. However, each client that deploys negotiation no longer constrains that fallback path, increasing the choices available for a valid fallback certificate for the remaining clients.\r\n```",
+              "createdAt": "2024-09-10T16:10:53Z",
+              "updatedAt": "2024-09-10T16:17:26Z"
+            },
+            {
+              "originalPosition": 149,
+              "body": "```suggestion\r\nIn other transitions, reducing delays is also valuable. If trustworthy CA is considered to provide net value to the users of a client and is added, a timely transition allows servers to make use of the CA and provide the benefit of using it to the client.\r\n```",
+              "createdAt": "2024-09-10T16:13:30Z",
+              "updatedAt": "2024-09-10T16:17:26Z"
+            },
+            {
+              "originalPosition": 156,
+              "body": "What risks? (this is the question that will be asked, do we leave it unanswered here?)",
+              "createdAt": "2024-09-10T16:14:36Z",
+              "updatedAt": "2024-09-10T16:17:26Z"
+            },
+            {
+              "originalPosition": 180,
+              "body": "```suggestion\r\nThe two drafts reduce the bandwidth costs of the `certificate_authorities` extension. For PKIs where `certificate_authorities` was already viable, this is a size optimization over the existing deployment model. For PKIs where `certificate_authorities` was prohibitively large, this provides negotiaiton with minimal size cost.\r\n```",
+              "createdAt": "2024-09-10T16:15:57Z",
+              "updatedAt": "2024-09-10T16:17:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IrJob",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T16:20:54Z",
+          "updatedAt": "2024-09-10T16:20:54Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "I generally like this, other than some degree of discomfort between \"today subscribers are provisioned witth one or more\" - I think we risk the reader believing today it isn't the case and most of the time it's only one.. yeah I know you say one or more, but I think a lot of our readership is stuck in a mode of \"who cares what we have today works fine\"",
+              "createdAt": "2024-09-10T16:20:54Z",
+              "updatedAt": "2024-09-10T16:20:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IrPL2",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T16:30:40Z",
+          "updatedAt": "2024-09-10T16:30:40Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "\"1 or more\" is necessary for the fingerprinting --> cert selection to make sense. Perhaps we can more clearly emphasize that guesses and resulting breakage do happen, if that assuages your concerns about people thinking this doesn't actually happen today (which it does).",
+              "createdAt": "2024-09-10T16:30:40Z",
+              "updatedAt": "2024-09-10T16:30:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IrQis",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T16:33:12Z",
+          "updatedAt": "2024-09-10T16:33:12Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "Suggest: \"extend the pattern/mechanism used by the existing TLS 1.3 `certificate_authorities` extension\"",
+              "createdAt": "2024-09-10T16:33:12Z",
+              "updatedAt": "2024-09-10T16:33:12Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Ir2Cw",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T17:18:16Z",
+          "updatedAt": "2024-09-10T17:18:17Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "nit: including 'extension' in the link after the codeblock formatting causes a weird break that makes it look like it's two separate links. Maybe just linkify `certificate_authorities`",
+              "createdAt": "2024-09-10T17:18:17Z",
+              "updatedAt": "2024-09-10T17:18:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Ir2TD",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T17:18:36Z",
+          "updatedAt": "2024-09-10T17:18:36Z",
+          "comments": [
+            {
+              "originalPosition": 104,
+              "body": "I don't think the provisioning is necessarily automatic. E.g. your backup certificate idea. Automation is very valuable, but that's covered in the next section.",
+              "createdAt": "2024-09-10T17:18:36Z",
+              "updatedAt": "2024-09-10T17:18:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Ir4PA",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T17:22:44Z",
+          "updatedAt": "2024-09-10T17:22:44Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "We can avoid people rabbit-holing on pinning by saying something more generally true, such as:\r\n\r\n\"Some more specialized clients, such as mobile apps, may be constrained to trusting one or two specific CAs\"",
+              "createdAt": "2024-09-10T17:22:44Z",
+              "updatedAt": "2024-09-10T17:22:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Ir8X0",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T17:30:02Z",
+          "updatedAt": "2024-09-10T17:30:02Z",
+          "comments": [
+            {
+              "originalPosition": 53,
+              "body": "Suggest something like: \"Without a negotiation mechanism, changes to client trust to improve user security directly conflict with service availability, with user security being deprioritized in favor of avoiding any kind of breakage\"\r\n\r\nIMO, framing user security as the cause of client diversity makes this point more clearly.",
+              "createdAt": "2024-09-10T17:30:02Z",
+              "updatedAt": "2024-09-10T17:30:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Ir9zJ",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T17:33:07Z",
+          "updatedAt": "2024-09-10T17:33:07Z",
+          "comments": [
+            {
+              "originalPosition": 104,
+              "body": "nit: make sure we're consistent about \"certification paths\" vs. \"certificate paths\"",
+              "createdAt": "2024-09-10T17:33:07Z",
+              "updatedAt": "2024-09-10T17:33:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Ir-zT",
+          "commit": {
+            "abbreviatedOid": "376f574"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T17:35:15Z",
+          "updatedAt": "2024-09-10T17:35:15Z",
+          "comments": [
+            {
+              "originalPosition": 156,
+              "body": "It feels like we can TODO a link to separate text that explains this later.",
+              "createdAt": "2024-09-10T17:35:15Z",
+              "updatedAt": "2024-09-10T17:35:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Ir5YU",
+          "commit": {
+            "abbreviatedOid": "fbe1d9d"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T17:25:03Z",
+          "updatedAt": "2024-09-10T18:39:17Z",
+          "comments": [
+            {
+              "originalPosition": 180,
+              "body": "Applied but with spelling fix.",
+              "createdAt": "2024-09-10T17:25:03Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 149,
+              "body": "\"net value to the ecosystem\" is the phrasing we used before. I think that is a better phrasing than to a client.\r\n\r\nThere are many reasons to add CAs. A CA might provide better automation, which directly benefits the server operator. Of course, it indirectly benefits the user by making the system more robust, which is ultimately what this is for. But this is a complicated and broad, so \"ecosystem\" is more appropriate.\r\n\r\nI rephrased a bit so we don't talk about the server benefiting because that's also poor phrasing for the same reason. Also added a couple examples.",
+              "createdAt": "2024-09-10T17:37:15Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 81,
+              "body": "Missing is weird because if it's missing the server should just deploy them. But I do like the tighter phrasing. I did \"stale or unavailable\".",
+              "createdAt": "2024-09-10T17:41:35Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 156,
+              "body": "I mean, the separate text *already exists*. It's Considered Alternatives. I rewrote it slightly and linked there.",
+              "createdAt": "2024-09-10T17:42:35Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 104,
+              "body": "For better or worse, this document uses \"certificate paths\" everywhere. I don't care either way which one we use but matched for now. It's all kind of a mess. Colloquial terminology is overwhelming \"certificate path\" and \"certificate authority\". 5280 says \"certification path\" and \"certification authority\". 8446 says \"certification path\" but \"certificate authority\".",
+              "createdAt": "2024-09-10T17:44:35Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 53,
+              "body": "Applied.",
+              "createdAt": "2024-09-10T17:45:03Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 44,
+              "body": "Applied.",
+              "createdAt": "2024-09-10T17:45:30Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 29,
+              "body": "We're not using it interchangeably.\r\n\r\nA CA is a kind of service that, among other things, uses a key. That service is defined by far more than a key. There's a name and other properties, usually packaged in a self-signed certificate. There's also the software and processes that access and use that key.\r\n\r\nA CA operator is an entity who operates one or more CAs.\r\n\r\nThe client contains a list of CAs, not CA operators. Rarely but sometimes CAs change hands between CA operators, though that is quite a process. When clients make trust decisions, they certainly take CA operators into account, but the trust anchor list is ultimately a list of CAs.\r\n\r\nWe've been pretty consistent throughout all our documents here. I think this is correct. Saying \"key\" loses all the other stuff that is part of a CA.",
+              "createdAt": "2024-09-10T17:48:27Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 19,
+              "body": "Done.",
+              "createdAt": "2024-09-10T18:12:57Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 19,
+              "body": "Done.",
+              "createdAt": "2024-09-10T18:38:06Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            },
+            {
+              "originalPosition": 15,
+              "body": "I wanted to try a consistent framing between \"this is make `certificate_authorities` more useful\" and \"this is straight-up impossible\". I think the former is a better framing because a lot of deployments *can* use `certificate_authorities` today. Like it's just fine for client certs.\r\n\r\nHow's this new version?",
+              "createdAt": "2024-09-10T18:38:58Z",
+              "updatedAt": "2024-09-10T18:39:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6ItCkj",
+          "commit": {
+            "abbreviatedOid": "ca7925e"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-09-10T19:00:58Z",
+          "updatedAt": "2024-09-10T19:00:58Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKigz-s6It9wR",
+          "commit": {
+            "abbreviatedOid": "79317ab"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T20:54:25Z",
+          "updatedAt": "2024-09-10T20:54:25Z",
+          "comments": [
+            {
+              "originalPosition": 29,
+              "body": "Not the hill to die on today then, but really, I find using the language \"untrustworthy\" referring to a \"CA\" as opposed to a \"CA operator\" a bit jarring. ",
+              "createdAt": "2024-09-10T20:54:25Z",
+              "updatedAt": "2024-09-10T20:54:25Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6It95v",
+          "commit": {
+            "abbreviatedOid": "79317ab"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-09-10T20:54:48Z",
+          "updatedAt": "2024-09-10T20:54:48Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IuJ3d",
+          "commit": {
+            "abbreviatedOid": "79317ab"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-09-10T21:23:29Z",
+          "updatedAt": "2024-09-10T21:23:30Z",
+          "comments": [
+            {
+              "originalPosition": 21,
+              "body": "```suggestion\r\nThe remainder of this section discusses what this problem statement means, and why it is important to solve. Subsequent sections provide an overview of the two solutions, discussion on design goals and key cases, and finally some alternatives we considered, including various existing solutions (e.g. fingerprinting and cross-signing), which do not meet the design goals.\r\n```",
+              "createdAt": "2024-09-10T21:23:29Z",
+              "updatedAt": "2024-09-10T21:23:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6IuKBc",
+          "commit": {
+            "abbreviatedOid": "79317ab"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-09-10T21:23:57Z",
+          "updatedAt": "2024-09-10T21:23:57Z",
+          "comments": []
         }
       ]
     }
