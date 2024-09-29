@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-26T01:46:59.487578+00:00",
+  "timestamp": "2024-09-29T01:55:07.390923+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -510,9 +510,38 @@
       ],
       "body": "Sometimes X.509 credentials are accompanied with SCTs in the `signed_certificate_timestamp` extension. This isn't widely deployed, but being able to negotiate SCTs would be valuable for much the same reasons. Future credential types may also have a need for separately negotiable sub-parts.\r\n\r\nA brief sketch:\r\n\r\nFirst, allocate a trust anchor ID for each CT log.\r\n\r\nNext, define a `signed_certificate_timestamp` certificate property. It contains something like this. (Replace structure names with something more sensible.)\r\n\r\n```\r\nenum {\r\n    signed_certificate_timestamps(TBD), (2^16-1)\r\n} CertificatePropertyType;\r\n\r\nopaque SerializedSCT<1..2^16-1>;  // From RFC 6962\r\n\r\nstruct {\r\n    SerializedSCT sct;\r\n    TrustAnchorIdentifier trust_anchor;\r\n} SCTTrustAnchorPair;\r\n\r\nSCTTrustAnchorPair SCTTrustAnchorPairList<1..2^16-1>;\r\n```\r\n\r\nNext, we make the trust anchors extension slightly richer. The client can send something like \"I want one of these, two of these, one of these\", etc. The server's advertisement should also be more structured (list of lists of trust anchors), because it needs to communicate \"I have one credential with proofs from A, B, C, another credential with proofs from C, D, E, and another with proofs from D, E, F\".\r\n\r\n\r\n```\r\n// The client's half:\r\nstruct {\r\n    // Semantics: please give me some request_count of trust_anchors\r\n    uint8 request_count;\r\n    TrustAnchorIdentifier trust_anchors<1..2^16-1>;\r\n} TrustAnchorRequest;\r\n\r\n// Semantics: please satisfy *all* of these requests\r\nTrustAnchorRequest TrustAnchorRequestList<1..2^16-1>;\r\n\r\n// The server's half:\r\nstruct {\r\n    // Semantics: I have a credential with associated proofs from each of these trust anchors.\r\n    TrustAnchorIdentifier trust_anchors<1..2^8-1>;\r\n} AvailableCredential;\r\n\r\n// Semantics: I have each of these credentials available.\r\nAvailableCredential AvailableCredentialList<1..2^16-1>;\r\n```\r\n\r\nWe can also go with a more bespoke SCT design, but the nice thing about this it enables other credential types (X.509 is very bad at it) to also have separately negotiable sub-parts.",
       "createdAt": "2024-07-25T20:27:14Z",
-      "updatedAt": "2024-07-25T23:07:37Z",
+      "updatedAt": "2024-09-27T19:54:55Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "body": "struct {\r\n    SerializedSCT sct;\r\n    TrustAnchorIdentifier trust_anchor;\r\n} SCTTrustAnchorPair;\r\n\r\nThis should probably also include an identifier for the log as well, should it not? so that a client can request that is wants one or more SCT from [Frank, George, Festus], so the server can pick from [Frank, Festus, Google, Filippo] that is has? \r\n\r\nAhh, I see the TAI in here is implictly the log's identifer.. nvm. ",
+          "createdAt": "2024-09-27T19:37:59Z",
+          "updatedAt": "2024-09-27T19:39:29Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "body": "There's a slight problem with Available Credential I think. let's say I have a variety of certificates. certificte from CA A logs to [Fred / Sam]. certificate B logs to [Google / Filippo]. -  This server would advertise credentials from [A, B, Fred, Sam, Google, Flippo] - and a client would be therefore free to ask for (1, (B)) (1, (Fred, Sam))  - not having any clue the server can't give them that.",
+          "createdAt": "2024-09-27T19:46:51Z",
+          "updatedAt": "2024-09-27T19:46:51Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "In your example, the server would send [[A, Fred, Sam], [B, Google, Filippo]]. That is the point of AvailableCredential, to express which things are associated. :-p",
+          "createdAt": "2024-09-27T19:53:30Z",
+          "updatedAt": "2024-09-27T19:53:30Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "> Ahh, I see the TAI in here is implictly the log's identifer.. nvm.\r\n\r\nYes.",
+          "createdAt": "2024-09-27T19:54:54Z",
+          "updatedAt": "2024-09-27T19:54:54Z"
+        }
+      ]
     },
     {
       "number": 62,
