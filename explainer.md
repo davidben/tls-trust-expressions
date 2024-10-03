@@ -25,7 +25,7 @@ The remainder of this section discusses what this problem statement means, and w
 
 ### Background
 
-[TLS](https://www.rfc-editor.org/rfc/rfc8446) uses [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280) to associate a TLS endpoint's DNS names, or other application identifiers, with its TLS key. These associations are signed by certificate authorities (CAs) and are presented to the peer, known as the *relying party*. Each relying party curates a set of CAs, called *trust anchors*, whose associations the relying party accepts. If the relying party's trust anchors can be trusted to only issue correct associations, the relying party can use TLS to securely connect to the authenticating party, known as the *subscriber*. The common case in TLS is server certificate authentication, where the subscriber is the server, and the relying party is the client. The roles are reversed with client certificates. For clarity, this document will primarily discuss the server certificate case, but most of the motivations and solutions apply analogously to client certificates.
+[TLS](https://www.rfc-editor.org/rfc/rfc8446) uses [X.509 certificates](https://www.rfc-editor.org/rfc/rfc5280) to associate a TLS endpoint's DNS names, or other application identifiers, with its TLS key. These associations are signed by certificate authorities (CAs) and are presented to the peer, known as the *relying party*. Each relying party curates a set of CAs, called *trust anchors*, whose associations the relying party accepts. If the relying party's trust anchors can be trusted to only issue correct associations, the relying party can use TLS to securely connect to the authenticating party, known as the *authenticating party*. The common case in TLS is server certificate authentication, where the authenticating party is the server, and the relying party is the client. The roles are reversed with client certificates. For clarity, this document will primarily discuss the server certificate case, but most of the motivations and solutions apply analogously to client certificates.
 
 In this system, the client's trust anchors directly impact service availability and user security:
 
@@ -97,7 +97,7 @@ Although they aim to solve the same problem, the two drafts work in very differe
 
 * Trust Anchor IDs can only express large client trust stores (for server certificates), not large server trust stores. Large trust stores rely on the retry mechanism described in [the draft](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html#name-retry-mechanism), which is not available to client certificates.
 
-The two mechanisms can be deployed together. A subscriber can have metadata for both mechanisms available, and a relying party can advertise both. Mechanisms with aspects of both may potentially also be designed.
+The two mechanisms can be deployed together. An authenticating party can have metadata for both mechanisms available, and a relying party can advertise both. Mechanisms with aspects of both may potentially also be designed.
 
 ### Server Configuration
 
@@ -107,7 +107,7 @@ If the negotiation mechanism is either not supported or did not match a candidat
 
 ### ACME Extension
 
-The two drafts also define an optional supporting ACME extension to help servers provision multiple certificates. When the server is configured to speak to some ACME server, the ACME server can return *multiple* certificate paths for the server's requested key and identity. As CAs already maintain relationships with root programs, they are well-positioned to update the kinds of certificates they provision in response to PKI changes. Automation allows subscribers to benefit from this without manual reconfiguration.
+The two drafts also define an optional supporting ACME extension to help servers provision multiple certificates. When the server is configured to speak to some ACME server, the ACME server can return *multiple* certificate paths for the server's requested key and identity. As CAs already maintain relationships with root programs, they are well-positioned to update the kinds of certificates they provision in response to PKI changes. Automation allows authenticating parties to benefit from this without manual reconfiguration.
 
 For ACME, the drafts currently propose a minimal change to existing mechanisms, where a new MIME type provides the metadata alongside each certificate path, and the [existing alternate certificate mechanism](https://www.rfc-editor.org/rfc/rfc8555.html#section-7.4.2) allows provisioning multiple alternate certificates in response to one request.
 
@@ -198,25 +198,25 @@ The following section is an overview of scenarios where trust anchor negotiation
 
 ### Key Rotation
 
-In most X.509 deployments, a compromise of _any_ root CA's private key compromises the entire PKI. Yet key rotation in PKIs is rare. As of 2023, the oldest certificate in Chrome's and Mozilla's root stores dates to 1998. Key rotation is challenging in a single-certificate deployment model. As long as any older relying party requires the old root, subscribers cannot switch to the new root, which in turn means relying parties cannot distrust the old root, leaving them vulnerable.
+In most X.509 deployments, a compromise of _any_ root CA's private key compromises the entire PKI. Yet key rotation in PKIs is rare. As of 2023, the oldest certificate in Chrome's and Mozilla's root stores dates to 1998. Key rotation is challenging in a single-certificate deployment model. As long as any older relying party requires the old root, authenticating parties cannot switch to the new root, which in turn means relying parties cannot distrust the old root, leaving them vulnerable.
 
-In a multi-certificate deployment model, the CA simply starts issuing from both the old and new root. Certificate negotiation in the TLS software then transparently allows the subscriber to send the correct one to each relying party. This requires no configuration changes to the subscriber. The subscriber does not need to know why it received two certificates, only how to select between them.
+In a multi-certificate deployment model, the CA simply starts issuing from both the old and new root. Certificate negotiation in the TLS software then transparently allows the authenticating party to send the correct one to each relying party. This requires no configuration changes to the authenticating party. The authenticating party does not need to know why it received two certificates, only how to select between them.
 
 ### Adding CAs
 
-Today, subscribers cannot use TLS certificates issued from a new root CA until all supported relying parties have been updated to trust the new root CA. This can take years or more. Some relying parties, such as IoT devices, may never receive trust store updates at all.
+Today, authenticating parties cannot use TLS certificates issued from a new root CA until all supported relying parties have been updated to trust the new root CA. This can take years or more. Some relying parties, such as IoT devices, may never receive trust store updates at all.
 
-In a multi-certificate deployment model, subscribers can begin serving certificates from new root CAs without interrupting relying parties that depend on existing ones.
+In a multi-certificate deployment model, authenticating parties can begin serving certificates from new root CAs without interrupting relying parties that depend on existing ones.
 
 ### Removing CAs
 
-Subscribers in a single-certificate model are limited to CAs in the intersection of their supported relying parties. As newer relying parties remove untrusted CAs over time, the intersection with older relying parties shrinks. Moreover, the subscriber may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For subscribers that serve many diverse relying parties, this is a disruptive and risky process.
+Authenticating parties in a single-certificate model are limited to CAs in the intersection of their supported relying parties. As newer relying parties remove untrusted CAs over time, the intersection with older relying parties shrinks. Moreover, the authenticating party may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For authenticating parties that serve many diverse relying parties, this is a disruptive and risky process.
 
-The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one.
+The multi-certificate model removes this constraint. If an authenticating party's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one.
 
 ### Other Root Transitions
 
-The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a CA operator may generate a postquantum root CA and use the mechanism in {{acme-extension}} to issue from the classical and postquantum roots concurrently. The subscriber will then, transparently and with no configuration change, serve both. As in {{key-rotation}}, newer relying parties can then remove the classical roots, while older relying parties continue to function.
+The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a CA operator may generate a postquantum root CA and use the mechanism in {{acme-extension}} to issue from the classical and postquantum roots concurrently. The authenticating party will then, transparently and with no configuration change, serve both. As in {{key-rotation}}, newer relying parties can then remove the classical roots, while older relying parties continue to function.
 
 This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.
 
@@ -226,17 +226,17 @@ This same procedure may also be used to transition between newer, more size-effi
 
 Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties. This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate. Post-quantum algorithms will further inflate this cost. A single [Dilithium3](https://pq-crystals.org/dilithium/) intermediate certificate uses 5,245 bytes in cryptographic material (public key and signature) alone.
 
-The multi-certificate model reduces this cost. A CA operator could provide subscribers with two certificate paths: a longer path ending at a long-lived root and shorter path the other ending at a short-lived root. Relying parties would trust both the long-lived root and the most recent short-lived root. Up-to-date relying parties will match on the short-lived root and use less bandwidth. On mismatch, older relying parties will continue to work with the long-lived root. Subscribers are no longer limited to the lowest-common denominator.
+The multi-certificate model reduces this cost. A CA operator could provide authenticating parties with two certificate paths: a longer path ending at a long-lived root and shorter path the other ending at a short-lived root. Relying parties would trust both the long-lived root and the most recent short-lived root. Up-to-date relying parties will match on the short-lived root and use less bandwidth. On mismatch, older relying parties will continue to work with the long-lived root. Authenticating parties are no longer limited to the lowest-common denominator.
 
 ### Conflicting Relying Party Requirements
 
-A subscriber may need to support relying parties with different requirements. For example, in contexts where online revocation checks are expensive, unreliable, or privacy-sensitive, user security is best served by short-lived certificates. In other contexts, long-lived certificates may be more appropriate for, e.g., systems that are offline for long periods of time or have unreliable clocks.
+An authenticating party may need to support relying parties with different requirements. For example, in contexts where online revocation checks are expensive, unreliable, or privacy-sensitive, user security is best served by short-lived certificates. In other contexts, long-lived certificates may be more appropriate for, e.g., systems that are offline for long periods of time or have unreliable clocks.
 
-A single-certificate deployment model forces subscribers to find a single certificate that meets all requirements. User security then suffers in all contexts, as the PKI may not quite meet anyone's needs. In a multi-certificate deployment model, different sets of requirements can simply use different root CAs.
+A single-certificate deployment model forces authenticating parties to find a single certificate that meets all requirements. User security then suffers in all contexts, as the PKI may not quite meet anyone's needs. In a multi-certificate deployment model, different sets of requirements can simply use different root CAs.
 
 ### Backup Certificates
 
-A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.
+An authenticating party may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.
 
 ### Public Key Pinning
 

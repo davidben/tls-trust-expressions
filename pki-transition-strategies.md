@@ -70,7 +70,7 @@ As above, older clients would need to be served the cross-sign and incur extra b
 
 ### Trust Anchor Negotation with Parallel Issuance
 
-Trust anchor negotiation enable a second deployment strategy. Rather than cross-signing the new key with the old one, the CA could operate both roots in parallel. Whenever a subscriber requests a certificate, it issues two parallel chains. As above, the ACME extensions automate this: the CA simply provides both chains, and server software automatically selects between the two.
+Trust anchor negotiation enable a second deployment strategy. Rather than cross-signing the new key with the old one, the CA could operate both roots in parallel. Whenever an authenticating party requests a certificate, it issues two parallel chains. As above, the ACME extensions automate this: the CA simply provides both chains, and server software automatically selects between the two.
 
 This is a trade-off between CA operational burden and bandwidth. Parallel issuance means the CA must maintain two instances of issuing infrastructure. But, by doing so, they keep the chains for both the old and new roots small.
 
@@ -162,7 +162,7 @@ Since Certificate Transparency pairs certificates with SCTs issued from a third 
 
 * Not all distrusts present fact patterns that lend themselves to SCT-based distrust. For example, if too many certificates were misissued before the cutoff date, revocation lists may become too large to feasibly deliver to clients. Moving cutoff dates earlier risks additional breakage for sites unaffected by misissuance. During PKI transitions, root programs evaluate such tradeoffs, picking the approach that best suits the security needs of their users.
 
-* There are certain CA failure modes for which trusting certificates before a certain date is inappropriate. For example, a CA that has been performing domain validation incorrectly may have never issued a certificate correctly. Auditing the entire corpus of certificates issued from this CA to determine which were misissued may be infeasible due to both scale and changes in subscribers and domain ownership over time.
+* There are certain CA failure modes for which trusting certificates before a certain date is inappropriate. For example, a CA that has been performing domain validation incorrectly may have never issued a certificate correctly. Auditing the entire corpus of certificates issued from this CA to determine which were misissued may be infeasible due to both scale and changes in domain ownership over time.
 
 * Clients that do not enforce Certificate Transparency are also still vulnerable to backdating, since such certificates would successfully validate without the SCTs present to indicate the incorrect issuance time asserted in the certificate.
 
@@ -180,7 +180,7 @@ This conflict impacts scenarios such as:
 * Some client [pinned](https://www.rfc-editor.org/rfc/rfc7469.html) the site to a particular CA. Years later, the CA is compromised and must be removed from modern clients.
 * Root programs in the Web PKI, which do not coordinate on trust actions, disagree on what actions to take with a particular CA.
 
-Moreover, the subscriber may not even know the precise intersection. Often, the only option is to try the new certificate and monitor errors. For subscribers that serve many diverse relying parties, this is a disruptive and risky process. Adding such risk to what is ultimately a security incident response adds complications and delays. This ultimately makes it more difficult to remove the untrustworthy CA and address the user security risk.
+Moreover, the authenticating party may not even know the precise intersection. Often, the only option is to try the new certificate and monitor errors. For authenticating partiess that serve many diverse relying parties, this is a disruptive and risky process. Adding such risk to what is ultimately a security incident response adds complications and delays. This ultimately makes it more difficult to remove the untrustworthy CA and address the user security risk.
 
 
 ### Cross-Sign from Distrusted CA
