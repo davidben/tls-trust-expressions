@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 12 February 2025                                     Google LLC
-                                                          11 August 2024
+Expires: 6 April 2025                                         Google LLC
+                                                          3 October 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 February 2025.
+   This Internet-Draft will expire on 6 April 2025.
 
 Copyright Notice
 
@@ -105,10 +105,11 @@ Table of Contents
      9.7.  Backup Certificates
    10. Privacy Considerations
    11. Security Considerations
-     11.1.  Relying Party Policies and Agility
-     11.2.  Incorrect Selection Metadata
-     11.3.  Serving Multiple Certificates
-     11.4.  Targeting TLS Interception
+     11.1.  Relying Party Policies
+     11.2.  Agility
+     11.3.  Incorrect Selection Metadata
+     11.4.  Serving Multiple Certificates
+     11.5.  Targeting TLS Interception
    12. IANA Considerations
      12.1.  TLS ExtensionType Updates
      12.2.  Media Type Updates
@@ -128,6 +129,10 @@ Table of Contents
    DNS name or other identifier.  If the peer trusts the CA, it will
    accept this association.  The authenticating party is known as the
    subscriber and the peer is the relying party.
+
+   [[TODO: We have since switched to using "authenticating party"
+   instead of "subscriber", but this document has not been updated with
+   the new terminology.]]
 
    Subscribers typically provision a single certificate for all
    supported relying parties, because relying parties do not communicate
@@ -1345,36 +1350,46 @@ Table of Contents
 
 11.  Security Considerations
 
-11.1.  Relying Party Policies and Agility
+11.1.  Relying Party Policies
 
-   The certificate negotiation mechanism described in this document
-   facilitates which certification path is served to relying parties,
-   but has no impact on the relying party's trust preferences
-   themselves.
+   PKI-based TLS authentication depends on the relying party's
+   certificate policies.  If the relying party trusts an untrustworthy
+   CA, that CA can intercept TLS connections made by that relying party
+   by issuing certificates associating the target name with the wrong
+   TLS key.
 
-   As a result, this allows for a more flexible and agile PKI, which can
-   better mitigate security risks to users.  Section 9 discusses some
-   scenarios which benefit from the multi-certificate deployment this
-   document enables.  In general, robust certificate negotiation helps
-   subscribers navigate differences in relying party requirements.  This
-   means security improvements for one set of relying parties can be
-   deployed without needing to risk incompatibility or breakage for
-   others.
+   This attack vector is available with or without trust anchor
+   negotiation.  The negotiation mechanism described in this document
+   allows certificate selection to reflect a relying party's certificate
+   policies.  It does not determine the certificate policies themselves.
+   Relying parties remain responsible for trusting only trustworthy CAs,
+   and untrustworthy CAs remain a security risk when trusted.
 
-   For example, agility reduces pressures on relying parties to
-   sacrifice user security for compatibility.  Suppose a subscriber
-   currently uses some CA, but a relying party deems trusting that CA to
-   pose an unacceptable security risk to its users.  In a single-
-   certificate deployment, those subscribers may be unwilling to adopt a
-   CA trusted by the relying party, as switching CAs risks compatibility
-   problems elsewhere.  The relying party then faces compatibility
-   pressure add this CA, sacrificing user security.  However, in a
-   multi-certificate deployment, the subscriber can use its existing CA
-   _in addition to_ another CA trusted by relying party B.  This allows
-   the ecosystem to improve interoperability, while still meeting
-   relying party B's user-security goals.
+11.2.  Agility
 
-11.2.  Incorrect Selection Metadata
+   As with other TLS parameters, negotiation reduces a conflict between
+   availability and security, which allows PKIs to better mitigate
+   security risks to users.  When relying parties in an existing TLS
+   ecosystem improve their certificate policies, trust anchor
+   negotiation helps subscribers navigate differences between those
+   relying parties and existing relying parties.  Each set of
+   requirements may be satisfied without compatibility risk to the
+   other.  Section 9 discusses such scenarios in more detail.
+
+   Negotiation also reduces pressures on relying parties to sacrifice
+   user security for compatibility.  Suppose a subscriber currently uses
+   some CA, but a relying party deems trusting that CA to pose an
+   unacceptable security risk to its users.  In a single-certificate
+   deployment, those subscribers may be unwilling to adopt a CA trusted
+   by the relying party, as switching CAs risks compatibility problems
+   elsewhere.  The relying party then faces compatibility pressure and
+   adds this CA, sacrificing user security.  However, in a multi-
+   certificate deployment, the subscriber can use its existing CA _in
+   addition to_ another CA trusted by relying party B.  This allows the
+   ecosystem to improve interoperability, while still meeting relying
+   party B's user-security goals.
+
+11.3.  Incorrect Selection Metadata
 
    If either the subscriber's TrustStoreInclusionList or the relying
    party's TrustExpressionList are incorrect, the matching algorithm
@@ -1385,25 +1400,45 @@ Table of Contents
    program, respectively, who are already expected to provide accurate
    information.
 
-11.3.  Serving Multiple Certificates
+11.4.  Serving Multiple Certificates
 
-   In a multi-certificate deployment, subscribers have a collection of
-   certificates available to satisfy relying parties with potentially
-   different security policies.  It is possible that some of these
-   policies will only be satisifed by certificates from less trustworthy
-   CAs, such as if the relying party is out of date but still important
-   for the subscriber to support.  If a certificate asserts the correct
-   information about the subscriber (TLS key, DNS names, etc.), the
-   subscriber can safely present it, even if the CA is otherwise
-   untrustworthy.  Issuing a certificate for the subscriber's public key
-   does not grant the CA access to the corresponding private key.
-   Presenting such a certificate does not enable the CA decrypt or
-   intercept the connection.
+   Negotiation reduces compatibility pressures against subscribers
+   choosing to serve certificates from a less common CA, as the
+   subscriber can serve it in addition to other CAs that, together,
+   satisfy all supported relying parties.  The CA may even have been
+   distrusted by some relying parties, e.g. if it is needed for older,
+   unupdated relying parties that are still important for the subscriber
+   to support.  As discussed in Section 9 and Section 11.2, this
+   deployment model avoids compatibility risks during PKI transitions
+   which mitigate security risks to users.
 
-   However, the subscriber presenting a certificate is not an
-   endorsement of the CA.  The subscriber's role is to present a
-   certificate which will convince the relying party of the correct
-   subscriber information.  Subscribers do not vet CAs for
+   Serving such certificates does not enable the CA to decrypt or
+   intercept the connection.  If a certificate asserts the correct
+   information about the subscriber, notably the correct public key, the
+   subscriber can safely present it, whether or not the issuing CA is
+   otherwise trustworthy.  Issuing a certificate for the subscriber's
+   public key does not grant the CA access to the corresponding private
+   key.  Conversely, if the attacker already has access to the
+   subscriber's private key, they do not need to be in control of a CA
+   to intercept a connection.
+
+   While the choice of CA is a security-critical decision in a PKI, it
+   is the relying party's choice of trusted CAs that determines
+   interceptibility, not the subscriber's choice of certificates to
+   present.  If the relying party trusts an attacker-controlled CA, the
+   attacker can intercept the connection independent of whether the
+   subscriber uses that CA or another CA.  In both cases, the attacker
+   would need to present a different certificate, with a different
+   public key.  Conversely, if the relying party does not trust the
+   attacker's CA, the subscriber's correct but untrusted attacker-issued
+   certificate will not enable the attacker to substitute in a different
+   public key.  The ability to intercept a connection via the PKI is
+   determined solely by relying party trust decisions.
+
+   Relying parties thus SHOULD NOT interpret the subscriber's choice of
+   CA list as an endorsement of the CA.  The subscriber's role is to
+   present a certificate which will convince the relying party of the
+   correct subscriber information.  Subscribers do not vet CAs for
    trustworthiness, only the correctness of their specific, configured
    certificates and the CA's ability to meet the subscriber's
    requirements, such as availability, compatibility, and performance.
@@ -1417,7 +1452,7 @@ Table of Contents
    critical process, the full considerations of which are outside the
    scope of this document.
 
-11.4.  Targeting TLS Interception
+11.5.  Targeting TLS Interception
 
    Trust Expressions, like certificate_authorities, enables a TLS server
    to differentiate between clients that do and do not trust some CA.
@@ -1615,9 +1650,9 @@ Table of Contents
    [I-D.ietf-tls-cert-abridge]
               Jackson, D., "Abridged Compression for WebPKI
               Certificates", Work in Progress, Internet-Draft, draft-
-              ietf-tls-cert-abridge-01, 16 March 2024,
+              ietf-tls-cert-abridge-02, 16 September 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              cert-abridge-01>.
+              cert-abridge-02>.
 
    [MOZILLA-ROOTS]
               Mozilla, "Mozilla Included CA Certificate List", 30 August

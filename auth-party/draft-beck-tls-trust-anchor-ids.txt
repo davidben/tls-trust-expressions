@@ -5,8 +5,8 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 12 February 2025                                     Google LLC
-                                                          11 August 2024
+Expires: 6 April 2025                                         Google LLC
+                                                          3 October 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -15,9 +15,9 @@ Expires: 12 February 2025                                     Google LLC
 Abstract
 
    This document defines the TLS Trust Anchors extension, a mechanism
-   for relying parties and subscribers to convey trusted certification
-   authorities.  It describes individual certification authorities more
-   succinctly than the TLS Certificate Authorities extension.
+   for relying parties to convey trusted certification authorities.  It
+   describes individual certification authorities more succinctly than
+   the TLS Certificate Authorities extension.
 
    Additionally, to support TLS clients with many trusted certification
    authorities, it supports a mode where servers describe their
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 February 2025.
+   This Internet-Draft will expire on 6 April 2025.
 
 Copyright Notice
 
@@ -82,7 +82,7 @@ Table of Contents
    3.  Trust Anchor Identifiers
      3.1.  Certificate Properties
      3.2.  Relying Party Configuration
-     3.3.  Subscriber Configuration
+     3.3.  Authenticating Party Configuration
    4.  TLS Extension
      4.1.  Overview
      4.2.  Certificate Selection
@@ -104,12 +104,13 @@ Table of Contents
      8.8.  Public Key Pinning
    9.  Privacy Considerations
      9.1.  Relying Parties
-     9.2.  Subscribers
+     9.2.  Authenticating Parties
    10. Security Considerations
-     10.1.  Relying Party Policies and Agility
-     10.2.  Incorrect Selection Metadata
-     10.3.  Serving Multiple Certificates
-     10.4.  Targeting TLS Interception
+     10.1.  Relying Party Policies
+     10.2.  Agility
+     10.3.  Incorrect Selection Metadata
+     10.4.  Serving Multiple Certificates
+     10.5.  Targeting TLS Interception
    11. IANA Considerations
      11.1.  TLS ExtensionType Updates
      11.2.  Media Type Updates
@@ -123,53 +124,60 @@ Table of Contents
 
 1.  Introduction
 
-   TLS [RFC8446] endpoints typically authenticate using X.509
-   certificates [RFC5280].  These are assertions by a certification
-   authority (CA) that associate a TLS key with DNS names or other
-   identifiers.  If the peer trusts the CA, it will accept this
-   association.  The authenticating party (usually the server) is known
-   as the _subscriber_ and the peer (usually the client) is the _relying
-   party_.
+   TLS [RFC8446] authentication uses X.509 certificates [RFC5280] to
+   associate the _authenticating party's_ TLS key with its application
+   identifiers, such as DNS names.  These associations are signed by
+   some certificate authority (CA).  The peer, or _relying party_,
+   curates a set of CAs that are trusted to only sign correct
+   associations, which allows it to rely on the TLS to authenticate
+   application identifiers.  Typically the authenticating party is the
+   server and the relying party is the client.
 
-   Section 4.2.4 of [RFC8446] defines the certificate_authorities
-   extension, which allows the subscriber, who may have multiple
-   certificates available, to select the correct certificate for the
-   relying party.  However, this extension’s size is impractical for
-   some applications.
+   An authenticating party may need to interoperate with relying parties
+   that trust different sets of CAs.  Section 4.2.4 of [RFC8446] defines
+   the certificate_authorities extension to accommodate this.  It allows
+   the authenticating party to provision multiple certificates and
+   select the one that will allow the relying party to accept its TLS
+   key.  This is analogous to parameter negotiation elsewhere in TLS.
 
-   Without such a negotiation mechanism, the subscriber must somehow
-   obtain certificates which simultaneously satisfy all relying parties.
-   This is a challenge for subscribers when relying parties are diverse.
-   This translates to analogous challenges for CAs and relying parties:
+   However, certificate_authorities's size is impractical for some
+   applications.  Existing PKIs may have many CAs, and existing CAs may
+   have long X.509 names.  As of August 2023, the Mozilla CA Certificate
+   Program [MOZILLA-ROOTS] contained 144 CAs, with an average name
+   length of around 100 bytes.  Such TLS deployments often do not use
+   trust anchor negotiation at all.
 
-   *  For a new CA to be usable by subscribers, all relying parties must
-      trust it.  This is particularly challenging for older, un-
-      updatable relying parties.  Existing CAs face similar challenges
-      when rotating or deploying new keys.
+   Without a negotiation mechanism, the authenticating party must obtain
+   a single certificate that simultaneously satisfies all relying
+   parties.  This is challenging when relying parties are diverse.  PKI
+   transitions, including those necessary for user security, naturally
+   lead to relying party diversity, so the result is that service
+   availability conflicts with security and overall PKI evolution:
+
+   *  For an authenticating party to use a CA in its single certificate,
+      all supported relying parties must trust the CA.  PKI transitions
+      then become difficult when authentiating parties support older,
+      unupdated relying parties.  This impacts both new keys from
+      existing CA operators and new CA operators.
 
    *  When a relying party must update its policies to meet new security
-      requirements, it must choose between compromising on user security
-      or imposing a significant burden on subscribers that still support
-      older relying parties.
+      requirements, it adds to relying party diversity and the
+      challenges that authenticating parties and CAs face.  The relying
+      party must then choose between compromising on user security or
+      burdening the rest of the ecosystem, potentially impacting
+      availability in the process.
 
-   The certificate_authorities extension’s size becomes impractical due
-   to two factors.  First, X.509 names are large.  Second, many clients,
-   notably web browsers, trust a large number of CAs.  As of August
-   2023, the Mozilla CA Certificate Program [MOZILLA-ROOTS] contained
-   144 CAs, with an average name length of around 100 bytes.  This
-   document introduces Trust Anchor Identifiers, which aims to address
-   both of these challenges.
-
+   To address this, this document introduces Trust Anchor Identifiers.
    There are four parts to this mechanism:
 
    1.  Section 3 defines _trust anchor identifiers_, which are short,
        unique identifiers for X.509 trust anchors.
 
    2.  Section 4 defines a TLS extension that communicates the relying
-       party’s requested trust anchors, and the subscriber’s available
-       ones.  When the relying party is a TLS client, it can mitigate
-       large lists by sending a, possibly empty, subset of its trust
-       anchors to the TLS server.  The server provides its list of
+       party's requested trust anchors, and the authenticating party's
+       available ones.  When the relying party is a TLS client, it can
+       mitigate large lists by sending a, possibly empty, subset of its
+       trust anchors to the TLS server.  The server provides its list of
        available trust anchors in response so that the client can retry
        on mismatch.
 
@@ -182,8 +190,8 @@ Table of Contents
        multiple certification paths, each with an associated trust
        anchor identifier.
 
-   Together, they extend the certificate_authorities mechanism to a
-   broader set of applications, enabling a more flexible and robust PKI.
+   Together, they reduce the size costs of trust anchor negotiation,
+   supporting flexible and robust PKIs for more applications.
 
 2.  Conventions and Definitions
 
@@ -200,16 +208,16 @@ Table of Contents
 
    This document discusses three roles:
 
-   Subscriber:  The party whose identity is being validated in the
+   Authenticating party:  The party authenticating itself in the
       protocol.  In TLS, this is the side sending the Certificate and
       CertificateVerify message.
 
-   Relying party:  The party authenticating the subscriber.  In TLS,
-      this is the side that validates a Certificate and
-      CertificateVerify message.
+   Relying party:  The party whom the authenticating party presents its
+      identity to.  In TLS, this is the side that validates a
+      Certificate and CertificateVerify message.
 
    Certification authority (CA):  The service issuing certificates to
-      the subscriber.
+      the authenticating party.
 
    Additionally, there are several terms used throughout this document
    to describe this proposal:
@@ -225,7 +233,7 @@ Table of Contents
 
    CertificatePropertyList:  A structure associated with a certification
       path, containing additional information from the CA, for use by
-      the subscriber when presenting the certification path.
+      the authenticating party when presenting the certification path.
 
 3.  Trust Anchor Identifiers
 
@@ -267,8 +275,9 @@ Table of Contents
    common among relying parties that trust the CA.  They MAY be
    allocated by another party, e.g. when bootstrapping an existing
    ecosystem, if all parties agree on the identifier.  In particular,
-   the protocol requires relying parties and subscribers to agree, and
-   subscriber configuration typically comes from the CA.
+   the protocol requires authenticating and relying parties to agree,
+   and the authenticating party's configuration typically comes from the
+   CA.
 
    The length of a trust anchor identifier's binary representation MUST
    NOT exceed 255 bytes.  It SHOULD be significantly shorter, for
@@ -278,8 +287,8 @@ Table of Contents
 
    This document introduces an extensible CertificatePropertyList
    structure for CAs to communicate additional information to
-   subscribers, such as associated trust anchor identifiers.  A
-   CertificatePropertyList is defined using the TLS presentation
+   authenticating parties, such as associated trust anchor identifiers.
+   A CertificatePropertyList is defined using the TLS presentation
    language (Section 3 of [RFC8446]) below:
 
   enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
@@ -298,16 +307,12 @@ Table of Contents
 
    This document defines a single property, trust_anchor_identifier.
    The data field of the property contains the binary representation of
-   the trust anchor identifier of the certification path’s trust anchor,
+   the trust anchor identifier of the certification path's trust anchor,
    as described in Section 3.  Future documents may define other
    properties for use with other mechanisms.
 
-   Subscribers MUST ignore unrecognized properties with
-   CertificatePropertyType values.  If ignoring a property would cause
-   such subscribers to misinterpret the structure, the document defining
-   the CertificatePropertyType SHOULD include a mechanism for CAs to
-   negotiate the new property with the subscriber in certificate
-   management protocols such as ACME [RFC8555].
+   Authenticating parties MUST ignore unrecognized properties with
+   CertificatePropertyType values.
 
 3.2.  Relying Party Configuration
 
@@ -337,22 +342,24 @@ Table of Contents
    anchor negotiation protocols, such as the certificate_authorities
    extension.
 
-3.3.  Subscriber Configuration
+3.3.  Authenticating Party Configuration
 
-   Subscribers are configured with one or more candidate certification
-   paths to present in TLS, in some preference order.  This preference
-   order is used when multiple candidate paths are usable for a
-   connection.  For example, the subscriber may prefer candidates that
-   minimize message size or have more performant private keys.
+   Authenticating parties are configured with one or more candidate
+   certification paths to present in TLS, in some preference order.
+   This preference order is used when multiple candidate paths are
+   usable for a connection.  For example, the authenticating party may
+   prefer candidates that minimize message size or have more performant
+   private keys.
 
    Each candidate path which participates in this protocol must be
    provisioned with the trust anchor identifier for its corresponding
    trust anchor in the CertificatePropertlyList.
 
-   Subscribers MAY have candidate certification paths without associated
-   trust anchor identifiers, but such paths will not participate in this
-   protocol.  Those paths MAY participate in other trust anchor
-   negotiation protocols, such as the certificate_authorities extension.
+   Authenticating parties MAY have candidate certification paths without
+   associated trust anchor identifiers, but such paths will not
+   participate in this protocol.  Those paths MAY participate in other
+   trust anchor negotiation protocols, such as the
+   certificate_authorities extension.
 
 4.  TLS Extension
 
@@ -378,7 +385,7 @@ Table of Contents
 
    When the extension is sent in EncryptedExtensions, the extension_data
    is a TrustAnchorIdentifierList containing the list of trust anchors
-   that server has available, in the server’s preference order, and MUST
+   that server has available, in the server's preference order, and MUST
    NOT be empty.
 
    When the extension is sent in Certificate, the extension_data MUST be
@@ -393,54 +400,56 @@ Table of Contents
    processed similarly to the certificate_authorities extension.  The
    relying party indicates some set of supported trust anchors in the
    ClientHello or CertificateRequest trust_anchors extension.  The
-   subscriber then selects a certificate from its candidate
+   authenticating party then selects a certificate from its candidate
    certification paths (see Section 3.3), as described in
    Section 4.4.2.2 of [RFC8446] and Section 4.4.2.3 of [RFC8446].  This
    process is extended as follows:
 
    If the ClientHello or CertificateRequest contains a trust_anchors
-   extension, the subscriber SHOULD send a certification path whose
-   trust anchor identifier appears in the relying party’s trust_anchors
-   extension.
+   extension, the authenticating party SHOULD send a certification path
+   whose trust anchor identifier appears in the relying party's
+   trust_anchors extension.
 
    If the ClientHello or CertificateRequest contains both trust_anchors
    and certificate_authorities, certification paths that satisfy either
-   extension’s criteria may be used.  This additionally applies to
+   extension's criteria may be used.  This additionally applies to
    future extensions which play a similar role.
 
-   If no certification paths satisfy either extension, the subscriber
-   MAY return a handshake_failure alert, or choose among fallback
-   certification paths without considering trust_anchors or
-   certification_authorities.  See Section 4.3 for additional guidance
-   on selecting a fallback when the ClientHello contains trust_anchors.
+   If no certification paths satisfy either extension, the
+   authenticating party MAY return a handshake_failure alert, or choose
+   among fallback certification paths without considering trust_anchors
+   or certification_authorities.  See Section 4.3 for additional
+   guidance on selecting a fallback when the ClientHello contains
+   trust_anchors.
 
-   Sending a fallback allows the subscriber to retain support for
-   relying parties that do not implement any form of trust anchor
-   negotiation.  In this case, the subscriber must find a sufficiently
-   ubiquitous trust anchor, if one exists.  However, only those relying
-   parties need to be considered in this ubiquity determination.
-   Updated relying parties may continue to evolve without restricting
-   fallback certificate selection.
+   Sending a fallback allows the authenticating party to retain support
+   for relying parties that do not implement any form of trust anchor
+   negotiation.  In this case, the authenticating party must find a
+   sufficiently ubiquitous trust anchor, if one exists.  However, only
+   those relying parties need to be considered in this ubiquity
+   determination.  Updated relying parties may continue to evolve
+   without restricting fallback certificate selection.
 
-   If the subscriber sends a certification path that matches the relying
-   party’s trust_anchors extension, as described in Section 4.2, the
-   subscriber MUST send an empty trust_anchors extension in the first
-   CertificateEntry of the Certificate message.  In this case, the
-   certificate_list flexibility described in Section 4.4.2 of [RFC8446]
-   no longer applies.  The certificate_list MUST contain a complete
-   certification path, issued by the matching trust anchor, correctly
-   ordered and with no extraneous certificates.  That is, each
-   certificate MUST certify the one immediately preceding it, and the
-   trust anchor MUST certify the final certificate.  The subscriber MUST
-   NOT send the trust_anchors extension in the Certificate message in
-   other situations.
+   If the authenticating party sends a certification path that matches
+   the relying party's trust_anchors extension, as described in
+   Section 4.2, the authenticating party MUST send an empty
+   trust_anchors extension in the first CertificateEntry of the
+   Certificate message.  In this case, the certificate_list flexibility
+   described in Section 4.4.2 of [RFC8446] no longer applies.  The
+   certificate_list MUST contain a complete certification path, issued
+   by the matching trust anchor, correctly ordered and with no
+   extraneous certificates.  That is, each certificate MUST certify the
+   one immediately preceding it, and the trust anchor MUST certify the
+   final certificate.  The authenticating party MUST NOT send the
+   trust_anchors extension in the Certificate message in other
+   situations.
 
    If a relying party receives this extension in the Certificate
    message, it MAY choose to disable path building [RFC4158] and
    validate the peer's certificate list as pre-built certification path.
    Doing so avoids the unpredictable behavior of path-building, and
-   helps ensure CAs and subscribers do not inadvertently provision
-   incorrect paths.
+   helps ensure CAs and authenticating parties do not inadvertently
+   provision incorrect paths.
 
 4.3.  Retry Mechanism
 
@@ -468,9 +477,9 @@ Table of Contents
    SHOULD implement the following retry mechanism:
 
    If the client receives either a connection error or an untrusted
-   certificate, the client looks in server’s EncryptedExtensions for a
+   certificate, the client looks in server's EncryptedExtensions for a
    trust anchor identifier that it trusts.  If there are multiple, it
-   selects an option based on the server’s preference order and its
+   selects an option based on the server's preference order and its
    local preferences.  It then makes a new connection to the same
    endpoint, sending only the selected trust anchor identifier in the
    ClientHello trust_anchors extension.  If the EncryptedExtensions had
@@ -558,7 +567,7 @@ Table of Contents
    When connecting to a service endpoint whose HTTPS or SVCB record
    contains the tls-trust-anchors parameter, the client first computes
    the intersection between its configured trust anchors and the
-   server’s provided list.  If this intersection is non-empty, the
+   server's provided list.  If this intersection is non-empty, the
    client MAY use it to determine the trust_anchors extension in the
    ClientHello (see Section 4.3).
 
@@ -566,7 +575,7 @@ Table of Contents
    meet size constraints, but SHOULD offer multiple options.  This
    reduces the chance of a reconnection if, for example, the first
    option in the intersection uses a signature algorithm that the client
-   doesn’t support, or if the TLS server and DNS configuration are out
+   doesn't support, or if the TLS server and DNS configuration are out
    of sync.
 
    Although this service parameter is intended to reduce trust anchor
@@ -656,9 +665,9 @@ Table of Contents
    In 2023, the oldest root in [CHROME-ROOTS] and [MOZILLA-ROOTS] was 25
    years old, dating to 1998.  Key rotation is challenging in a single-
    certificate deployment model.  As long as any older relying party
-   requires the old root, subscribers cannot switch to the new root,
-   which in turn means relying parties cannot distrust the old root,
-   leaving them vulnerable.
+   requires the old root, authenticating parties cannot switch to the
+   new root, which in turn means relying parties cannot distrust the old
+   root, leaving them vulnerable.
 
    A multi-certificate deployment model avoids these transition
    problems.  Key rotation may proceed as follows:
@@ -667,47 +676,53 @@ Table of Contents
        continues operating the old root CA.
 
    2.  Root programs begin trusting the new root CA alongside the old
-       one.  They update their root store manifests.
+       one, as a transition state.  Both root CAs are configured to
+       participate in trust anchor negotiation.
 
-   3.  When subscribers request certificates, the CA issues certificates
-       from both roots and provisions the subscriber with both
-       certificates.
+   3.  When authenticating parties request certificates, the CA operator
+       issues certificates from both roots and provisions the
+       authenticating party with both certificates.
 
-   4.  Relying parties send trust expressions that evaluate to either
-       the old or new root, and are served the appropriate option.
+   4.  Trust anchor negotiation selects the old root for relying parties
+       that only trust the old root, and the new root for relying
+       parties that only trust the new root.  In transition, relying
+       parties that trust both may be served either, but prioritizing
+       the new root helps monitor the transition.
 
-   5.  Once subscribers have been provisioned with new certificates,
-       root programs can safely distrust the old root in new relying
-       parties.  The CA operator continues to operate the old root CA
-       for as long as it wishes to serve subscribers that, in turn, wish
-       to serve older relying parties.
+   5.  Once authenticating parties have been provisioned with new
+       certificates, root programs can safely distrust the old root in
+       new relying parties.  The CA operator may continue to operate the
+       old root CA for as long as it wishes to serve authenticating
+       parties that, in turn, wish to serve older relying parties.
 
-   This process requires no configuration changes to the subscriber,
-   given an automated, multi-certificate-aware certificate issuance
-   process.  The subscriber does not need to know why it received two
-   certificates, only how to select between them for each relying party.
+   This process requires no configuration changes to the authenticating
+   party, given an automated, multi-certificate-aware certificate
+   issuance process.  The authenticating party does not need to know why
+   it received two certificates, only how to select between them for
+   each relying party.
 
 8.2.  Adding CAs
 
-   In the single-certificate model, subscribers cannot use TLS
-   certificates issued from a new root CA until all supported relying
-   parties have been updated to trust the new root CA.  This can take
-   years or more.  Some relying parties, such as IoT devices, may never
-   receive trust store updates at all.
+   In the single-certificate model, authenticating parties cannot use
+   TLS certificates issued from a new root CA until all supported
+   relying parties have been updated to trust the new root CA.  This can
+   take years or more.  Some relying parties, such as IoT devices, may
+   never receive trust store updates at all.
 
-   As a result, it is very difficult for subscribers that serve a wide
-   variety of relying parties to use a newly-trusted root CA.  When
-   trust stores diverge too far, subscribers often must partition their
-   services into multiple TLS endpoints (i.e. different DNS names) and
-   direct different relying parties to different endpoints.  Subscribers
-   sometimes resort to TLS fingerprinting, to detect particular relying
-   parties.  But, as this repurposes other TLS fields for unintended
-   purposes, this is unreliable and usually requires writing custom
-   service-specific logic.
+   As a result, it is very difficult for authenticating parties that
+   serve a wide variety of relying parties to use a newly-trusted root
+   CA.  When trust stores diverge too far, authenticating parties often
+   must partition their services into multiple TLS endpoints (i.e.
+   different DNS names) and direct different relying parties to
+   different endpoints.  Authenticating parties sometimes resort to TLS
+   fingerprinting, to detect particular relying parties.  But, as this
+   repurposes other TLS fields for unintended purposes, this is
+   unreliable and usually requires writing custom service-specific
+   logic.
 
-   In a multi-certificate deployment model, subscribers can begin
-   serving certificates from new root CAs without interrupting relying
-   parties that depend on existing ones.
+   In a multi-certificate deployment model, authenticating parties can
+   begin serving certificates from new root CAs without interrupting
+   relying parties that depend on existing ones.
 
    In some contexts, it may be possible to use other fields to select
    the new CA.  For example, post-quantum-capable clients may be
@@ -718,19 +733,20 @@ Table of Contents
 
 8.3.  Removing CAs
 
-   Subscribers in a single-certificate model are limited to CAs in the
-   intersection of their supported relying parties.  As newer relying
-   parties remove untrusted CAs over time,the intersection with older
-   relying parties shrinks.  Moreover, the subscriber may not even know
-   which CAs are in the intersection.  Often, the only option is to try
-   the new certificate and monitor errors.  For subscribers that serve
-   many diverse relying parties, this is a disruptive and risky process.
+   Authenticating parties in a single-certificate model are limited to
+   CAs in the intersection of their supported relying parties.  As newer
+   relying parties remove untrusted CAs over time,the intersection with
+   older relying parties shrinks.  Moreover, the authenticating party
+   may not even know which CAs are in the intersection.  Often, the only
+   option is to try the new certificate and monitor errors.  For
+   authenticating parties that serve many diverse relying parties, this
+   is a disruptive and risky process.
 
-   The multi-certificate model removes this constraint.  If a
-   subscriber's CA is distrusted, it can continue to use that CA, in
-   addition to a newer one.  This removes the risk that some older
-   relying party required that CA and was incompatible with the new one.
-   The mechanisms in this document will select an appropriate
+   The multi-certificate model removes this constraint.  If an
+   authenticating party's CA is distrusted, it can continue to use that
+   CA, in addition to a newer one.  This removes the risk that some
+   older relying party required that CA and was incompatible with the
+   new one.  The mechanisms in this document will select an appropriate
    certificate for each relying party.
 
 8.4.  Other Root Transitions
@@ -738,7 +754,7 @@ Table of Contents
    The mechanisms in this document can aid PKI transitions beyond key
    rotation.  For example, a CA operator may generate a postquantum root
    CA and use the mechanism in Section 6 to issue from the classical and
-   postquantum roots concurrently.  The subscriber will then,
+   postquantum roots concurrently.  The authenticating party will then,
    transparently and with no configuration change, serve both.  As in
    Section 8.1, newer relying parties can then remove the classical
    roots, while older relying parties continue to function.
@@ -777,13 +793,13 @@ Table of Contents
    root certificates requires updating relying parties, but
    predistributed intermediates already presume updated relying parties.
 
-   A CA operator could provide subscribers with two certification paths:
-   a longer path ending at a long-lived trust anchor and shorter path
-   the other ending at a short-lived, revocable root.  Relying parties
-   would be configured to trust both the long-lived root and the most
-   recent short-lived root.  A server that prioritizes the shorter path
-   would then send the shorter path to up-to-date relying parties and
-   the longer path to older relying parties.
+   A CA operator could provide authenticating parties with two
+   certification paths: a longer path ending at a long-lived trust
+   anchor and shorter path the other ending at a short-lived, revocable
+   root.  Relying parties would be configured to trust both the long-
+   lived root and the most recent short-lived root.  A server that
+   prioritizes the shorter path would then send the shorter path to up-
+   to-date relying parties and the longer path to older relying parties.
 
    This achieves the same effect with a more general-purpose multi-
    certificate mechanism.  It is also more flexible, as the two paths
@@ -797,26 +813,28 @@ Table of Contents
 
 8.6.  Conflicting Relying Party Requirements
 
-   A subscriber may need to support relying parties with different
-   requirements.  For example, in contexts where online revocation
-   checks are expensive, unreliable, or privacy-sensitive, user security
-   is best served by short-lived certificates.  In other contexts, long-
-   lived certificates may be more appropriate for, e.g., systems that
-   are offline for long periods of time or have unreliable clocks.
+   An authenticating party may need to support relying parties with
+   different requirements.  For example, in contexts where online
+   revocation checks are expensive, unreliable, or privacy-sensitive,
+   user security is best served by short-lived certificates.  In other
+   contexts, long-lived certificates may be more appropriate for, e.g.,
+   systems that are offline for long periods of time or have unreliable
+   clocks.
 
-   A single-certificate deployment model forces subscribers to find a
-   single certificate that meets all requirements.  User security then
-   suffers in all contexts, as the PKI may not quite meet anyone's
-   needs.  In a multi-certificate deployment model, different contexts
-   may use different trust anchors.  A subscriber that supports multiple
-   contexts would provision certificates for each, with certificate
-   negotiation logic directing the right one to each relying party.
+   A single-certificate deployment model forces authenticating parties
+   to find a single certificate that meets all requirements.  User
+   security then suffers in all contexts, as the PKI may not quite meet
+   anyone's needs.  In a multi-certificate deployment model, different
+   contexts may use different trust anchors.  An authenticating party
+   that supports multiple contexts would provision certificates for
+   each, with certificate negotiation logic directing the right one to
+   each relying party.
 
 8.7.  Backup Certificates
 
-   A subscriber may obtain certificate paths from multiple CAs for
-   redundancy in the face of future CA compromises.  If one CA is
-   compromised and removed from newer relying parties, the TLS server
+   An authenticating party may obtain certificate paths from multiple
+   CAs for redundancy in the face of future CA compromises.  If one CA
+   is compromised and removed from newer relying parties, the TLS server
    software will transparently serve the other one.
 
    To support this, TLS serving software SHOULD permit users to
@@ -832,16 +850,16 @@ Table of Contents
    to a subset of the original set.
 
    As other relying parties in the PKI evolve, the pinning relying party
-   limits the subscriber to satisfy both the pinning constraint and
-   newer constraints in the PKI.  This can lead to conflicts if, for
-   example, the pinned CA is distrusted by a newer relying party.  The
-   subscriber is then forced to either break the pinning relying party,
-   or break the newer ones.
+   limits the authenticating party to satisfy both the pinning
+   constraint and newer constraints in the PKI.  This can lead to
+   conflicts if, for example, the pinned CA is distrusted by a newer
+   relying party.  The authenticating party is then forced to either
+   break the pinning relying party, or break the newer ones.
 
    This protocol reduces this conflict if the pinning relying party uses
-   its effective, reduced trust anchor list.  The subscriber can then,
-   as needed, use a certificate from the pinned CA with the pinning
-   relying party, and another CA with newer relying parties.
+   its effective, reduced trust anchor list.  The authenticating party
+   can then, as needed, use a certificate from the pinned CA with the
+   pinning relying party, and another CA with newer relying parties.
 
 9.  Privacy Considerations
 
@@ -857,13 +875,13 @@ Table of Contents
    party may be divided into three categories:
 
    1.  Trust anchors whose identifiers the relying party sends
-       _unconditionally_, i.e. not in response to the server’s HTTPS/
+       _unconditionally_, i.e. not in response to the server's HTTPS/
        SVCB record, trust anchor list in EncryptedExtensions, etc.
 
    2.  Trust anchors whose identifiers the relying party sends
        _conditionally_, i.e. only if the server offers them.  For
        example, the relying party may indicate support for a trust
-       anchor if its identifier is listed in the server’s HTTPS/SVCB
+       anchor if its identifier is listed in the server's HTTPS/SVCB
        record or trust anchor list in EncryptedExtensions.
 
    3.  Trust anchors whose identifiers the relying party never sends,
@@ -879,17 +897,17 @@ Table of Contents
    trust anchors common to the relying party's anonymity set
    (Section 3.3 of [RFC6973]).
 
-   Trust anchor identifiers sent in response to the subscriber can only
-   be observed actively.  That is, the subscriber could vary its list
-   and observe how the client responds, in order to probe for the
-   client’s trust anchor list.
+   Trust anchor identifiers sent in response to the authenticating party
+   can only be observed actively.  That is, the authenticating party
+   could vary its list and observe how the client responds, in order to
+   probe for the client's trust anchor list.
 
    This is similar to the baseline exposure for trust anchors that do
-   not participate in negotiation.  A subscriber in possession of a
-   certificate can send it and determine if the relying party accepts or
-   rejects it.  Unlike this baseline exposure, trust anchors that
-   participate in this protocol can be probed by only knowing the trust
-   anchor identifier.
+   not participate in negotiation.  An authenticating party in
+   possession of a certificate can send it and determine if the relying
+   party accepts or rejects it.  Unlike this baseline exposure, trust
+   anchors that participate in this protocol can be probed by only
+   knowing the trust anchor identifier.
 
    Relying parties SHOULD determine which trust anchors participate in
    this mechanism, and whether to advertise them unconditionally or
@@ -905,13 +923,13 @@ Table of Contents
    implementing the DNS service parameter can avoid a round-trip penalty
    without such state.
 
-9.2.  Subscribers
+9.2.  Authenticating Parties
 
-   If the subscriber is a server, the mechanisms in Section 5 and
-   Section 4.3 enumerate the trust anchors for the server’s available
-   certification paths.  This mechanism assumes they are not sensitive.
-   Servers SHOULD NOT use this mechanism to negotiate certification
-   paths with sensitive trust anchors.
+   If the authenticating party is a server, the mechanisms in Section 5
+   and Section 4.3 enumerate the trust anchors for the server's
+   available certification paths.  This mechanism assumes they are not
+   sensitive.  Servers SHOULD NOT use this mechanism to negotiate
+   certification paths with sensitive trust anchors.
 
    In servers that host multiple services, this protocol only enumerates
    certification paths for the requested service.  If, for example, a
@@ -921,83 +939,116 @@ Table of Contents
    only contains information for the corresponding service.  In both
    cases, co-located services are not revealed.
 
-   The above does not apply if the subscriber is a client.  This
-   protocol does not enumerate the available certification paths for a
-   client.
+   The above does not apply if the authenticating party is a client.
+   This protocol does not enumerate the available certification paths
+   for a client.
 
 10.  Security Considerations
 
-10.1.  Relying Party Policies and Agility
+10.1.  Relying Party Policies
 
-   The negotiation mechanism described in this document facilitates
-   which certification path is served to relying parties, but has no
-   impact on the relying party's trust preferences themselves.
+   PKI-based TLS authentication depends on the relying party's
+   certificate policies.  If the relying party trusts an untrustworthy
+   CA, that CA can intercept TLS connections made by that relying party
+   by issuing certificates associating the target name with the wrong
+   TLS key.
 
-   As a result, this enables a more flexible and agile PKI, which can
-   better mitigate security risks to users.  Section 8 discusses some
-   scenarios which benefit from the multi-certificate deployment this
-   document enables.  In general, robust trust anchor negotiation helps
-   subscribers navigate differences in relying party requirements.  This
-   means security improvements for one set of relying parties can be
-   deployed without needing to risk incompatibility or breakage for
-   others.
+   This attack vector is available with or without trust anchor
+   negotiation.  The negotiation mechanism described in this document
+   allows certificate selection to reflect a relying party's certificate
+   policies.  It does not determine the certificate policies themselves.
+   Relying parties remain responsible for trusting only trustworthy CAs,
+   and untrustworthy CAs remain a security risk when trusted.
 
-   For example, agility reduces pressures on relying parties to
-   sacrifice user security for compatibility.  Suppose a subscriber
+10.2.  Agility
+
+   As with other TLS parameters, negotiation reduces a conflict between
+   availability and security, which allows PKIs to better mitigate
+   security risks to users.  When relying parties in an existing TLS
+   ecosystem improve their certificate policies, trust anchor
+   negotiation helps authenticating parties navigate differences between
+   those relying parties and existing relying parties.  Each set of
+   requirements may be satisfied without compatibility risk to the
+   other.  Section 8 discusses such scenarios in more detail.
+
+   Negotiation also reduces pressures on relying parties to sacrifice
+   user security for compatibility.  Suppose an authenticating party
    currently uses some CA, but a relying party deems trusting that CA to
    pose an unacceptable security risk to its users.  In a single-
-   certificate deployment, those subscribers may be unwilling to adopt a
-   CA trusted by the relying party, as switching CAs risks compatibility
-   problems elsewhere.  The relying party then faces compatibility
-   pressure and adds this CA, sacrificing user security.  However, in a
-   multi-certificate deployment, the subscriber can use its existing CA
-   _in addition to_ another CA trusted by relying party B.  This allows
-   the ecosystem to improve interoperability, while still meeting
-   relying party B's user-security goals.
+   certificate deployment, those authenticating parties may be unwilling
+   to adopt a CA trusted by the relying party, as switching CAs risks
+   compatibility problems elsewhere.  The relying party then faces
+   compatibility pressure and adds this CA, sacrificing user security.
+   However, in a multi-certificate deployment, the authenticating party
+   can use its existing CA _in addition to_ another CA trusted by
+   relying party B.  This allows the ecosystem to improve
+   interoperability, while still meeting relying party B's user-security
+   goals.
 
-10.2.  Incorrect Selection Metadata
+10.3.  Incorrect Selection Metadata
 
-   If the subscriber has incorrect information about trust anchor
-   identifiers, it may send an untrusted certification path.  This will
-   not result in that path being trusted, but does present the
+   If the authenticating party has incorrect information about trust
+   anchor identifiers, it may send an untrusted certification path.
+   This will not result in that path being trusted, but does present the
    possibility of a degradation of service.  However, this information
    is provisioned by the CA, which is already expected to provide
    accurate information.
 
-10.3.  Serving Multiple Certificates
+10.4.  Serving Multiple Certificates
 
-   In a multi-certificate deployment, subscribers have a collection of
-   certificates available to satisfy relying parties with potentially
-   different security policies.  It is possible that some of these
-   policies will only be satisfied by certificates from CAs that have
-   been distrusted by other relying parties, such as if the relying
-   party is out of date but still important for the subscriber to
-   support.  If a certificate asserts the correct information about the
-   subscriber (TLS key, DNS names, etc.), the subscriber can safely
-   present it, even if the CA is otherwise untrustworthy.  Issuing a
-   certificate for the subscriber's public key does not grant the CA
-   access to the corresponding private key.  Presenting such a
-   certificate does not enable the CA decrypt or intercept the
+   Negotiation reduces compatibility pressures against authenticating
+   parties choosing to serve certificates from a less common CA, as the
+   authenticating party can serve it in addition to other CAs that,
+   together, satisfy all supported relying parties.  The CA may even
+   have been distrusted by some relying parties, e.g. if it is needed
+   for older, unupdated relying parties that are still important for the
+   authenticating party to support.  As discussed in Section 8 and
+   Section 10.2, this deployment model avoids compatibility risks during
+   PKI transitions which mitigate security risks to users.
+
+   Serving such certificates does not enable the CA to decrypt or
+   intercept the connection.  If a certificate asserts the correct
+   information about the authenticating party, notably the correct
+   public key, the authenticating party can safely present it, whether
+   or not the issuing CA is otherwise trustworthy.  Issuing a
+   certificate for the authenticating party's public key does not grant
+   the CA access to the corresponding private key.  Conversely, if the
+   attacker already has access to the authenticating party's private
+   key, they do not need to be in control of a CA to intercept a
    connection.
 
-   However, the subscriber presenting a certificate is not an
-   endorsement of the CA.  The subscriber's role is to present a
-   certificate which will convince the relying party of the correct
-   subscriber information.  Subscribers do not vet CAs for
-   trustworthiness, only the correctness of their specific, configured
-   certificates and the CA's ability to meet the subscriber's
-   requirements, such as availability, compatibility, and performance.
-   It is the responsibility of the relying party, and its corresponding
-   root program, to determine the set of trusted CAs.  Trusting a CA
-   means trusting _all_ certificates issued by that CA, so it is not
-   enough to observe subscribers serving correct certificates.  An
-   untrustworthy CA may sign one correct certificate, but also sign
-   incorrect certificates, possibly in the future, that can attack the
-   relying party.  Root program management is a complex, security-
-   critical process, the full considerations of which are outside the
-   scope of this document.
+   While the choice of CA is a security-critical decision in a PKI, it
+   is the relying party's choice of trusted CAs that determines
+   interceptibility, not the authenticating party's choice of
+   certificates to present.  If the relying party trusts an attacker-
+   controlled CA, the attacker can intercept the connection independent
+   of whether the authenticating party uses that CA or another CA.  In
+   both cases, the attacker would need to present a different
+   certificate, with a different public key.  Conversely, if the relying
+   party does not trust the attacker's CA, the authenticating party's
+   correct but untrusted attacker-issued certificate will not enable the
+   attacker to substitute in a different public key.  The ability to
+   intercept a connection via the PKI is determined solely by relying
+   party trust decisions.
 
-10.4.  Targeting TLS Interception
+   Relying parties thus SHOULD NOT interpret the authenticating party's
+   choice of CA list as an endorsement of the CA.  The authenticating
+   party's role is to present a certificate which will demonstrate its
+   name and TLS key to the relying party.  Authenticating parties do not
+   vet CAs for trustworthiness, only the correctness of their specific,
+   configured certificates and the CA's ability to meet the
+   authenticating party's requirements, such as availability,
+   compatibility, and performance.  It is the responsibility of the
+   relying party, and its corresponding root program, to determine the
+   set of trusted CAs.  Trusting a CA means trusting _all_ certificates
+   issued by that CA, so it is not enough to observe authenticating
+   parties serving correct certificates.  An untrustworthy CA may sign
+   one correct certificate, but also sign incorrect certificates,
+   possibly in the future, that can attack the relying party.  Root
+   program management is a complex, security-critical process, the full
+   considerations of which are outside the scope of this document.
+
+10.5.  Targeting TLS Interception
 
    Trust Anchor Identifiers, like certificate_authorities, enables a TLS
    server to differentiate between clients that do and do not trust some
@@ -1189,16 +1240,16 @@ Table of Contents
    [I-D.ietf-tls-cert-abridge]
               Jackson, D., "Abridged Compression for WebPKI
               Certificates", Work in Progress, Internet-Draft, draft-
-              ietf-tls-cert-abridge-01, 16 March 2024,
+              ietf-tls-cert-abridge-02, 16 September 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              cert-abridge-01>.
+              cert-abridge-02>.
 
    [I-D.ietf-tls-wkech]
               Farrell, S., Salz, R., and B. M. Schwartz, "A well-known
-              URI for publishing ECHConfigList values.", Work in
-              Progress, Internet-Draft, draft-ietf-tls-wkech-05, 7 July
-              2024, <https://datatracker.ietf.org/doc/html/draft-ietf-
-              tls-wkech-05>.
+              URI for publishing service parameters", Work in Progress,
+              Internet-Draft, draft-ietf-tls-wkech-06, 1 October 2024,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
+              wkech-06>.
 
    [MOZILLA-ROOTS]
               Mozilla, "Mozilla Included CA Certificate List", 30 August
@@ -1233,7 +1284,7 @@ Appendix A.  Comparison to TLS Trust Expressions
 
    *  Trust Expressions works with static server configuration.  An
       ideal trust_anchors deployment requires automation to synchronize
-      a server’s DNS and TLS configuration.  [I-D.ietf-tls-wkech] could
+      a server's DNS and TLS configuration.  [I-D.ietf-tls-wkech] could
       be a starting point for this automation.  In deployments that are
       limited by server changes, this may be a more difficult
       transition.
@@ -1251,9 +1302,9 @@ Appendix A.  Comparison to TLS Trust Expressions
       stores rely on the retry mechanism described in Section 4.3, which
       is not available to client certificates.
 
-   The two mechanisms can be deployed together.  A subscriber can have
-   metadata for both mechanisms available, and a relying party can
-   advertise both.
+   The two mechanisms can be deployed together.  An authenticating party
+   can have metadata for both mechanisms available, and a relying party
+   can advertise both.
 
    [[TODO: remove this or move to supporting documentation after more
    working group consensus]]

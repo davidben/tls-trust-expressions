@@ -11,17 +11,17 @@
 <meta content="
        This document defines TLS trust expressions, a mechanism for relying parties to succinctly convey trusted certification authorities to subscribers by referencing named and versioned trust stores. It also defines supporting mechanisms for subscribers to evaluate these trust expressions, and select one of several available certification paths to present. This enables a multi-certificate deployment model, for a more agile and flexible PKI that can better meet security requirements. 
     " name="description">
-<meta content="xml2rfc 3.22.0" name="generator">
+<meta content="xml2rfc 3.23.2" name="generator">
 <meta content="draft-davidben-tls-trust-expr-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.22.0
-    Python 3.12.3
+  xml2rfc 3.23.2
+    Python 3.12.6
     ConfigArgParse 1.7
-    google-i18n-address 3.1.0
+    google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.4
     lxml 4.9.4
-    platformdirs 4.2.2
+    platformdirs 4.3.6
     pycountry 22.3.5
     PyYAML 6.0.1
     requests 2.32.3
@@ -1025,11 +1025,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS Trust Expressions</td>
-<td class="right">August 2024</td>
+<td class="right">October 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin, et al.</td>
-<td class="center">Expires 20 February 2025</td>
+<td class="center">Expires 6 April 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1042,12 +1042,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-davidben-tls-trust-expr-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-08-19" class="published">19 August 2024</time>
+<time datetime="2024-10-03" class="published">3 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-02-20">20 February 2025</time></dd>
+<dd class="expires"><time datetime="2025-04-06">6 April 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1105,7 +1105,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 20 February 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1303,19 +1303,20 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
 <p id="section-1-1">TLS <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> endpoints typically authenticate using X.509 certificates <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>. These are used as assertions by a certification authority (CA) that associate some TLS key with some DNS name or other identifier. If the peer trusts the CA, it will accept this association. The authenticating party is known as the subscriber and the peer is the relying party.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. This certificate must then simultaneously meet requirements for all relying parties.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, making it increasingly difficult for subscribers to support both. This translates to analogous costs for CAs and relying parties:<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-2">[[TODO: We have since switched to using "authenticating party" instead of "subscriber", but this document has not been updated with the new terminology.]]<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Subscribers typically provision a single certificate for all supported relying parties, because relying parties do not communicate which CAs are trusted. This certificate must then simultaneously meet requirements for all relying parties.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">This constraint imposes costs on the ecosystem as PKIs evolve over time. The older the relying party, the more its requirements may have diverged from newer ones, making it increasingly difficult for subscribers to support both. This translates to analogous costs for CAs and relying parties:<a href="#section-1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-1-4.1">
-          <p id="section-1-4.1.1">For a new CA to be usable by subscribers, it must be trusted by all relying parties. This is particularly challenging for older, unupdatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.<a href="#section-1-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-1-5.1">
+          <p id="section-1-5.1.1">For a new CA to be usable by subscribers, it must be trusted by all relying parties. This is particularly challenging for older, unupdatable relying parties. Existing CAs face similar challenges when rotating or deploying new keys.<a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-1-4.2">
-          <p id="section-1-4.2.1">When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.<a href="#section-1-4.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-1-5.2">
+          <p id="section-1-5.2.1">When a relying party must update its policies to meet new security requirements, it must choose between compromising on user security or imposing a significant burden on subscribers that still support older relying parties.<a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-5">This document aims to remove this constraint with a multi-certificate deployment model. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for different relying parties, including older and newer ones.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">This model requires the endpoints to somehow negotiate which certificate to use. <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.4" class="relref">Section 4.2.4</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> defines the <code>certificate_authorities</code> extension, but it is often impractical. Some trust stores are large, and the X.509 Name structure is inefficient. For example, as of August 2023, the Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> would encode 144 names totaling 14,457 bytes. Instead, this document defines a TLS extension and supporting mechanisms that allow relying parties and subscribers to succinctly communicate supported trust anchors to subscribers, using pre-shared information provisioned by root programs and CAs, respectively.<a href="#section-1-6" class="pilcrow">¶</a></p>
-<p id="section-1-7">Together, these mechanisms enable subscribers to deploy multiple certificates, which supports a more flexible, robust Public Key Infrastructure (PKI). <a href="#use-cases" class="auto internal xref">Section 9</a> discusses several deployment use cases that benefit from this model.<a href="#section-1-7" class="pilcrow">¶</a></p>
+<p id="section-1-6">This document aims to remove this constraint with a multi-certificate deployment model. Subscribers are instead provisioned with multiple certificates and automatically select the correct one to use with each relying party. This allows a single subscriber to use different certificates for different relying parties, including older and newer ones.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">This model requires the endpoints to somehow negotiate which certificate to use. <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.4" class="relref">Section 4.2.4</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> defines the <code>certificate_authorities</code> extension, but it is often impractical. Some trust stores are large, and the X.509 Name structure is inefficient. For example, as of August 2023, the Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> would encode 144 names totaling 14,457 bytes. Instead, this document defines a TLS extension and supporting mechanisms that allow relying parties and subscribers to succinctly communicate supported trust anchors to subscribers, using pre-shared information provisioned by root programs and CAs, respectively.<a href="#section-1-7" class="pilcrow">¶</a></p>
+<p id="section-1-8">Together, these mechanisms enable subscribers to deploy multiple certificates, which supports a more flexible, robust Public Key Infrastructure (PKI). <a href="#use-cases" class="auto internal xref">Section 9</a> discusses several deployment use cases that benefit from this model.<a href="#section-1-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -2501,7 +2502,7 @@ How to compute this set depends on the root program's label allocation scheme (<
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-cert-abridge">[I-D.ietf-tls-cert-abridge]</dt>
         <dd>
-<span class="refAuthor">Jackson, D.</span>, <span class="refTitle">"Abridged Compression for WebPKI Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-cert-abridge-01</span>, <time datetime="2024-03-16" class="refDate">16 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-01">https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-01</a>&gt;</span>. </dd>
+<span class="refAuthor">Jackson, D.</span>, <span class="refTitle">"Abridged Compression for WebPKI Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-cert-abridge-02</span>, <time datetime="2024-09-16" class="refDate">16 September 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-02">https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-02</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="MOZILLA-ROOTS">[MOZILLA-ROOTS]</dt>
         <dd>
