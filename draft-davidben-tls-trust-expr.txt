@@ -5,8 +5,8 @@
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                D. O'Brien
 Intended status: Standards Track                                 B. Beck
-Expires: 14 March 2025                                        Google LLC
-                                                       10 September 2024
+Expires: 6 April 2025                                         Google LLC
+                                                          3 October 2024
 
 
                          TLS Trust Expressions
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 14 March 2025.
+   This Internet-Draft will expire on 6 April 2025.
 
 Copyright Notice
 
@@ -129,6 +129,10 @@ Table of Contents
    DNS name or other identifier.  If the peer trusts the CA, it will
    accept this association.  The authenticating party is known as the
    subscriber and the peer is the relying party.
+
+   [[TODO: We have since switched to using "authenticating party"
+   instead of "subscriber", but this document has not been updated with
+   the new terminology.]]
 
    Subscribers typically provision a single certificate for all
    supported relying parties, because relying parties do not communicate
@@ -1646,9 +1650,9 @@ Table of Contents
    [I-D.ietf-tls-cert-abridge]
               Jackson, D., "Abridged Compression for WebPKI
               Certificates", Work in Progress, Internet-Draft, draft-
-              ietf-tls-cert-abridge-01, 16 March 2024,
+              ietf-tls-cert-abridge-02, 16 September 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              cert-abridge-01>.
+              cert-abridge-02>.
 
    [MOZILLA-ROOTS]
               Mozilla, "Mozilla Included CA Certificate List", 30 August
