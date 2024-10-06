@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-03T01:47:52.358579+00:00",
+  "timestamp": "2024-10-06T01:54:34.705788+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -666,6 +666,37 @@
           "body": "https://github.com/davidben/tls-trust-expressions/pull/66",
           "createdAt": "2024-08-11T23:50:35Z",
           "updatedAt": "2024-08-11T23:50:35Z"
+        }
+      ]
+    },
+    {
+      "number": 74,
+      "id": "I_kwDOKigz-s6YxZTf",
+      "title": "Rename \"subscriber\" to \"authenticating party\"",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/74",
+      "state": "CLOSED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "We took \"subscriber\" from the BRs but it's referring to a subscriber/applicant to the CA. That's not wrong but is a little confusing in the context of this protocol.\r\n\r\n\"Relying party\" and \"authenticating party\", while a mouthful, has a nice symmetry to it.",
+      "createdAt": "2024-10-03T04:17:45Z",
+      "updatedAt": "2024-10-03T15:45:46Z",
+      "closedAt": "2024-10-03T15:45:46Z",
+      "comments": [
+        {
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "body": "+1 to moving off subscriber and onto authenticating party, even if it is a mouthful. This will undoubtedly get re-litigated post-adoption, so we should just get onto a terminology that's less actively confusing than subscriber.",
+          "createdAt": "2024-10-03T13:03:13Z",
+          "updatedAt": "2024-10-03T13:03:13Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Haha, I see we previously wrote this, which \"authenticating\" in the other direction. (I'll just rephrase this.)\r\n\r\n> Subscriber: : The party whose identity is being validated in the protocol. In TLS, this is the side sending the Certificate and CertificateVerify message.\r\n>\r\n> Relying party: : The party authenticating the subscriber. In TLS, this is the side that validates a Certificate and CertificateVerify message.",
+          "createdAt": "2024-10-03T13:15:31Z",
+          "updatedAt": "2024-10-03T13:15:31Z"
         }
       ]
     }
@@ -4004,6 +4035,37 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 75,
+      "id": "PR_kwDOKigz-s59grjA",
+      "title": "Switch \"subscriber\" to \"authenticating party\"",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/75",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "devonobrien",
+        "bob-beck"
+      ],
+      "labels": [],
+      "body": "Closes #74. I've left draft-davidben-tls-trust-expr alone for now, since we currently expect to use draft-beck-tls-trust-anchor-ids as a starting point.",
+      "createdAt": "2024-10-03T14:36:52Z",
+      "updatedAt": "2024-10-03T15:52:21Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "274116ce1082463992b04fcc3a85579f01ca315e",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "auth-party",
+      "headRefOid": "efdfe0135f769e81f4e0ceeb59e21bb08bc24607",
+      "closedAt": "2024-10-03T15:45:45Z",
+      "mergedAt": "2024-10-03T15:45:45Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "1739f03458eeb5ce45cf244b09cb98797e755fe3"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
