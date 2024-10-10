@@ -9,20 +9,20 @@
 <meta content="David Benjamin" name="author">
 <meta content="Devon O'Brien" name="author">
 <meta content="
-       This document defines the TLS Trust Anchors extension, a mechanism for relying parties and subscribers to convey trusted certification authorities. It describes individual certification authorities more succinctly than the TLS Certificate Authorities extension. 
+       This document defines the TLS Trust Anchors extension, a mechanism for relying parties to convey trusted certification authorities. It describes individual certification authorities more succinctly than the TLS Certificate Authorities extension. 
        Additionally, to support TLS clients with many trusted certification authorities, it supports a mode where servers describe their available certification paths and the client selects from them. Servers may describe this during connection setup, or in DNS for lower latency. 
     " name="description">
-<meta content="xml2rfc 3.23.0" name="generator">
+<meta content="xml2rfc 3.23.2" name="generator">
 <meta content="draft-beck-tls-trust-anchor-ids-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.23.0
-    Python 3.12.3
+  xml2rfc 3.23.2
+    Python 3.12.7
     ConfigArgParse 1.7
-    google-i18n-address 3.1.0
+    google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.4
     lxml 4.9.4
-    platformdirs 4.2.2
+    platformdirs 4.3.6
     pycountry 22.3.5
     PyYAML 6.0.1
     requests 2.32.3
@@ -1026,11 +1026,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS Trust Anchor Identifiers</td>
-<td class="right">September 2024</td>
+<td class="right">October 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Beck, et al.</td>
-<td class="center">Expires 14 March 2025</td>
+<td class="center">Expires 13 April 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1043,12 +1043,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-beck-tls-trust-anchor-ids-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-09-10" class="published">10 September 2024</time>
+<time datetime="2024-10-10" class="published">10 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-03-14">14 March 2025</time></dd>
+<dd class="expires"><time datetime="2025-04-13">13 April 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1069,7 +1069,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">TLS Trust Anchor Identifiers</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines the TLS Trust Anchors extension, a mechanism for relying parties and subscribers to convey trusted certification authorities. It describes individual certification authorities more succinctly than the TLS Certificate Authorities extension.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines the TLS Trust Anchors extension, a mechanism for relying parties to convey trusted certification authorities. It describes individual certification authorities more succinctly than the TLS Certificate Authorities extension.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">Additionally, to support TLS clients with many trusted certification authorities, it supports a mode where servers describe their available certification paths and the client selects from them. Servers may describe this during connection setup, or in DNS for lower latency.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
@@ -1107,7 +1107,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 14 March 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 13 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1157,7 +1157,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-relying-party-configuration" class="internal xref">Relying Party Configuration</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
-                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-subscriber-configuration" class="internal xref">Subscriber Configuration</a></p>
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-authenticating-party-config" class="internal xref">Authenticating Party Configuration</a></p>
 </li>
             </ul>
 </li>
@@ -1231,7 +1231,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-relying-parties" class="internal xref">Relying Parties</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
-                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-subscribers" class="internal xref">Subscribers</a></p>
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-authenticating-parties" class="internal xref">Authenticating Parties</a></p>
 </li>
             </ul>
 </li>
@@ -1298,16 +1298,16 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">TLS <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> authentication uses X.509 certificates <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> to associate the authenticating party's, or <em>subscriber's</em>, TLS key with its application identifiers, such as DNS names. These associations are signed by some certificate authority (CA). The peer, or <em>relying party</em>, curates a set of CAs that are trusted to only sign correct associations, which allows it to rely on the TLS to authenticate application identifiers. Typically the subscriber is the server and the relying party is the client.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">A single subscriber may need to interoperate with relying parties that trust different sets of CAs. <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.4" class="relref">Section 4.2.4</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> defines the <code>certificate_authorities</code> extension to accommodate this. It allows the subscriber to provision multiple certificates and select the one that will allow the relying party to accept its TLS key. This is analogous to parameter negotiation elsewhere in TLS.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-1">TLS <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> authentication uses X.509 certificates <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> to associate the <em>authenticating party's</em> TLS key with its application identifiers, such as DNS names. These associations are signed by some certificate authority (CA). The peer, or <em>relying party</em>, curates a set of CAs that are trusted to only sign correct associations, which allows it to rely on the TLS to authenticate application identifiers. Typically the authenticating party is the server and the relying party is the client.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">An authenticating party may need to interoperate with relying parties that trust different sets of CAs. <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.4" class="relref">Section 4.2.4</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> defines the <code>certificate_authorities</code> extension to accommodate this. It allows the authenticating party to provision multiple certificates and select the one that will allow the relying party to accept its TLS key. This is analogous to parameter negotiation elsewhere in TLS.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">However, <code>certificate_authorities</code>'s size is impractical for some applications. Existing PKIs may have many CAs, and existing CAs may have long X.509 names. As of August 2023, the Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> contained 144 CAs, with an average name length of around 100 bytes. Such TLS deployments often do not use trust anchor negotiation at all.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">Without a negotiation mechanism, the subscriber must obtain a single certificate that simultaneously satisfies all relying parties. This is challenging when relying parties are diverse. PKI transitions, including those necessary for user security, naturally lead to relying party diversity, so the result is that service availability conflicts with security and overall PKI evolution:<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">Without a negotiation mechanism, the authenticating party must obtain a single certificate that simultaneously satisfies all relying parties. This is challenging when relying parties are diverse. PKI transitions, including those necessary for user security, naturally lead to relying party diversity, so the result is that service availability conflicts with security and overall PKI evolution:<a href="#section-1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-5.1">
-          <p id="section-1-5.1.1">For a subscriber to use a CA in its single certificate, all supported relying parties must trust the CA. PKI transitions then become difficult when subscribers support older, unupdated relying parties. This impacts both new keys from existing CA operators and new CA operators.<a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
+          <p id="section-1-5.1.1">For an authenticating party to use a CA in its single certificate, all supported relying parties must trust the CA. PKI transitions then become difficult when authentiating parties support older, unupdated relying parties. This impacts both new keys from existing CA operators and new CA operators.<a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-5.2">
-          <p id="section-1-5.2.1">When a relying party must update its policies to meet new security requirements, it adds to relying party diversity and the challenges that subscribers and CAs face. The relying party must then choose between compromising on user security or burdening the rest of the ecosystem, potentially impacting availability in the process.<a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
+          <p id="section-1-5.2.1">When a relying party must update its policies to meet new security requirements, it adds to relying party diversity and the challenges that authenticating parties and CAs face. The relying party must then choose between compromising on user security or burdening the rest of the ecosystem, potentially impacting availability in the process.<a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-1-6">To address this, this document introduces Trust Anchor Identifiers. There are four parts to this mechanism:<a href="#section-1-6" class="pilcrow">¶</a></p>
@@ -1316,7 +1316,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
           <p id="section-1-7.1.1"><a href="#trust-anchor-ids" class="auto internal xref">Section 3</a> defines <em>trust anchor identifiers</em>, which are short, unique identifiers for X.509 trust anchors.<a href="#section-1-7.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-1-7.2">
-          <p id="section-1-7.2.1"><a href="#tls-extension" class="auto internal xref">Section 4</a> defines a TLS extension that communicates the relying party’s requested trust anchors, and the subscriber’s available ones. When the relying party is a TLS client, it can mitigate large lists by sending a, possibly empty, subset of its trust anchors to the TLS server. The server provides its list of available trust anchors in response so that the client can retry on mismatch.<a href="#section-1-7.2.1" class="pilcrow">¶</a></p>
+          <p id="section-1-7.2.1"><a href="#tls-extension" class="auto internal xref">Section 4</a> defines a TLS extension that communicates the relying party's requested trust anchors, and the authenticating party's available ones. When the relying party is a TLS client, it can mitigate large lists by sending a, possibly empty, subset of its trust anchors to the TLS server. The server provides its list of available trust anchors in response so that the client can retry on mismatch.<a href="#section-1-7.2.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-1-7.3">
           <p id="section-1-7.3.1"><a href="#dns-service-parameter" class="auto internal xref">Section 5</a> allows TLS servers to advertise their available trust anchors in HTTPS or SVCB <span>[<a href="#RFC9460" class="cite xref">RFC9460</a>]</span> DNS records. TLS clients can then request an accurate initial subset and avoid a retry penalty.<a href="#section-1-7.3.1" class="pilcrow">¶</a></p>
@@ -1345,19 +1345,19 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
         </h3>
 <p id="section-2.1-1">This document discusses three roles:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-2.1-2">
-          <dt id="section-2.1-2.1">Subscriber:</dt>
+          <dt id="section-2.1-2.1">Authenticating party:</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-2.2">
-            <p id="section-2.1-2.2.1">The party whose identity is being validated in the protocol. In TLS, this is the side sending the Certificate and CertificateVerify message.<a href="#section-2.1-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-2.2.1">The party authenticating itself in the protocol. In TLS, this is the side sending the Certificate and CertificateVerify message.<a href="#section-2.1-2.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-2.1-2.3">Relying party:</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-2.4">
-            <p id="section-2.1-2.4.1">The party authenticating the subscriber. In TLS, this is the side that validates a Certificate and CertificateVerify message.<a href="#section-2.1-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-2.4.1">The party whom the authenticating party presents its identity to. In TLS, this is the side that validates a Certificate and CertificateVerify message.<a href="#section-2.1-2.4.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-2.1-2.5">Certification authority (CA):</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-2.6">
-            <p id="section-2.1-2.6.1">The service issuing certificates to the subscriber.<a href="#section-2.1-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-2.6.1">The service issuing certificates to the authenticating party.<a href="#section-2.1-2.6.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -1375,7 +1375,7 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
           <dd class="break"></dd>
 <dt id="section-2.1-4.5">CertificatePropertyList:</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-4.6">
-            <p id="section-2.1-4.6.1">A structure associated with a certification path, containing additional information from the CA, for use by the subscriber when presenting the certification path.<a href="#section-2.1-4.6.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-4.6.1">A structure associated with a certification path, containing additional information from the CA, for use by the authenticating party when presenting the certification path.<a href="#section-2.1-4.6.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -1402,14 +1402,14 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
           <p id="section-3-4.3.1">For use in ASCII-compatible text protocols, a trust anchor identifier's ASCII representation is the relative object identifier in dotted decimal notation. The example identifier's ASCII representation is <code>32473.1</code>.<a href="#section-3-4.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-3-5">Trust anchor identifiers SHOULD be allocated by the CA operator and common among relying parties that trust the CA. They MAY be allocated by another party, e.g. when bootstrapping an existing ecosystem, if all parties agree on the identifier. In particular, the protocol requires relying parties and subscribers to agree, and subscriber configuration typically comes from the CA.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-5">Trust anchor identifiers SHOULD be allocated by the CA operator and common among relying parties that trust the CA. They MAY be allocated by another party, e.g. when bootstrapping an existing ecosystem, if all parties agree on the identifier. In particular, the protocol requires authenticating and relying parties to agree, and the authenticating party's configuration typically comes from the CA.<a href="#section-3-5" class="pilcrow">¶</a></p>
 <p id="section-3-6">The length of a trust anchor identifier's binary representation MUST NOT exceed 255 bytes. It SHOULD be significantly shorter, for bandwidth efficiency.<a href="#section-3-6" class="pilcrow">¶</a></p>
 <div id="certificate-properties">
 <section id="section-3.1">
         <h3 id="name-certificate-properties">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-certificate-properties" class="section-name selfRef">Certificate Properties</a>
         </h3>
-<p id="section-3.1-1">This document introduces an extensible CertificatePropertyList structure for CAs to communicate additional information to subscribers, such as associated trust anchor identifiers. A CertificatePropertyList is defined using the TLS presentation language (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-3" class="relref">Section 3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>) below:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">This document introduces an extensible CertificatePropertyList structure for CAs to communicate additional information to authenticating parties, such as associated trust anchor identifiers. A CertificatePropertyList is defined using the TLS presentation language (<span><a href="https://rfc-editor.org/rfc/rfc8446#section-3" class="relref">Section 3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>) below:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.1-2">
 <pre>
 enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
@@ -1423,8 +1423,8 @@ CertificateProperty CertificatePropertyList&lt;0..2^16-1&gt;;
 </pre><a href="#section-3.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.1-3">The entries in a CertificatePropertyList MUST be sorted numerically by <code>type</code> and MUST NOT contain values with a duplicate <code>type</code>. Inputs that do not satisfy these invariants are syntax errors and MUST be rejected by parsers.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4">This document defines a single property, <code>trust_anchor_identifier</code>. The <code>data</code> field of the property contains the binary representation of the trust anchor identifier of the certification path’s trust anchor, as described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. Future documents may define other properties for use with other mechanisms.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
-<p id="section-3.1-5">Subscribers MUST ignore unrecognized properties with CertificatePropertyType values. If ignoring a property would cause such subscribers to misinterpret the structure, the document defining the CertificatePropertyType SHOULD include a mechanism for CAs to negotiate the new property with the subscriber in certificate management protocols such as ACME <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">This document defines a single property, <code>trust_anchor_identifier</code>. The <code>data</code> field of the property contains the binary representation of the trust anchor identifier of the certification path's trust anchor, as described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. Future documents may define other properties for use with other mechanisms.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.1-5">Authenticating parties MUST ignore unrecognized properties with CertificatePropertyType values.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="relying-party-configuration">
@@ -1445,14 +1445,14 @@ TrustAnchorIdentifier ::= RELATIVE-OID
 <p id="section-3.2-5">Relying parties MAY support trust anchors without associated trust anchor identifiers, but such trust anchors will not participate in this protocol. Those trust anchors MAY participate in other trust anchor negotiation protocols, such as the <code>certificate_authorities</code> extension.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="subscriber-configuration">
+<div id="authenticating-party-configuration">
 <section id="section-3.3">
-        <h3 id="name-subscriber-configuration">
-<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-subscriber-configuration" class="section-name selfRef">Subscriber Configuration</a>
+        <h3 id="name-authenticating-party-config">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-authenticating-party-config" class="section-name selfRef">Authenticating Party Configuration</a>
         </h3>
-<p id="section-3.3-1">Subscribers are configured with one or more candidate certification paths to present in TLS, in some preference order. This preference order is used when multiple candidate paths are usable for a connection. For example, the subscriber may prefer candidates that minimize message size or have more performant private keys.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-1">Authenticating parties are configured with one or more candidate certification paths to present in TLS, in some preference order. This preference order is used when multiple candidate paths are usable for a connection. For example, the authenticating party may prefer candidates that minimize message size or have more performant private keys.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">Each candidate path which participates in this protocol must be provisioned with the trust anchor identifier for its corresponding trust anchor in the CertificatePropertlyList.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">Subscribers MAY have candidate certification paths without associated trust anchor identifiers, but such paths will not participate in this protocol. Those paths MAY participate in other trust anchor negotiation protocols, such as the <code>certificate_authorities</code> extension.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">Authenticating parties MAY have candidate certification paths without associated trust anchor identifiers, but such paths will not participate in this protocol. Those paths MAY participate in other trust anchor negotiation protocols, such as the <code>certificate_authorities</code> extension.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1479,7 +1479,7 @@ TrustAnchorIdentifier TrustAnchorIdentifierList&lt;0..2^16-1&gt;;
 </pre><a href="#section-4.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-4.1-3">When the extension is sent in the ClientHello or CertificateRequest messages, the <code>extension_data</code> is a TrustAnchorIdentifierList and indicates that the sender supports the specified trust anchors. The list is unordered, and MAY be empty. Each TrustAnchorIdentifier uses the binary representation, as described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
-<p id="section-4.1-4">When the extension is sent in EncryptedExtensions, the <code>extension_data</code> is a TrustAnchorIdentifierList containing the list of trust anchors that server has available, in the server’s preference order, and MUST NOT be empty.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">When the extension is sent in EncryptedExtensions, the <code>extension_data</code> is a TrustAnchorIdentifierList containing the list of trust anchors that server has available, in the server's preference order, and MUST NOT be empty.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <p id="section-4.1-5">When the extension is sent in Certificate, the <code>extension_data</code> MUST be empty and indicates that the sender sent the certificate because the certificate matched a trust anchor identifier sent by the peer. When used in this form, the extension may only be sent in the first CertificateEntry. It MUST NOT be sent in subsequent ones.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1488,13 +1488,13 @@ TrustAnchorIdentifier TrustAnchorIdentifierList&lt;0..2^16-1&gt;;
         <h3 id="name-certificate-selection">
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-certificate-selection" class="section-name selfRef">Certificate Selection</a>
         </h3>
-<p id="section-4.2-1">A <code>trust_anchors</code> extension in the ClientHello or CertificateRequest is processed similarly to the <code>certificate_authorities</code> extension. The relying party indicates some set of supported trust anchors in the ClientHello or CertificateRequest <code>trust_anchors</code> extension. The subscriber then selects a certificate from its candidate certification paths (see <a href="#subscriber-configuration" class="auto internal xref">Section 3.3</a>), as described in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.4.2.2" class="relref">Section 4.4.2.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> and <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.4.2.3" class="relref">Section 4.4.2.3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>. This process is extended as follows:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">If the ClientHello or CertificateRequest contains a <code>trust_anchors</code> extension, the subscriber SHOULD send a certification path whose trust anchor identifier appears in the relying party’s <code>trust_anchors</code> extension.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
-<p id="section-4.2-3">If the ClientHello or CertificateRequest contains both <code>trust_anchors</code> and <code>certificate_authorities</code>, certification paths that satisfy either extension’s criteria may be used. This additionally applies to future extensions which play a similar role.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.2-4">If no certification paths satisfy either extension, the subscriber MAY return a <code>handshake_failure</code> alert, or choose among fallback certification paths without considering <code>trust_anchors</code> or <code>certification_authorities</code>. See <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a> for additional guidance on selecting a fallback when the ClientHello contains <code>trust_anchors</code>.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
-<p id="section-4.2-5">Sending a fallback allows the subscriber to retain support for relying parties that do not implement any form of trust anchor negotiation. In this case, the subscriber must find a sufficiently ubiquitous trust anchor, if one exists. However, only those relying parties need to be considered in this ubiquity determination. Updated relying parties may continue to evolve without restricting fallback certificate selection.<a href="#section-4.2-5" class="pilcrow">¶</a></p>
-<p id="section-4.2-6">If the subscriber sends a certification path that matches the relying party’s <code>trust_anchors</code> extension, as described in <a href="#certificate-selection" class="auto internal xref">Section 4.2</a>, the subscriber MUST send an empty <code>trust_anchors</code> extension in the first CertificateEntry of the Certificate message. In this case, the <code>certificate_list</code> flexibility described in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.4.2" class="relref">Section 4.4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> no longer applies. The <code>certificate_list</code> MUST contain a complete certification path, issued by the matching trust anchor, correctly ordered and with no extraneous certificates. That is, each certificate MUST certify the one immediately preceding it, and the trust anchor MUST certify the final certificate. The subscriber MUST NOT send the <code>trust_anchors</code> extension in the Certificate message in other situations.<a href="#section-4.2-6" class="pilcrow">¶</a></p>
-<p id="section-4.2-7">If a relying party receives this extension in the Certificate message, it MAY choose to disable path building <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span> and validate the peer's certificate list as pre-built certification path. Doing so avoids the unpredictable behavior of path-building, and helps ensure CAs and subscribers do not inadvertently provision incorrect paths.<a href="#section-4.2-7" class="pilcrow">¶</a></p>
+<p id="section-4.2-1">A <code>trust_anchors</code> extension in the ClientHello or CertificateRequest is processed similarly to the <code>certificate_authorities</code> extension. The relying party indicates some set of supported trust anchors in the ClientHello or CertificateRequest <code>trust_anchors</code> extension. The authenticating party then selects a certificate from its candidate certification paths (see <a href="#authenticating-party-configuration" class="auto internal xref">Section 3.3</a>), as described in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.4.2.2" class="relref">Section 4.4.2.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> and <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.4.2.3" class="relref">Section 4.4.2.3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>. This process is extended as follows:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">If the ClientHello or CertificateRequest contains a <code>trust_anchors</code> extension, the authenticating party SHOULD send a certification path whose trust anchor identifier appears in the relying party's <code>trust_anchors</code> extension.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2-3">If the ClientHello or CertificateRequest contains both <code>trust_anchors</code> and <code>certificate_authorities</code>, certification paths that satisfy either extension's criteria may be used. This additionally applies to future extensions which play a similar role.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.2-4">If no certification paths satisfy either extension, the authenticating party MAY return a <code>handshake_failure</code> alert, or choose among fallback certification paths without considering <code>trust_anchors</code> or <code>certification_authorities</code>. See <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a> for additional guidance on selecting a fallback when the ClientHello contains <code>trust_anchors</code>.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-5">Sending a fallback allows the authenticating party to retain support for relying parties that do not implement any form of trust anchor negotiation. In this case, the authenticating party must find a sufficiently ubiquitous trust anchor, if one exists. However, only those relying parties need to be considered in this ubiquity determination. Updated relying parties may continue to evolve without restricting fallback certificate selection.<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+<p id="section-4.2-6">If the authenticating party sends a certification path that matches the relying party's <code>trust_anchors</code> extension, as described in <a href="#certificate-selection" class="auto internal xref">Section 4.2</a>, the authenticating party MUST send an empty <code>trust_anchors</code> extension in the first CertificateEntry of the Certificate message. In this case, the <code>certificate_list</code> flexibility described in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.4.2" class="relref">Section 4.4.2</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> no longer applies. The <code>certificate_list</code> MUST contain a complete certification path, issued by the matching trust anchor, correctly ordered and with no extraneous certificates. That is, each certificate MUST certify the one immediately preceding it, and the trust anchor MUST certify the final certificate. The authenticating party MUST NOT send the <code>trust_anchors</code> extension in the Certificate message in other situations.<a href="#section-4.2-6" class="pilcrow">¶</a></p>
+<p id="section-4.2-7">If a relying party receives this extension in the Certificate message, it MAY choose to disable path building <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span> and validate the peer's certificate list as pre-built certification path. Doing so avoids the unpredictable behavior of path-building, and helps ensure CAs and authenticating parties do not inadvertently provision incorrect paths.<a href="#section-4.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="retry-mechanism">
@@ -1514,7 +1514,7 @@ TrustAnchorIdentifier TrustAnchorIdentifierList&lt;0..2^16-1&gt;;
         </ul>
 <p id="section-4.3-4">If this collection is non-empty, the server sends a <code>trust_anchors</code> extension in EncryptedExtensions, containing the corresponding trust anchor identifiers in preference order.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
 <p id="section-4.3-5">When a client sends a subset or empty list in <code>trust_anchors</code>, it SHOULD implement the following retry mechanism:<a href="#section-4.3-5" class="pilcrow">¶</a></p>
-<p id="section-4.3-6">If the client receives either a connection error or an untrusted certificate, the client looks in server’s EncryptedExtensions for a trust anchor identifier that it trusts. If there are multiple, it selects an option based on the server’s preference order and its local preferences. It then makes a new connection to the same endpoint, sending only the selected trust anchor identifier in the ClientHello <code>trust_anchors</code> extension. If the EncryptedExtensions had no <code>trust_anchor</code> extension, or no match was found, the client returns the error to the application.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+<p id="section-4.3-6">If the client receives either a connection error or an untrusted certificate, the client looks in server's EncryptedExtensions for a trust anchor identifier that it trusts. If there are multiple, it selects an option based on the server's preference order and its local preferences. It then makes a new connection to the same endpoint, sending only the selected trust anchor identifier in the ClientHello <code>trust_anchors</code> extension. If the EncryptedExtensions had no <code>trust_anchor</code> extension, or no match was found, the client returns the error to the application.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
 <p id="section-4.3-7">Clients SHOULD retry at most once per connection attempt.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
 <p id="section-4.3-8">[[TODO: Retrying in a new connection is expensive and cannot be done from within the TLS stack in most implementations. Consider handshake modifications to instead retry within the same connection. https://github.com/davidben/tls-trust-expressions/issues/53 ]]<a href="#section-4.3-8" class="pilcrow">¶</a></p>
 <p id="section-4.3-9">This mechanism allows the connection to recover from a certificate selection failure, e.g. due to the client not revealing its full preference list, at additional latency cost. <a href="#dns-service-parameter" class="auto internal xref">Section 5</a> describes an optimization which can avoid this cost.<a href="#section-4.3-9" class="pilcrow">¶</a></p>
@@ -1568,8 +1568,8 @@ example.net.  7200  IN SVCB 3 server.example.net. (
         <h3 id="name-client-behavior">
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-client-behavior" class="section-name selfRef">Client Behavior</a>
         </h3>
-<p id="section-5.3-1">When connecting to a service endpoint whose HTTPS or SVCB record contains the <code>tls-trust-anchors</code> parameter, the client first computes the intersection between its configured trust anchors and the server’s provided list. If this intersection is non-empty, the client MAY use it to determine the <code>trust_anchors</code> extension in the ClientHello (see <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a>).<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.3-2">If doing so, the client MAY send a subset of this intersection to meet size constraints, but SHOULD offer multiple options. This reduces the chance of a reconnection if, for example, the first option in the intersection uses a signature algorithm that the client doesn’t support, or if the TLS server and DNS configuration are out of sync.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
+<p id="section-5.3-1">When connecting to a service endpoint whose HTTPS or SVCB record contains the <code>tls-trust-anchors</code> parameter, the client first computes the intersection between its configured trust anchors and the server's provided list. If this intersection is non-empty, the client MAY use it to determine the <code>trust_anchors</code> extension in the ClientHello (see <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a>).<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-2">If doing so, the client MAY send a subset of this intersection to meet size constraints, but SHOULD offer multiple options. This reduces the chance of a reconnection if, for example, the first option in the intersection uses a signature algorithm that the client doesn't support, or if the TLS server and DNS configuration are out of sync.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
 <p id="section-5.3-3">Although this service parameter is intended to reduce trust anchor mismatches, mismatches may still occur in some scenarios. Clients and servers MUST continue to implement the provisions described in <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a>, even when using this service parameter.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1632,7 +1632,7 @@ TODO fill in an example
         <h3 id="name-key-rotation">
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-key-rotation" class="section-name selfRef">Key Rotation</a>
         </h3>
-<p id="section-8.1-1">In most X.509 deployments, a compromise of <em>any</em> root CA's private key compromises the entire PKI. Yet key rotation in PKIs is rare. In 2023, the oldest root in <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> and <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> was 25 years old, dating to 1998. Key rotation is challenging in a single-certificate deployment model. As long as any older relying party requires the old root, subscribers cannot switch to the new root, which in turn means relying parties cannot distrust the old root, leaving them vulnerable.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-1">In most X.509 deployments, a compromise of <em>any</em> root CA's private key compromises the entire PKI. Yet key rotation in PKIs is rare. In 2023, the oldest root in <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> and <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> was 25 years old, dating to 1998. Key rotation is challenging in a single-certificate deployment model. As long as any older relying party requires the old root, authenticating parties cannot switch to the new root, which in turn means relying parties cannot distrust the old root, leaving them vulnerable.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
 <p id="section-8.1-2">A multi-certificate deployment model avoids these transition problems. Key rotation may proceed as follows:<a href="#section-8.1-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-8.1-3">
 <li id="section-8.1-3.1">
@@ -1642,16 +1642,16 @@ TODO fill in an example
             <p id="section-8.1-3.2.1">Root programs begin trusting the new root CA alongside the old one, as a transition state. Both root CAs are configured to participate in trust anchor negotiation.<a href="#section-8.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-8.1-3.3">
-            <p id="section-8.1-3.3.1">When subscribers request certificates, the CA operator issues certificates from both roots and provisions the subscriber with both certificates.<a href="#section-8.1-3.3.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-3.3.1">When authenticating parties request certificates, the CA operator issues certificates from both roots and provisions the authenticating party with both certificates.<a href="#section-8.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-8.1-3.4">
             <p id="section-8.1-3.4.1">Trust anchor negotiation selects the old root for relying parties that only trust the old root, and the new root for relying parties that only trust the new root. In transition, relying parties that trust both may be served either, but prioritizing the new root helps monitor the transition.<a href="#section-8.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-8.1-3.5">
-            <p id="section-8.1-3.5.1">Once subscribers have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator may continue to operate the old root CA for as long as it wishes to serve subscribers that, in turn, wish to serve older relying parties.<a href="#section-8.1-3.5.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-3.5.1">Once authenticating parties have been provisioned with new certificates, root programs can safely distrust the old root in new relying parties. The CA operator may continue to operate the old root CA for as long as it wishes to serve authenticating parties that, in turn, wish to serve older relying parties.<a href="#section-8.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-8.1-4">This process requires no configuration changes to the subscriber, given an automated, multi-certificate-aware certificate issuance process. The subscriber does not need to know why it received two certificates, only how to select between them for each relying party.<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+<p id="section-8.1-4">This process requires no configuration changes to the authenticating party, given an automated, multi-certificate-aware certificate issuance process. The authenticating party does not need to know why it received two certificates, only how to select between them for each relying party.<a href="#section-8.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="adding-cas">
@@ -1659,9 +1659,9 @@ TODO fill in an example
         <h3 id="name-adding-cas">
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-adding-cas" class="section-name selfRef">Adding CAs</a>
         </h3>
-<p id="section-8.2-1">In the single-certificate model, subscribers cannot use TLS certificates issued from a new root CA until all supported relying parties have been updated to trust the new root CA. This can take years or more. Some relying parties, such as IoT devices, may never receive trust store updates at all.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2-2">As a result, it is very difficult for subscribers that serve a wide variety of relying parties to use a newly-trusted root CA. When trust stores diverge too far, subscribers often must partition their services into multiple TLS endpoints (i.e. different DNS names) and direct different relying parties to different endpoints. Subscribers sometimes resort to TLS fingerprinting, to detect particular relying parties. But, as this repurposes other TLS fields for unintended purposes, this is unreliable and usually requires writing custom service-specific logic.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
-<p id="section-8.2-3">In a multi-certificate deployment model, subscribers can begin serving certificates from new root CAs without interrupting relying parties that depend on existing ones.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
+<p id="section-8.2-1">In the single-certificate model, authenticating parties cannot use TLS certificates issued from a new root CA until all supported relying parties have been updated to trust the new root CA. This can take years or more. Some relying parties, such as IoT devices, may never receive trust store updates at all.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">As a result, it is very difficult for authenticating parties that serve a wide variety of relying parties to use a newly-trusted root CA. When trust stores diverge too far, authenticating parties often must partition their services into multiple TLS endpoints (i.e. different DNS names) and direct different relying parties to different endpoints. Authenticating parties sometimes resort to TLS fingerprinting, to detect particular relying parties. But, as this repurposes other TLS fields for unintended purposes, this is unreliable and usually requires writing custom service-specific logic.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-3">In a multi-certificate deployment model, authenticating parties can begin serving certificates from new root CAs without interrupting relying parties that depend on existing ones.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
 <p id="section-8.2-4">In some contexts, it may be possible to use other fields to select the new CA. For example, post-quantum-capable clients may be detected with the <code>signature_algorithms</code> and <code>signature_algorithms_cert</code> extensions. However, this assumes all post-quantum CAs are added at the same time. A multi-certificate model avoids this problem and allows for a more gradual deployment of post-quantum CAs.<a href="#section-8.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1670,8 +1670,8 @@ TODO fill in an example
         <h3 id="name-removing-cas">
 <a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-removing-cas" class="section-name selfRef">Removing CAs</a>
         </h3>
-<p id="section-8.3-1">Subscribers in a single-certificate model are limited to CAs in the intersection of their supported relying parties. As newer relying parties remove untrusted CAs over time,the intersection with older relying parties shrinks. Moreover, the subscriber may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For subscribers that serve many diverse relying parties, this is a disruptive and risky process.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
-<p id="section-8.3-2">The multi-certificate model removes this constraint. If a subscriber's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certificate for each relying party.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
+<p id="section-8.3-1">Authenticating parties in a single-certificate model are limited to CAs in the intersection of their supported relying parties. As newer relying parties remove untrusted CAs over time,the intersection with older relying parties shrinks. Moreover, the authenticating party may not even know which CAs are in the intersection. Often, the only option is to try the new certificate and monitor errors. For authenticating parties that serve many diverse relying parties, this is a disruptive and risky process.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-2">The multi-certificate model removes this constraint. If an authenticating party's CA is distrusted, it can continue to use that CA, in addition to a newer one. This removes the risk that some older relying party required that CA and was incompatible with the new one. The mechanisms in this document will select an appropriate certificate for each relying party.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="other-root-transitions">
@@ -1679,7 +1679,7 @@ TODO fill in an example
         <h3 id="name-other-root-transitions">
 <a href="#section-8.4" class="section-number selfRef">8.4. </a><a href="#name-other-root-transitions" class="section-name selfRef">Other Root Transitions</a>
         </h3>
-<p id="section-8.4-1">The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a CA operator may generate a postquantum root CA and use the mechanism in <a href="#acme-extension" class="auto internal xref">Section 6</a> to issue from the classical and postquantum roots concurrently. The subscriber will then, transparently and with no configuration change, serve both. As in <a href="#key-rotation" class="auto internal xref">Section 8.1</a>, newer relying parties can then remove the classical roots, while older relying parties continue to function.<a href="#section-8.4-1" class="pilcrow">¶</a></p>
+<p id="section-8.4-1">The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a CA operator may generate a postquantum root CA and use the mechanism in <a href="#acme-extension" class="auto internal xref">Section 6</a> to issue from the classical and postquantum roots concurrently. The authenticating party will then, transparently and with no configuration change, serve both. As in <a href="#key-rotation" class="auto internal xref">Section 8.1</a>, newer relying parties can then remove the classical roots, while older relying parties continue to function.<a href="#section-8.4-1" class="pilcrow">¶</a></p>
 <p id="section-8.4-2">This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.<a href="#section-8.4-2" class="pilcrow">¶</a></p>
 <p id="section-8.4-3">[[TODO: There's one missing piece, which is that some servers may attempt to parse the signature algorithms out of the certificate chain. See https://github.com/davidben/tls-trust-expressions/issues/9 ]]<a href="#section-8.4-3" class="pilcrow">¶</a></p>
 </section>
@@ -1692,7 +1692,7 @@ TODO fill in an example
 <p id="section-8.5-1">Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties.<a href="#section-8.5-1" class="pilcrow">¶</a></p>
 <p id="section-8.5-2">This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate, which includes a public key, signature, and X.509 metadata. An average X.509 name in the Chrome Root Store <span>[<a href="#CHROME-ROOTS" class="cite xref">CHROME-ROOTS</a>]</span> or Mozilla CA Certificate Program <span>[<a href="#MOZILLA-ROOTS" class="cite xref">MOZILLA-ROOTS</a>]</span> is around 100 bytes alone. Post-quantum signature algorithms will dramatically shift this tradeoff. Dilithium3 <span>[<a href="#Dilithium" class="cite xref">Dilithium</a>]</span>, for example, has a total public key and signature size of 5,245 bytes.<a href="#section-8.5-2" class="pilcrow">¶</a></p>
 <p id="section-8.5-3"><span>[<a href="#I-D.ietf-tls-cert-abridge" class="cite xref">I-D.ietf-tls-cert-abridge</a>]</span> proposes to predistribute known intermediate certificates to relying parties, as a compression scheme. A multi-certificate deployment model provides another way to achieve this effect. To relying parties, a predistributed intermediate certificate is functionally equivalent to a root certificate. PKIs use intermediate certificates because changing root certificates requires updating relying parties, but predistributed intermediates already presume updated relying parties.<a href="#section-8.5-3" class="pilcrow">¶</a></p>
-<p id="section-8.5-4">A CA operator could provide subscribers with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. A server that prioritizes the shorter path would then send the shorter path to up-to-date relying parties and the longer path to older relying parties.<a href="#section-8.5-4" class="pilcrow">¶</a></p>
+<p id="section-8.5-4">A CA operator could provide authenticating parties with two certification paths: a longer path ending at a long-lived trust anchor and shorter path the other ending at a short-lived, revocable root. Relying parties would be configured to trust both the long-lived root and the most recent short-lived root. A server that prioritizes the shorter path would then send the shorter path to up-to-date relying parties and the longer path to older relying parties.<a href="#section-8.5-4" class="pilcrow">¶</a></p>
 <p id="section-8.5-5">This achieves the same effect with a more general-purpose multi-certificate mechanism. It is also more flexible, as the two paths need not be related. For example, root CA public keys are not distributed in each TLS connection, so a post-quantum signature algorithm that optimizes for signature size may be preferable. In this model, both the long-lived and short-lived roots may use such an algorithm. In a compression-based model, the same intermediate must optimize both its compressed and uncompressed size, so such an algorithm may not be suitable.<a href="#section-8.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1701,8 +1701,8 @@ TODO fill in an example
         <h3 id="name-conflicting-relying-party-r">
 <a href="#section-8.6" class="section-number selfRef">8.6. </a><a href="#name-conflicting-relying-party-r" class="section-name selfRef">Conflicting Relying Party Requirements</a>
         </h3>
-<p id="section-8.6-1">A subscriber may need to support relying parties with different requirements. For example, in contexts where online revocation checks are expensive, unreliable, or privacy-sensitive, user security is best served by short-lived certificates. In other contexts, long-lived certificates may be more appropriate for, e.g., systems that are offline for long periods of time or have unreliable clocks.<a href="#section-8.6-1" class="pilcrow">¶</a></p>
-<p id="section-8.6-2">A single-certificate deployment model forces subscribers to find a single certificate that meets all requirements. User security then suffers in all contexts, as the PKI may not quite meet anyone's needs. In a multi-certificate deployment model, different contexts may use different trust anchors. A subscriber that supports multiple contexts would provision certificates for each, with certificate negotiation logic directing the right one to each relying party.<a href="#section-8.6-2" class="pilcrow">¶</a></p>
+<p id="section-8.6-1">An authenticating party may need to support relying parties with different requirements. For example, in contexts where online revocation checks are expensive, unreliable, or privacy-sensitive, user security is best served by short-lived certificates. In other contexts, long-lived certificates may be more appropriate for, e.g., systems that are offline for long periods of time or have unreliable clocks.<a href="#section-8.6-1" class="pilcrow">¶</a></p>
+<p id="section-8.6-2">A single-certificate deployment model forces authenticating parties to find a single certificate that meets all requirements. User security then suffers in all contexts, as the PKI may not quite meet anyone's needs. In a multi-certificate deployment model, different contexts may use different trust anchors. An authenticating party that supports multiple contexts would provision certificates for each, with certificate negotiation logic directing the right one to each relying party.<a href="#section-8.6-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="backup-certificates">
@@ -1710,7 +1710,7 @@ TODO fill in an example
         <h3 id="name-backup-certificates">
 <a href="#section-8.7" class="section-number selfRef">8.7. </a><a href="#name-backup-certificates" class="section-name selfRef">Backup Certificates</a>
         </h3>
-<p id="section-8.7-1">A subscriber may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.<a href="#section-8.7-1" class="pilcrow">¶</a></p>
+<p id="section-8.7-1">An authenticating party may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.<a href="#section-8.7-1" class="pilcrow">¶</a></p>
 <p id="section-8.7-2">To support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the union of the certificate paths returned by each ACME server.<a href="#section-8.7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1720,8 +1720,8 @@ TODO fill in an example
 <a href="#section-8.8" class="section-number selfRef">8.8. </a><a href="#name-public-key-pinning" class="section-name selfRef">Public Key Pinning</a>
         </h3>
 <p id="section-8.8-1">To reduce the risk of attacks from misissued certificates, relying parties sometimes employ public key pinning <span>[<a href="#RFC7469" class="cite xref">RFC7469</a>]</span>. This enforces that one of some set of public keys appear in the final certificate path. This effectively reduces a relying party's trust anchor list to a subset of the original set.<a href="#section-8.8-1" class="pilcrow">¶</a></p>
-<p id="section-8.8-2">As other relying parties in the PKI evolve, the pinning relying party limits the subscriber to satisfy both the pinning constraint and newer constraints in the PKI. This can lead to conflicts if, for example, the pinned CA is distrusted by a newer relying party. The subscriber is then forced to either break the pinning relying party, or break the newer ones.<a href="#section-8.8-2" class="pilcrow">¶</a></p>
-<p id="section-8.8-3">This protocol reduces this conflict if the pinning relying party uses its effective, reduced trust anchor list. The subscriber can then, as needed, use a certificate from the pinned CA with the pinning relying party, and another CA with newer relying parties.<a href="#section-8.8-3" class="pilcrow">¶</a></p>
+<p id="section-8.8-2">As other relying parties in the PKI evolve, the pinning relying party limits the authenticating party to satisfy both the pinning constraint and newer constraints in the PKI. This can lead to conflicts if, for example, the pinned CA is distrusted by a newer relying party. The authenticating party is then forced to either break the pinning relying party, or break the newer ones.<a href="#section-8.8-2" class="pilcrow">¶</a></p>
+<p id="section-8.8-3">This protocol reduces this conflict if the pinning relying party uses its effective, reduced trust anchor list. The authenticating party can then, as needed, use a certificate from the pinned CA with the pinning relying party, and another CA with newer relying parties.<a href="#section-8.8-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1740,10 +1740,10 @@ TODO fill in an example
 <p id="section-9.1-2">The privacy implications of this are determined by how a relying party uses this extension. Trust anchors supported by a relying party may be divided into three categories:<a href="#section-9.1-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-9.1-3">
 <li id="section-9.1-3.1">
-            <p id="section-9.1-3.1.1">Trust anchors whose identifiers the relying party sends <em>unconditionally</em>, i.e. not in response to the server’s HTTPS/SVCB record, trust anchor list in EncryptedExtensions, etc.<a href="#section-9.1-3.1.1" class="pilcrow">¶</a></p>
+            <p id="section-9.1-3.1.1">Trust anchors whose identifiers the relying party sends <em>unconditionally</em>, i.e. not in response to the server's HTTPS/SVCB record, trust anchor list in EncryptedExtensions, etc.<a href="#section-9.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-9.1-3.2">
-            <p id="section-9.1-3.2.1">Trust anchors whose identifiers the relying party sends <em>conditionally</em>, i.e. only if the server offers them. For example, the relying party may indicate support for a trust anchor if its identifier is listed in the server’s HTTPS/SVCB record or trust anchor list in EncryptedExtensions.<a href="#section-9.1-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-9.1-3.2.1">Trust anchors whose identifiers the relying party sends <em>conditionally</em>, i.e. only if the server offers them. For example, the relying party may indicate support for a trust anchor if its identifier is listed in the server's HTTPS/SVCB record or trust anchor list in EncryptedExtensions.<a href="#section-9.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-9.1-3.3">
             <p id="section-9.1-3.3.1">Trust anchors whose identifiers the relying party never sends, but still trusts. These are trust anchors which do not participate in this mechanism.<a href="#section-9.1-3.3.1" class="pilcrow">¶</a></p>
@@ -1751,20 +1751,20 @@ TODO fill in an example
         </ol>
 <p id="section-9.1-4">Each of these categories carries a different fingerprinting exposure:<a href="#section-9.1-4" class="pilcrow">¶</a></p>
 <p id="section-9.1-5">Trust anchor identifiers sent unconditionally can be observed passively. Thus, relying parties SHOULD NOT unconditionally advertise trust anchor lists which are unique to an individual user. Rather, such lists SHOULD be either empty or computed only from the trust anchors common to the relying party's anonymity set (<span><a href="https://rfc-editor.org/rfc/rfc6973#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC6973" class="cite xref">RFC6973</a>]</span>).<a href="#section-9.1-5" class="pilcrow">¶</a></p>
-<p id="section-9.1-6">Trust anchor identifiers sent in response to the subscriber can only be observed actively. That is, the subscriber could vary its list and observe how the client responds, in order to probe for the client’s trust anchor list.<a href="#section-9.1-6" class="pilcrow">¶</a></p>
-<p id="section-9.1-7">This is similar to the baseline exposure for trust anchors that do not participate in negotiation. A subscriber in possession of a certificate can send it and determine if the relying party accepts or rejects it. Unlike this baseline exposure, trust anchors that participate in this protocol can be probed by only knowing the trust anchor identifier.<a href="#section-9.1-7" class="pilcrow">¶</a></p>
+<p id="section-9.1-6">Trust anchor identifiers sent in response to the authenticating party can only be observed actively. That is, the authenticating party could vary its list and observe how the client responds, in order to probe for the client's trust anchor list.<a href="#section-9.1-6" class="pilcrow">¶</a></p>
+<p id="section-9.1-7">This is similar to the baseline exposure for trust anchors that do not participate in negotiation. An authenticating party in possession of a certificate can send it and determine if the relying party accepts or rejects it. Unlike this baseline exposure, trust anchors that participate in this protocol can be probed by only knowing the trust anchor identifier.<a href="#section-9.1-7" class="pilcrow">¶</a></p>
 <p id="section-9.1-8">Relying parties SHOULD determine which trust anchors participate in this mechanism, and whether to advertise them unconditionally or conditionally, based on their privacy goals. PKIs that reliably use the DNS service parameter (<a href="#dns-service-parameter" class="auto internal xref">Section 5</a>) can rely on conditional advertisement for stronger privacy properties without a round-trip penalty.<a href="#section-9.1-8" class="pilcrow">¶</a></p>
 <p id="section-9.1-9">Additionally, a relying party that computes the <code>trust_anchors</code> extension based on prior state may allow observers to correlate across connections. Relying parties SHOULD NOT maintain such state across connections that are intended to be uncorrelated. As above, implementing the DNS service parameter can avoid a round-trip penalty without such state.<a href="#section-9.1-9" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="subscribers">
+<div id="authenticating-parties">
 <section id="section-9.2">
-        <h3 id="name-subscribers">
-<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-subscribers" class="section-name selfRef">Subscribers</a>
+        <h3 id="name-authenticating-parties">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-authenticating-parties" class="section-name selfRef">Authenticating Parties</a>
         </h3>
-<p id="section-9.2-1">If the subscriber is a server, the mechanisms in <a href="#dns-service-parameter" class="auto internal xref">Section 5</a> and <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a> enumerate the trust anchors for the server’s available certification paths. This mechanism assumes they are not sensitive. Servers SHOULD NOT use this mechanism to negotiate certification paths with sensitive trust anchors.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+<p id="section-9.2-1">If the authenticating party is a server, the mechanisms in <a href="#dns-service-parameter" class="auto internal xref">Section 5</a> and <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a> enumerate the trust anchors for the server's available certification paths. This mechanism assumes they are not sensitive. Servers SHOULD NOT use this mechanism to negotiate certification paths with sensitive trust anchors.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
 <p id="section-9.2-2">In servers that host multiple services, this protocol only enumerates certification paths for the requested service. If, for example, a server uses the <code>server_name</code> extension to select services, the addition to EncryptedExtensions in <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a> is expected to be filtered by <code>server_name</code>. Likewise, the DNS parameter in <a href="#dns-service-parameter" class="auto internal xref">Section 5</a> only contains information for the corresponding service. In both cases, co-located services are not revealed.<a href="#section-9.2-2" class="pilcrow">¶</a></p>
-<p id="section-9.2-3">The above does not apply if the subscriber is a client. This protocol does not enumerate the available certification paths for a client.<a href="#section-9.2-3" class="pilcrow">¶</a></p>
+<p id="section-9.2-3">The above does not apply if the authenticating party is a client. This protocol does not enumerate the available certification paths for a client.<a href="#section-9.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1788,8 +1788,8 @@ TODO fill in an example
         <h3 id="name-agility">
 <a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-agility" class="section-name selfRef">Agility</a>
         </h3>
-<p id="section-10.2-1">As with other TLS parameters, negotiation reduces a conflict between availability and security, which allows PKIs to better mitigate security risks to users. When relying parties in an existing TLS ecosystem improve their certificate policies, trust anchor negotiation helps subscribers navigate differences between those relying parties and existing relying parties. Each set of requirements may be satisfied without compatibility risk to the other. <a href="#use-cases" class="auto internal xref">Section 8</a> discusses such scenarios in more detail.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
-<p id="section-10.2-2">Negotiation also reduces pressures on relying parties to sacrifice user security for compatibility. Suppose a subscriber currently uses some CA, but a relying party deems trusting that CA to pose an unacceptable security risk to its users. In a single-certificate deployment, those subscribers may be unwilling to adopt a CA trusted by the relying party, as switching CAs risks compatibility problems elsewhere. The relying party then faces compatibility pressure and adds this CA, sacrificing user security. However, in a multi-certificate deployment, the subscriber can use its existing CA <em>in addition to</em> another CA trusted by relying party B. This allows the ecosystem to improve interoperability, while still meeting relying party B's user-security goals.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
+<p id="section-10.2-1">As with other TLS parameters, negotiation reduces a conflict between availability and security, which allows PKIs to better mitigate security risks to users. When relying parties in an existing TLS ecosystem improve their certificate policies, trust anchor negotiation helps authenticating parties navigate differences between those relying parties and existing relying parties. Each set of requirements may be satisfied without compatibility risk to the other. <a href="#use-cases" class="auto internal xref">Section 8</a> discusses such scenarios in more detail.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-2">Negotiation also reduces pressures on relying parties to sacrifice user security for compatibility. Suppose an authenticating party currently uses some CA, but a relying party deems trusting that CA to pose an unacceptable security risk to its users. In a single-certificate deployment, those authenticating parties may be unwilling to adopt a CA trusted by the relying party, as switching CAs risks compatibility problems elsewhere. The relying party then faces compatibility pressure and adds this CA, sacrificing user security. However, in a multi-certificate deployment, the authenticating party can use its existing CA <em>in addition to</em> another CA trusted by relying party B. This allows the ecosystem to improve interoperability, while still meeting relying party B's user-security goals.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="incorrect-selection-metadata">
@@ -1797,7 +1797,7 @@ TODO fill in an example
         <h3 id="name-incorrect-selection-metadat">
 <a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-incorrect-selection-metadat" class="section-name selfRef">Incorrect Selection Metadata</a>
         </h3>
-<p id="section-10.3-1">If the subscriber has incorrect information about trust anchor identifiers, it may send an untrusted certification path. This will not result in that path being trusted, but does present the possibility of a degradation of service. However, this information is provisioned by the CA, which is already expected to provide accurate information.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-1">If the authenticating party has incorrect information about trust anchor identifiers, it may send an untrusted certification path. This will not result in that path being trusted, but does present the possibility of a degradation of service. However, this information is provisioned by the CA, which is already expected to provide accurate information.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="serving-multiple-certificates">
@@ -1805,10 +1805,10 @@ TODO fill in an example
         <h3 id="name-serving-multiple-certificat">
 <a href="#section-10.4" class="section-number selfRef">10.4. </a><a href="#name-serving-multiple-certificat" class="section-name selfRef">Serving Multiple Certificates</a>
         </h3>
-<p id="section-10.4-1">Negotiation reduces compatibility pressures against subscribers choosing to serve certificates from a less common CA, as the subscriber can serve it in addition to other CAs that, together, satisfy all supported relying parties. The CA may even have been distrusted by some relying parties, e.g. if it is needed for older, unupdated relying parties that are still important for the subscriber to support. As discussed in <a href="#use-cases" class="auto internal xref">Section 8</a> and <a href="#agility" class="auto internal xref">Section 10.2</a>, this deployment model avoids compatibility risks during PKI transitions which mitigate security risks to users.<a href="#section-10.4-1" class="pilcrow">¶</a></p>
-<p id="section-10.4-2">Serving such certificates does not enable the CA to decrypt or intercept the connection. If a certificate asserts the correct information about the subscriber, notably the correct public key, the subscriber can safely present it, whether or not the issuing CA is otherwise trustworthy. Issuing a certificate for the subscriber's public key does not grant the CA access to the corresponding private key. Conversely, if the attacker already has access to the subscriber's private key, they do not need to be in control of a CA to intercept a connection.<a href="#section-10.4-2" class="pilcrow">¶</a></p>
-<p id="section-10.4-3">While the choice of CA is a security-critical decision in a PKI, it is the relying party's choice of trusted CAs that determines interceptibility, not the subscriber's choice of certificates to present. If the relying party trusts an attacker-controlled CA, the attacker can intercept the connection independent of whether the subscriber uses that CA or another CA. In both cases, the attacker would need to present a different certificate, with a different public key. Conversely, if the relying party does not trust the attacker's CA, the subscriber's correct but untrusted attacker-issued certificate will not enable the attacker to substitute in a different public key. The ability to intercept a connection via the PKI is determined solely by relying party trust decisions.<a href="#section-10.4-3" class="pilcrow">¶</a></p>
-<p id="section-10.4-4">Relying parties thus SHOULD NOT interpret the subscriber's choice of CA list as an endorsement of the CA. The subscriber's role is to present a certificate which will convince the relying party of the correct subscriber information. Subscribers do not vet CAs for trustworthiness, only the correctness of their specific, configured certificates and the CA's ability to meet the subscriber's requirements, such as availability, compatibility, and performance. It is the responsibility of the relying party, and its corresponding root program, to determine the set of trusted CAs. Trusting a CA means trusting <em>all</em> certificates issued by that CA, so it is not enough to observe subscribers serving correct certificates. An untrustworthy CA may sign one correct certificate, but also sign incorrect certificates, possibly in the future, that can attack the relying party. Root program management is a complex, security-critical process, the full considerations of which are outside the scope of this document.<a href="#section-10.4-4" class="pilcrow">¶</a></p>
+<p id="section-10.4-1">Negotiation reduces compatibility pressures against authenticating parties choosing to serve certificates from a less common CA, as the authenticating party can serve it in addition to other CAs that, together, satisfy all supported relying parties. The CA may even have been distrusted by some relying parties, e.g. if it is needed for older, unupdated relying parties that are still important for the authenticating party to support. As discussed in <a href="#use-cases" class="auto internal xref">Section 8</a> and <a href="#agility" class="auto internal xref">Section 10.2</a>, this deployment model avoids compatibility risks during PKI transitions which mitigate security risks to users.<a href="#section-10.4-1" class="pilcrow">¶</a></p>
+<p id="section-10.4-2">Serving such certificates does not enable the CA to decrypt or intercept the connection. If a certificate asserts the correct information about the authenticating party, notably the correct public key, the authenticating party can safely present it, whether or not the issuing CA is otherwise trustworthy. Issuing a certificate for the authenticating party's public key does not grant the CA access to the corresponding private key. Conversely, if the attacker already has access to the authenticating party's private key, they do not need to be in control of a CA to intercept a connection.<a href="#section-10.4-2" class="pilcrow">¶</a></p>
+<p id="section-10.4-3">While the choice of CA is a security-critical decision in a PKI, it is the relying party's choice of trusted CAs that determines interceptibility, not the authenticating party's choice of certificates to present. If the relying party trusts an attacker-controlled CA, the attacker can intercept the connection independent of whether the authenticating party uses that CA or another CA. In both cases, the attacker would need to present a different certificate, with a different public key. Conversely, if the relying party does not trust the attacker's CA, the authenticating party's correct but untrusted attacker-issued certificate will not enable the attacker to substitute in a different public key. The ability to intercept a connection via the PKI is determined solely by relying party trust decisions.<a href="#section-10.4-3" class="pilcrow">¶</a></p>
+<p id="section-10.4-4">Relying parties thus SHOULD NOT interpret the authenticating party's choice of CA list as an endorsement of the CA. The authenticating party's role is to present a certificate which will demonstrate its name and TLS key to the relying party. Authenticating parties do not vet CAs for trustworthiness, only the correctness of their specific, configured certificates and the CA's ability to meet the authenticating party's requirements, such as availability, compatibility, and performance. It is the responsibility of the relying party, and its corresponding root program, to determine the set of trusted CAs. Trusting a CA means trusting <em>all</em> certificates issued by that CA, so it is not enough to observe authenticating parties serving correct certificates. An untrustworthy CA may sign one correct certificate, but also sign incorrect certificates, possibly in the future, that can attack the relying party. Root program management is a complex, security-critical process, the full considerations of which are outside the scope of this document.<a href="#section-10.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="targeting-tls-interception">
@@ -2061,11 +2061,11 @@ TODO fill in an example
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-cert-abridge">[I-D.ietf-tls-cert-abridge]</dt>
         <dd>
-<span class="refAuthor">Jackson, D.</span>, <span class="refTitle">"Abridged Compression for WebPKI Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-cert-abridge-01</span>, <time datetime="2024-03-16" class="refDate">16 March 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-01">https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-01</a>&gt;</span>. </dd>
+<span class="refAuthor">Jackson, D.</span>, <span class="refTitle">"Abridged Compression for WebPKI Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-cert-abridge-02</span>, <time datetime="2024-09-16" class="refDate">16 September 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-02">https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-02</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-wkech">[I-D.ietf-tls-wkech]</dt>
         <dd>
-<span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Salz, R.</span>, and <span class="refAuthor">B. M. Schwartz</span>, <span class="refTitle">"A well-known URI for publishing ECHConfigList values."</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-wkech-05</span>, <time datetime="2024-07-07" class="refDate">7 July 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-05">https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-05</a>&gt;</span>. </dd>
+<span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Salz, R.</span>, and <span class="refAuthor">B. M. Schwartz</span>, <span class="refTitle">"A well-known URI for publishing service parameters"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-wkech-06</span>, <time datetime="2024-10-01" class="refDate">1 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-06">https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-06</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="MOZILLA-ROOTS">[MOZILLA-ROOTS]</dt>
         <dd>
@@ -2098,7 +2098,7 @@ TODO fill in an example
           <p id="appendix-A-2.2.1">When used with large trust stores, the retry mechanism in <code>trust_anchors</code> requires a new connection. In most applications, this must be implemented outside the TLS stack, so more components must be changed and redeployed. In deployments that are limited by client changes, this may be a more difficult transition. [[TODO: See <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a> for an alternate retry scheme that avoids this.]]<a href="#appendix-A-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.3">
-          <p id="appendix-A-2.3.1">Trust Expressions works with static server configuration. An ideal <code>trust_anchors</code> deployment requires automation to synchronize a server’s DNS and TLS configuration. <span>[<a href="#I-D.ietf-tls-wkech" class="cite xref">I-D.ietf-tls-wkech</a>]</span> could be a starting point for this automation. In deployments that are limited by server changes, this may be a more difficult transition.<a href="#appendix-A-2.3.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.3.1">Trust Expressions works with static server configuration. An ideal <code>trust_anchors</code> deployment requires automation to synchronize a server's DNS and TLS configuration. <span>[<a href="#I-D.ietf-tls-wkech" class="cite xref">I-D.ietf-tls-wkech</a>]</span> could be a starting point for this automation. In deployments that are limited by server changes, this may be a more difficult transition.<a href="#appendix-A-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.4">
           <p id="appendix-A-2.4.1">Trust Expressions require that CAs continually fetch information from manifests that are published by root programs, while <code>trust_anchors</code> relies only on static pre-assigned trust anchor identifiers.<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
@@ -2110,7 +2110,7 @@ TODO fill in an example
           <p id="appendix-A-2.6.1"><code>trust_anchors</code> can only express large client trust stores (for server certificates), not large server trust stores. Large trust stores rely on the retry mechanism described in <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a>, which is not available to client certificates.<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="appendix-A-3">The two mechanisms can be deployed together. A subscriber can have metadata for both mechanisms available, and a relying party can advertise both.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
+<p id="appendix-A-3">The two mechanisms can be deployed together. An authenticating party can have metadata for both mechanisms available, and a relying party can advertise both.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
 <p id="appendix-A-4">[[TODO: remove this or move to supporting documentation after more working group consensus]]<a href="#appendix-A-4" class="pilcrow">¶</a></p>
 </section>
 </div>
