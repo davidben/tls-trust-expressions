@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-22T01:49:23.931495+00:00",
+  "timestamp": "2024-10-24T01:47:58.425522+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -705,15 +705,15 @@
       "id": "I_kwDOKigz-s6aQNbd",
       "title": "Adoptions to supersede `server/client_certificate_type` extensions",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/76",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "pohlm01",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "[Merkle Tree Certificates](https://datatracker.ietf.org/doc/html/draft-davidben-tls-merkle-tree-certs-03) require the `trust_anchors` extension defined in this repository, as well as the `server_certificate_type` and `client_certificate_type` extensions defined in [RFC 7250](https://datatracker.ietf.org/doc/html/rfc7250) (raw public keys).\r\n\r\nThe current draft says:\r\n> If the subscriber sends a certification path that matches the relying party\u2019s trust_anchors extension, as described in [Section 4.2](https://datatracker.ietf.org/doc/html/draft-beck-tls-trust-anchor-ids-01#certificate-selection), the subscriber MUST send an empty trust_anchors extension in the first CertificateEntry of the Certificate message.\r\n\r\nIf we change this to include the selected Trust Anchor instead, we would implicitly negotiate the certificate type as well and leave out the `server_certificate_type` and `client_certificate_type` extensions.\r\nI considered the following scenarios:\r\n\r\n- For negotiating the server certificate type, the client sends the supported Trust Anchors, possibly covering multiple certificate types such as X509 and Bikeshed. The server sends back the selected trust anchor (if match found) as `trust_anchors` extension, with exactly one entry in the first `CertificateEntry` of the `Certificate` message. \r\n  (As an optimization, we could introduce a separate extension only to be used in the `CertificateEntry` message that always contains exactly one entry. This would save two bytes for the length encoding.)\r\n- For negotiating the client certificate type, the server sends the supported Trust Anchors in the `CertificateRequest` message and would again retrieve the selected one as part of the `Certificate` message.\r\n\r\nThis approach has a few implications:\r\n- We need to have a unified representation of the certificate data in the `CertificateEntry` message to allow the application to interpret the data after it processed the extensions. See https://github.com/davidben/merkle-tree-certs/pull/95\r\n- It does increase the size of the extension placed in the `CertificateEntry` message, as it transmits the TAI instead of an empty extension. We could think of sending the TAI only for certificate types that are not X509, but that might complicate things.\r\n- It aligns server and client certificate type negotiation and therefore solves client certificate negotiation identified as a difficulty in [Merkle Tree Certificates](https://datatracker.ietf.org/doc/html/draft-davidben-tls-merkle-tree-certs-03#appendix-B)",
       "createdAt": "2024-10-15T07:49:16Z",
-      "updatedAt": "2024-10-21T16:42:49Z",
-      "closedAt": null,
+      "updatedAt": "2024-10-23T11:50:55Z",
+      "closedAt": "2024-10-23T11:50:55Z",
       "comments": [
         {
           "author": "davidben",
@@ -721,6 +721,13 @@
           "body": "Hmm. This does fall somewhat naturally from reusing the same TAI namespace between X.509 and Bikeshed (for completeness, we could have decided to just have a separate `bikeshed_trust_anchors` extension), but I suspect tying certificate format to trust anchor negotiation quite this tightly might be a bit too restrictive:\r\n\r\n* We might end up with multiple negotiation mechanisms. I mean, I hope not, but we already had two points in the trade-off space and #64 explores another one.\r\n* TAI's current design allows for the server to guess and for the client to retry if it's not happy. But if I see an unknown TAI, how do I know whether to check the contents (maybe it's an X.509 chain that I accept anyway) or not (maybe it's some non-X.509 format altogether)\r\n* For X.509, the relying party may have trust anchors that don't participate in TAI, either for privacy reasons or because there just isn't a TAI allocated. That's unlikely for Merkle Tree Certificates due to its strong dependency on negotiation, but maybe other bikeshed proof types or other cert formats will care.\r\n\r\nSo I suspect it'll be simplest if we keep the type explicit.",
           "createdAt": "2024-10-21T16:42:47Z",
           "updatedAt": "2024-10-21T16:42:47Z"
+        },
+        {
+          "author": "pohlm01",
+          "authorAssociation": "NONE",
+          "body": "Yes, you are right. Especially the second point seems quite relevant to me.",
+          "createdAt": "2024-10-23T11:50:55Z",
+          "updatedAt": "2024-10-23T11:50:55Z"
         }
       ]
     }
