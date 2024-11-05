@@ -205,7 +205,7 @@ The entries in a CertificatePropertyList MUST be sorted numerically by `type` an
 
 This document defines a single property, `trust_anchor_identifier`. The `data` field of the property contains the binary representation of the trust anchor identifier of the certification path's trust anchor, as described in {{trust-anchor-ids}}. Future documents may define other properties for use with other mechanisms.
 
-Authenticating parties MUST ignore unrecognized properties with CertificatePropertyType values.
+Authenticating parties MUST ignore properties with unrecognized CertificatePropertyType values.
 
 ## Relying Party Configuration
 
