@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-03T01:55:04.232210+00:00",
+  "timestamp": "2024-11-05T01:46:45.535641+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -4095,6 +4095,32 @@
       "mergeCommit": {
         "oid": "1739f03458eeb5ce45cf244b09cb98797e755fe3"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 77,
+      "id": "PR_kwDOKigz-s6A3lvU",
+      "title": "Fix typo",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/77",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Got a few words in order wrong the.",
+      "createdAt": "2024-11-05T01:03:21Z",
+      "updatedAt": "2024-11-05T01:03:21Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "1d274a5f98b9f1d1ba2fec42455b379d3a7346a9",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "fix-typo",
+      "headRefOid": "24cac4e7a0e9ecf43f8b87e269dffd56c4f1a4cb",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
