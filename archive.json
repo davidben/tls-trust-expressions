@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-05T01:46:45.535641+00:00",
+  "timestamp": "2024-11-07T01:46:24.272949+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -4103,26 +4103,42 @@
       "id": "PR_kwDOKigz-s6A3lvU",
       "title": "Fix typo",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/77",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Got a few words in order wrong the.",
       "createdAt": "2024-11-05T01:03:21Z",
-      "updatedAt": "2024-11-05T01:03:21Z",
+      "updatedAt": "2024-11-05T11:22:31Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "1d274a5f98b9f1d1ba2fec42455b379d3a7346a9",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "fix-typo",
       "headRefOid": "24cac4e7a0e9ecf43f8b87e269dffd56c4f1a4cb",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-11-05T11:22:31Z",
+      "mergedAt": "2024-11-05T11:22:31Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "434c61d64489bef00adf81085144f32104172df2"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6P91Pj",
+          "commit": {
+            "abbreviatedOid": "24cac4e"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-11-05T11:22:24Z",
+          "updatedAt": "2024-11-05T11:22:24Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
