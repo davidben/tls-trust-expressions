@@ -38,6 +38,12 @@ author:
     organization: "Google LLC"
     email: asymmetric@google.com
 
+ -
+    ins: "K. Nekritz"
+    name: "Kyle Nekritz"
+    organization: "Meta"
+    email: knekritz@meta.com
+
 normative:
   X680:
        title: "Information technology - Abstract Syntax Notation One (ASN.1): Specification of basic notation"
