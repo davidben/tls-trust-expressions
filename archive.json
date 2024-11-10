@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-07T01:46:24.272949+00:00",
+  "timestamp": "2024-11-10T01:52:03.326460+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -4136,6 +4136,48 @@
           "body": "",
           "createdAt": "2024-11-05T11:22:24Z",
           "updatedAt": "2024-11-05T11:22:24Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 78,
+      "id": "PR_kwDOKigz-s6BUPaF",
+      "title": "Add Kyle Nekritz as coauthor",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/78",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@knekritz looks good to you? Wasn't quite sure how you preferred to be listed.",
+      "createdAt": "2024-11-08T12:36:42Z",
+      "updatedAt": "2024-11-08T13:02:47Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "434c61d64489bef00adf81085144f32104172df2",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "coauthor",
+      "headRefOid": "50644ce51bc606ad134a1878054328185196dfd0",
+      "closedAt": "2024-11-08T13:01:48Z",
+      "mergedAt": "2024-11-08T13:01:48Z",
+      "mergedBy": "bob-beck",
+      "mergeCommit": {
+        "oid": "54aa73d0fa9b9f76b93f541f7d6ca4d0544ee6c5"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6Qd2lJ",
+          "commit": {
+            "abbreviatedOid": "50644ce"
+          },
+          "author": "knekritz",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-11-08T13:01:10Z",
+          "updatedAt": "2024-11-08T13:01:10Z",
           "comments": []
         }
       ]
