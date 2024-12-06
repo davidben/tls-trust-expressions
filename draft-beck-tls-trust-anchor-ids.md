@@ -233,7 +233,7 @@ Relying parties MAY support trust anchors without associated trust anchor identi
 
 Authenticating parties are configured with one or more candidate certification paths to present in TLS, in some preference order. This preference order is used when multiple candidate paths are usable for a connection. For example, the authenticating party may prefer candidates that minimize message size or have more performant private keys.
 
-Each candidate path which participates in this protocol must be provisioned with the trust anchor identifier for its corresponding trust anchor in the CertificatePropertlyList.
+Each candidate path which participates in this protocol must be provisioned with the trust anchor identifier for its corresponding trust anchor in the CertificatePropertyList.
 
 Authenticating parties MAY have candidate certification paths without associated trust anchor identifiers, but such paths will not participate in this protocol. Those paths MAY participate in other trust anchor negotiation protocols, such as the `certificate_authorities` extension.
 
