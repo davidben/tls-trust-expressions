@@ -5,10 +5,10 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 12 May 2025                                          Google LLC
+Expires: 9 June 2025                                          Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                         8 November 2024
+                                                         6 December 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 May 2025.
+   This Internet-Draft will expire on 9 June 2025.
 
 Copyright Notice
 
@@ -763,11 +763,6 @@ Table of Contents
 
    This same procedure may also be used to transition between newer,
    more size-efficient signature algorithms, as they are developed.
-
-   [[TODO: There's one missing piece, which is that some servers may
-   attempt to parse the signature algorithms out of the certificate
-   chain.  See https://github.com/davidben/tls-trust-expressions/
-   issues/9 ]]
 
 8.5.  Intermediate Elision
 
