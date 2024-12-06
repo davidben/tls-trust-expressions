@@ -339,16 +339,6 @@ If doing so, the client MAY send a subset of this intersection to meet size cons
 
 Although this service parameter is intended to reduce trust anchor mismatches, mismatches may still occur in some scenarios. Clients and servers MUST continue to implement the provisions described in {{retry-mechanism}}, even when using this service parameter.
 
-# ACME Extension
-
-This section extends ACME {{!RFC8555}} to be able to issue certificate paths, each with an associated CertificatePropertyList by defining a new media type in {{media-type}}.
-
-When an ACME server processes an order object, it MAY issue multiple certification paths, each with an associated Trust Anchor Identifier. The ACME server encodes each certification path using the application/pem-certificate-chain-with-properties format, defined in {{media-type}}).  Note this format is required to form a complete certification path. The CA MUST return a result that may be verified by relying parties without path building {{?RFC4158}}.
-
-The ACME server provides additional results to the client with the link relation header fields described in {{Section 7.4.2 of !RFC8555}}. When fetching certificates, the ACME client includes application/pem-certificate-chain-with-properties in its Accept header to indicate it supports the new format. Unlike the original mechanism described in {{RFC8555}}, these certification paths do not require heuristics to be used. Instead, the server uses the associated Trust Anchor Identifiers to select a path when requested.
-
-When the ACME client wishes to renew any of the certification paths issued in this order, it repeats this process to renew each path concurrently. Thus this extension is suitable when the CA is willing to issue and renew all paths together. It may not be appropriate if the paths have significantly different processing times or lifetimes. Future enhancements to ACME may be defined to address these cases, e.g. by allowing the ACME client to make independent orders.
-
 # Media Type
 
 A certification path with its associated CertificationPropertyList may be represented in a PEM {{!RFC7468}} structure in a file of type "application/pem-certificate-chain-with-properties". Files of this type MUST use the strict encoding and MUST NOT include explanatory text.  The ABNF {{!RFC5234}} for this format is
@@ -383,6 +373,16 @@ TODO fill in an example
 ~~~
 
 The IANA registration for this media type is described in {{media-type-updates}}.
+
+# ACME Extension
+
+This section extends ACME {{!RFC8555}} to be able to issue certificate paths, each with an associated CertificatePropertyList by defining a new media type in {{media-type}}.
+
+When an ACME server processes an order object, it MAY issue multiple certification paths, each with an associated Trust Anchor Identifier. The ACME server encodes each certification path using the application/pem-certificate-chain-with-properties format, defined in {{media-type}}).  Note this format is required to form a complete certification path. The CA MUST return a result that may be verified by relying parties without path building {{?RFC4158}}.
+
+The ACME server provides additional results to the client with the link relation header fields described in {{Section 7.4.2 of !RFC8555}}. When fetching certificates, the ACME client includes application/pem-certificate-chain-with-properties in its Accept header to indicate it supports the new format. Unlike the original mechanism described in {{RFC8555}}, these certification paths do not require heuristics to be used. Instead, the server uses the associated Trust Anchor Identifiers to select a path when requested.
+
+When the ACME client wishes to renew any of the certification paths issued in this order, it repeats this process to renew each path concurrently. Thus this extension is suitable when the CA is willing to issue and renew all paths together. It may not be appropriate if the paths have significantly different processing times or lifetimes. Future enhancements to ACME may be defined to address these cases, e.g. by allowing the ACME client to make independent orders.
 
 # Use Cases
 
