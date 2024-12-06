@@ -426,8 +426,6 @@ The mechanisms in this document can aid PKI transitions beyond key rotation. For
 
 This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.
 
-[[TODO: There's one missing piece, which is that some servers may attempt to parse the signature algorithms out of the certificate chain. See https://github.com/davidben/tls-trust-expressions/issues/9 ]]
-
 ## Intermediate Elision
 
 Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties.
