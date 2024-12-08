@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-05T01:58:20.458798+00:00",
+  "timestamp": "2024-12-08T02:05:34.137157+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -132,15 +132,15 @@
       "id": "I_kwDOKigz-s5_Y37F",
       "title": "Does CertificatePropertyList confer any semantics on its own?",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/6",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "In prototyping some subscriber support, one thing came up: trust-expression-enabled credentials are different from normal credentials:\r\n\r\n* The credentials are expected to be gated on trust expressions, or some other kind of issuer negotiation. (You could imagine also checking the `certificate_authorities` extension, or other mechanisms.)\r\n* Due to this negotiation, the credentials are expected be exact certificate paths, with nothing extra or missing. In particular, this means it should be safe for the subscriber to check against the `signature_algorithms` and `signature_algorithms_cert` without worrying about stray MD2 self-signed roots.\r\n\r\nHowever, CertificatePropertyList is extensible, which is nice because it allows us to introduce other kinds of properties without changing the CA -> server software -> TLS library flow. It's basically a grab-bag of any kind of CA -> server software communication.\r\n\r\nBut this, combined with wanting to minimize how much layers in between need to inspect CertificatePropertyList puts us in a pickle: what does it mean if you get a CertificatePropertyList without any trust expression property? Maybe it's got some other property you don't understand. Does it still imply that it's still issuer-gated and a whole path?\r\n\r\nIf yes, the extensibility is less useful. There may well be use cases that don't want to be issuer-gated.\r\nIf no, we don't want the certificate to accidentally get interpreted as non-issuer-gated when it actually was issuer-gated by some other mechanism.\r\n\r\nIn writing this, I think I'm coming around to \"no\" being the right answer, but then...\r\n* Should the caller be required to call some \"this is an issuer-gated credential\" API? I.e. we use an out-of-band signal rather than relying on in-band signals that might disappear.\r\n* Do we have a general \"this is issuer-gated\" property and say everyone must understand this? That seems a bit weird.\r\n* Do we need to invent critical properties??? \ud83d\ude2d ",
       "createdAt": "2024-02-15T19:01:39Z",
-      "updatedAt": "2024-05-29T12:44:50Z",
-      "closedAt": null,
+      "updatedAt": "2024-12-06T17:25:54Z",
+      "closedAt": "2024-12-06T17:25:54Z",
       "comments": [
         {
           "author": "bwesterb",
@@ -162,6 +162,13 @@
           "body": "Forgot this was open, but I think we've mostly settled on the interpretation above. https://github.com/davidben/tls-trust-expressions/pull/21 makes this a bit more explicit too in its example. Leaving this open just because we probably do need some text on the implications for the ACME bits.",
           "createdAt": "2024-05-29T12:44:49Z",
           "updatedAt": "2024-05-29T12:44:49Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Think I'll just close this. Not sure what ACME text I was thinking and probably wouldn't belong in this doc anyway.",
+          "createdAt": "2024-12-06T17:25:54Z",
+          "updatedAt": "2024-12-06T17:25:54Z"
         }
       ]
     },
@@ -194,15 +201,15 @@
       "id": "I_kwDOKigz-s6BM3vN",
       "title": "Allow CA signatures to be opaque to the subscriber",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/9",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Imagine we have a PKI and would like to transition the roots from one algorithm to another. This could be classical to post-quantum, or perhaps the current round of post-quantum algorithms to a future, more size-efficient one.\r\n\r\nThe subscribers keys will unavoidably require manual work by the subscriber. But everything beyond the subscriber key (what Merkle Tree Certificate's [BikeshedCertificate](https://davidben.github.io/merkle-tree-certs/draft-davidben-tls-merkle-tree-certs.html#name-certificate-format) calls the \"proof\") is purely a matter between the CA and relying party. The subscriber *does not need to process them*. It would be nice if CAs could transparently start issuing you a classical-rooted certificate and a PQ-rooted certificate, and then certificate negotiation automatically takes care of it.\r\n\r\nIn particular, though this doesn't get the EE keys, a world with PQ roots and mixed PQ and classical EE keys is actually still coherent because we have a PQ-secure signal[*] that the site is not yet ready to be PQ-secure. Separating the transitions will be useful. And, of course, when transitioning between PQ-old-and-big vs PQ-new-and-small, the mix is straightforwardly coherent.\r\n\r\nWe *almost* have the pieces of this, except for one problem: X.509 is a bad fit for TLS. TLS uses code points, while X.509 negotiations with (sometimes [comically unusable](https://www.rfc-editor.org/rfc/rfc4055.html)) AlgorithmIdentifiers. A TLS stack cannot map between them without recognizing the signature algorithm. This means CA signatures in X.509, unlike BikeshedCertificate, are *not* opaque to the subscriber. In particular, although very few folks implement it (without trust expressions, there are path-building problems), RFC 8446 technically [requires](https://www.rfc-editor.org/rfc/rfc8446#section-4.4.2.2) the subscriber check this before presenting a certificate.\r\n\r\nWe can fix this by adding a `signature_algorithms` certificate property, that contains the CA-extracted codepoints in TLS syntax. If the property is present, the subscriber's TLS software should check those against the ClientHello in lieu of trying to parse this messy data out of the certificate.\r\n\r\n[*] Well, sort of. The existence of a P-256 certificate does not imply the non-existence of an ML-DSA certificate. We may need a bit more pieces to make that transition state viable.",
       "createdAt": "2024-03-04T19:56:37Z",
-      "updatedAt": "2024-03-04T19:56:37Z",
-      "closedAt": null,
+      "updatedAt": "2024-12-06T18:57:33Z",
+      "closedAt": "2024-12-06T18:57:33Z",
       "comments": []
     },
     {
@@ -546,7 +553,7 @@
     {
       "number": 62,
       "id": "I_kwDOKigz-s6Q_n5I",
-      "title": "Allow one certificate to match multiple trust anchor IDs",
+      "title": "Allow one certificate path to match multiple trust anchor IDs",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/62",
       "state": "OPEN",
       "author": "davidben",
@@ -558,7 +565,7 @@
       ],
       "body": "See the discussion beginning https://github.com/davidben/merkle-tree-certs/issues/80#issuecomment-2252439958. In looking at rebasing MTCs atop this, we realized that MTCs, since it induces many many individual trust anchors, will effectively only be deployable with the DNS mechanism.\r\n\r\nI think this isn't the end of the world, as MTCs are sufficiently long term that we may have gotten the DNS bits to work. But the original design sketch in MTCs had an extra component. Every certificate had not just an actual trust anchor ID but also a list of trust anchor aliases that also matched it.\r\n\r\nEssentially we were saying that [as long as the certificate isn't expired], any relying party that trusts this other ID can also be assumed to trust this ID. This is kind of a weird scenario for X.509 CAs, but it exactly fits the invariant for MTCs: a client that knows batch number 42 can be assumed to also know batch number 41, 40, etc., down to whatever batches have since expired.\r\n\r\nWe also don't have to do this in this draft and can instead introduce it in the MTCs draft. But it is a little tidier if we do it in the main one.\r\n\r\n(Design history: These aliases eventually grew into trust stores in trust expressions, but got those a lot more complicated to accommodate trust stores changing over time. The trust anchor IDs design tries to avoid that with the retry + DNS dance.)",
       "createdAt": "2024-07-26T16:47:13Z",
-      "updatedAt": "2024-07-26T16:47:44Z",
+      "updatedAt": "2024-12-06T17:49:02Z",
       "closedAt": null,
       "comments": [
         {
@@ -730,6 +737,24 @@
           "updatedAt": "2024-10-23T11:50:55Z"
         }
       ]
+    },
+    {
+      "number": 79,
+      "id": "I_kwDOKigz-s6iVjan",
+      "title": "Move ACME extension from TAI to its own draft",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/79",
+      "state": "OPEN",
+      "author": "devonobrien",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "trust-anchor-ids"
+      ],
+      "body": "The ACME extension defined in Section 6 might be better defined in its own draft and submitted to the ACME wg.",
+      "createdAt": "2024-12-06T17:21:01Z",
+      "updatedAt": "2024-12-06T17:21:01Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
