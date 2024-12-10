@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-08T02:05:34.137157+00:00",
+  "timestamp": "2024-12-10T01:59:53.514824+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -4204,6 +4204,53 @@
           "createdAt": "2024-11-08T13:01:10Z",
           "updatedAt": "2024-11-08T13:01:10Z",
           "comments": []
+        }
+      ]
+    },
+    {
+      "number": 80,
+      "id": "PR_kwDOKigz-s6EoCIz",
+      "title": "Trim the ACME section a bit",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/80",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Based on feedback from @aarongable, let's just define the media type and how to use it with the existing ACME mechanisms. In particular, the alternate chain mechanism is not quite ideal for parallel issuance. Parallel issuance can be better solved in a separate document, as it's really orthogonal to the exact trust anchor negotiation strategy.\r\n\r\nThere's probably other bits we can trim, but I've left them alone for now.",
+      "createdAt": "2024-12-10T00:45:05Z",
+      "updatedAt": "2024-12-10T01:13:58Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "bde7925e5f4eaf20b53a9fefb89b03bd2e872f95",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "acme-update",
+      "headRefOid": "d0c81dadfad95eec7b032795b370297e14bd36aa",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6UchUR",
+          "commit": {
+            "abbreviatedOid": "855c6c7"
+          },
+          "author": "aarongable",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "LGTM with typo fix",
+          "createdAt": "2024-12-10T00:57:04Z",
+          "updatedAt": "2024-12-10T00:58:49Z",
+          "comments": [
+            {
+              "originalPosition": 46,
+              "body": "```suggestion\r\nWhile this document does not prescribe a specific configuration format or provisioning process, this section defines optional extensions to aid TLS applications using PEM {{!RFC7468}} or ACME {{!RFC8555}}.\r\n```",
+              "createdAt": "2024-12-10T00:57:05Z",
+              "updatedAt": "2024-12-10T00:58:49Z"
+            }
+          ]
         }
       ]
     }
