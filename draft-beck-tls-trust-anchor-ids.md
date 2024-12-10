@@ -341,7 +341,7 @@ Although this service parameter is intended to reduce trust anchor mismatches, m
 
 # Provisioning Certificates
 
-While, this document does not prescribe a specific configuration format or provisioning process, this section defines optional extensions to aid TLS applications using PEM {{!RFC7468}} or ACME {{!RFC8555}}.
+While this document does not prescribe a specific configuration format or provisioning process, this section defines optional extensions to aid TLS applications using PEM {{!RFC7468}} or ACME {{!RFC8555}}.
 
 ## Media Type
 
