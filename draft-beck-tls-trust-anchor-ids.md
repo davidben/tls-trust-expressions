@@ -129,15 +129,13 @@ Without a negotiation mechanism, the authenticating party must obtain a single c
 
 * When a relying party must update its policies to meet new security requirements, it adds to relying party diversity and the challenges that authenticating parties and CAs face. The relying party must then choose between compromising on user security or burdening the rest of the ecosystem, potentially impacting availability in the process.
 
-To address this, this document introduces Trust Anchor Identifiers. There are four parts to this mechanism:
+To address this, this document introduces Trust Anchor Identifiers. There are three parts to this mechanism:
 
 1. {{trust-anchor-ids}} defines *trust anchor identifiers*, which are short, unique identifiers for X.509 trust anchors.
 
 2. {{tls-extension}} defines a TLS extension that communicates the relying party's requested trust anchors, and the authenticating party's available ones. When the relying party is a TLS client, it can mitigate large lists by sending a, possibly empty, subset of its trust anchors to the TLS server. The server provides its list of available trust anchors in response so that the client can retry on mismatch.
 
 3. {{dns-service-parameter}} allows TLS servers to advertise their available trust anchors in HTTPS or SVCB {{!RFC9460}} DNS records. TLS clients can then request an accurate initial subset and avoid a retry penalty.
-
-4. {{acme-extension}} defines an ACME {{!RFC8555}} extension for provisioning multiple certification paths, each with an associated trust anchor identifier.
 
 Together, they reduce the size costs of trust anchor negotiation, supporting flexible and robust PKIs for more applications.
 
@@ -236,6 +234,8 @@ Authenticating parties are configured with one or more candidate certification p
 Each candidate path which participates in this protocol must be provisioned with the trust anchor identifier for its corresponding trust anchor in the CertificatePropertyList.
 
 Authenticating parties MAY have candidate certification paths without associated trust anchor identifiers, but such paths will not participate in this protocol. Those paths MAY participate in other trust anchor negotiation protocols, such as the `certificate_authorities` extension.
+
+{{provisioning-certificates}} defines some ways for authenticating parties to be configured with this information.
 
 # TLS Extension
 
@@ -339,7 +339,11 @@ If doing so, the client MAY send a subset of this intersection to meet size cons
 
 Although this service parameter is intended to reduce trust anchor mismatches, mismatches may still occur in some scenarios. Clients and servers MUST continue to implement the provisions described in {{retry-mechanism}}, even when using this service parameter.
 
-# Media Type
+# Provisioning Certificates
+
+While, this document does not prescribe a specific configuration format or provisioning process, this section defines optional extensions to aid TLS applications using PEM {{!RFC7468}} or ACME {{!RFC8555}}.
+
+## Media Type
 
 A certification path with its associated CertificationPropertyList may be represented in a PEM {{!RFC7468}} structure in a file of type "application/pem-certificate-chain-with-properties". Files of this type MUST use the strict encoding and MUST NOT include explanatory text.  The ABNF {{!RFC5234}} for this format is
 as follows, where "stricttextualmsg" and "eol" are as defined in
@@ -374,15 +378,13 @@ TODO fill in an example
 
 The IANA registration for this media type is described in {{media-type-updates}}.
 
-# ACME Extension
+## ACME Extension
 
-This section extends ACME {{!RFC8555}} to be able to issue certificate paths, each with an associated CertificatePropertyList by defining a new media type in {{media-type}}.
+The format defined in {{media-type}} can be used with ACME's alternate format mechanism (see {{Section 7.4.2 of !RFC8555}}) as follows. When downloading certificates, a supporting client SHOULD include "application/pem-certificate-chain-with-properties" in its HTTP Accept header ({{Section 12.5.1 of !RFC9110}}). When a supporting server sees such a header, it MAY then respond with that format to include a CertificatePropertyList with the certification path. This CertificatePropertyList MAY include a `trust_anchor_identifier` property for use with this protocol, or other properties defined in another document.
 
-When an ACME server processes an order object, it MAY issue multiple certification paths, each with an associated Trust Anchor Identifier. The ACME server encodes each certification path using the application/pem-certificate-chain-with-properties format, defined in {{media-type}}).  Note this format is required to form a complete certification path. The CA MUST return a result that may be verified by relying parties without path building {{?RFC4158}}.
+When used with ACME's alternate certificate chain mechanism (see {{Section 7.4.2 of !RFC8555}}), this protocol removes the need for heuristics in determining which path to serve to which relying party.
 
-The ACME server provides additional results to the client with the link relation header fields described in {{Section 7.4.2 of !RFC8555}}. When fetching certificates, the ACME client includes application/pem-certificate-chain-with-properties in its Accept header to indicate it supports the new format. Unlike the original mechanism described in {{RFC8555}}, these certification paths do not require heuristics to be used. Instead, the server uses the associated Trust Anchor Identifiers to select a path when requested.
-
-When the ACME client wishes to renew any of the certification paths issued in this order, it repeats this process to renew each path concurrently. Thus this extension is suitable when the CA is willing to issue and renew all paths together. It may not be appropriate if the paths have significantly different processing times or lifetimes. Future enhancements to ACME may be defined to address these cases, e.g. by allowing the ACME client to make independent orders.
+The authenticating party MAY combine the resulting certification paths with those from other ACME orders, or other sources, for a complete set of candidate paths to serve.
 
 # Use Cases
 
@@ -422,7 +424,7 @@ The multi-certificate model removes this constraint. If an authenticating party'
 
 ## Other Root Transitions
 
-The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a CA operator may generate a postquantum root CA and use the mechanism in {{acme-extension}} to issue from the classical and postquantum roots concurrently. The authenticating party will then, transparently and with no configuration change, serve both. As in {{key-rotation}}, newer relying parties can then remove the classical roots, while older relying parties continue to function.
+The mechanisms in this document can aid PKI transitions beyond key rotation. For example, a CA operator may generate a postquantum root CA and issue from the classical and postquantum roots concurrently. The authenticating party will then, transparently and with no configuration change, serve both. As in {{key-rotation}}, newer relying parties can then remove the classical roots, while older relying parties continue to function.
 
 This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.
 
@@ -447,8 +449,6 @@ A single-certificate deployment model forces authenticating parties to find a si
 ## Backup Certificates
 
 An authenticating party may obtain certificate paths from multiple CAs for redundancy in the face of future CA compromises. If one CA is compromised and removed from newer relying parties, the TLS server software will transparently serve the other one.
-
-To support this, TLS serving software SHOULD permit users to configure multiple ACME endpoints and select from the union of the certificate paths returned by each ACME server.
 
 ## Public Key Pinning
 
@@ -621,4 +621,4 @@ The two mechanisms can be deployed together. An authenticating party can have me
 # Acknowledgements
 {:numbered="false"}
 
-The authors thank Nick Harper, and Emily Stark for many valuable discussions and insights which led to this document.
+The authors thank Nick Harper, and Emily Stark for many valuable discussions and insights which led to this document. Thanks also to Aaron Gable for providing feedback on ACME extensions.
