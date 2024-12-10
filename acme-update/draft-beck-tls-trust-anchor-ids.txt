@@ -5,10 +5,10 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 12 May 2025                                          Google LLC
+Expires: 13 June 2025                                         Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                         8 November 2024
+                                                        10 December 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 May 2025.
+   This Internet-Draft will expire on 13 June 2025.
 
 Copyright Notice
 
@@ -93,33 +93,34 @@ Table of Contents
      5.1.  Syntax
      5.2.  Configuring Services
      5.3.  Client Behavior
-   6.  ACME Extension
-   7.  Media Type
-   8.  Use Cases
-     8.1.  Key Rotation
-     8.2.  Adding CAs
-     8.3.  Removing CAs
-     8.4.  Other Root Transitions
-     8.5.  Intermediate Elision
-     8.6.  Conflicting Relying Party Requirements
-     8.7.  Backup Certificates
-     8.8.  Public Key Pinning
-   9.  Privacy Considerations
-     9.1.  Relying Parties
-     9.2.  Authenticating Parties
-   10. Security Considerations
-     10.1.  Relying Party Policies
-     10.2.  Agility
-     10.3.  Incorrect Selection Metadata
-     10.4.  Serving Multiple Certificates
-     10.5.  Targeting TLS Interception
-   11. IANA Considerations
-     11.1.  TLS ExtensionType Updates
-     11.2.  Media Type Updates
-     11.3.  CertificatePropertyType Registry
-   12. References
-     12.1.  Normative References
-     12.2.  Informative References
+   6.  Provisioning Certificates
+     6.1.  Media Type
+     6.2.  ACME Extension
+   7.  Use Cases
+     7.1.  Key Rotation
+     7.2.  Adding CAs
+     7.3.  Removing CAs
+     7.4.  Other Root Transitions
+     7.5.  Intermediate Elision
+     7.6.  Conflicting Relying Party Requirements
+     7.7.  Backup Certificates
+     7.8.  Public Key Pinning
+   8.  Privacy Considerations
+     8.1.  Relying Parties
+     8.2.  Authenticating Parties
+   9.  Security Considerations
+     9.1.  Relying Party Policies
+     9.2.  Agility
+     9.3.  Incorrect Selection Metadata
+     9.4.  Serving Multiple Certificates
+     9.5.  Targeting TLS Interception
+   10. IANA Considerations
+     10.1.  TLS ExtensionType Updates
+     10.2.  Media Type Updates
+     10.3.  CertificatePropertyType Registry
+   11. References
+     11.1.  Normative References
+     11.2.  Informative References
    Appendix A.  Comparison to TLS Trust Expressions
    Acknowledgements
    Authors' Addresses
@@ -170,7 +171,7 @@ Table of Contents
       availability in the process.
 
    To address this, this document introduces Trust Anchor Identifiers.
-   There are four parts to this mechanism:
+   There are three parts to this mechanism:
 
    1.  Section 3 defines _trust anchor identifiers_, which are short,
        unique identifiers for X.509 trust anchors.
@@ -187,10 +188,6 @@ Table of Contents
        anchors in HTTPS or SVCB [RFC9460] DNS records.  TLS clients can
        then request an accurate initial subset and avoid a retry
        penalty.
-
-   4.  Section 6 defines an ACME [RFC8555] extension for provisioning
-       multiple certification paths, each with an associated trust
-       anchor identifier.
 
    Together, they reduce the size costs of trust anchor negotiation,
    supporting flexible and robust PKIs for more applications.
@@ -355,13 +352,16 @@ Table of Contents
 
    Each candidate path which participates in this protocol must be
    provisioned with the trust anchor identifier for its corresponding
-   trust anchor in the CertificatePropertlyList.
+   trust anchor in the CertificatePropertyList.
 
    Authenticating parties MAY have candidate certification paths without
    associated trust anchor identifiers, but such paths will not
    participate in this protocol.  Those paths MAY participate in other
    trust anchor negotiation protocols, such as the
    certificate_authorities extension.
+
+   Section 6 defines some ways for authenticating parties to be
+   configured with this information.
 
 4.  TLS Extension
 
@@ -457,7 +457,7 @@ Table of Contents
 
    When the relying party is a client, it may choose not to send its
    full trust anchor identifier list due to fingerprinting risks (see
-   Section 9), or because the list is too large.  The client MAY send a
+   Section 8), or because the list is too large.  The client MAY send a
    subset of supported trust anchors, or an empty list.  This subset may
    be determined by, possibly outdated, prior knowledge about the
    server, such as Section 5 or past connections.
@@ -585,38 +585,14 @@ Table of Contents
    and servers MUST continue to implement the provisions described in
    Section 4.3, even when using this service parameter.
 
-6.  ACME Extension
+6.  Provisioning Certificates
 
-   This section extends ACME [RFC8555] to be able to issue certificate
-   paths, each with an associated CertificatePropertyList by defining a
-   new media type in Section 7.
+   While, this document does not prescribe a specific configuration
+   format or provisioning process, this section defines optional
+   extensions to aid TLS applications using PEM [RFC7468] or ACME
+   [RFC8555].
 
-   When an ACME server processes an order object, it MAY issue multiple
-   certification paths, each with an associated Trust Anchor Identifier.
-   The ACME server encodes each certification path using the
-   application/pem-certificate-chain-with-properties format, defined in
-   Section 7).  Note this format is required to form a complete
-   certification path.  The CA MUST return a result that may be verified
-   by relying parties without path building [RFC4158].
-
-   The ACME server provides additional results to the client with the
-   link relation header fields described in Section 7.4.2 of [RFC8555].
-   When fetching certificates, the ACME client includes application/pem-
-   certificate-chain-with-properties in its Accept header to indicate it
-   supports the new format.  Unlike the original mechanism described in
-   [RFC8555], these certification paths do not require heuristics to be
-   used.  Instead, the server uses the associated Trust Anchor
-   Identifiers to select a path when requested.
-
-   When the ACME client wishes to renew any of the certification paths
-   issued in this order, it repeats this process to renew each path
-   concurrently.  Thus this extension is suitable when the CA is willing
-   to issue and renew all paths together.  It may not be appropriate if
-   the paths have significantly different processing times or lifetimes.
-   Future enhancements to ACME may be defined to address these cases,
-   e.g. by allowing the ACME client to make independent orders.
-
-7.  Media Type
+6.1.  Media Type
 
    A certification path with its associated CertificationPropertyList
    may be represented in a PEM [RFC7468] structure in a file of type
@@ -656,11 +632,32 @@ Table of Contents
    -----END CERTIFICATE-----
 
    The IANA registration for this media type is described in
-   Section 11.2.
+   Section 10.2.
 
-8.  Use Cases
+6.2.  ACME Extension
 
-8.1.  Key Rotation
+   The format defined in Section 6.1 can be used with ACME's alternate
+   format mechanism (see Section 7.4.2 of [RFC8555]) as follows.  When
+   downloading certificates, a supporting client SHOULD include
+   "application/pem-certificate-chain-with-properties" in its HTTP
+   Accept header (Section 12.5.1 of [RFC9110]).  When a supporting
+   server sees such a header, it MAY then respond with that format to
+   include a CertificatePropertyList with the certification path.  This
+   CertificatePropertyList MAY include a trust_anchor_identifier
+   property for use with this protocol, or other properties defined in
+   another document.
+
+   When used with ACME's alternate certificate chain mechanism (see
+   Section 7.4.2 of [RFC8555]), this protocol removes the need for
+   heuristics in determining which path to serve to which relying party.
+
+   The authenticating party MAY combine the resulting certification
+   paths with those from other ACME orders, or other sources, for a
+   complete set of candidate paths to serve.
+
+7.  Use Cases
+
+7.1.  Key Rotation
 
    In most X.509 deployments, a compromise of _any_ root CA's private
    key compromises the entire PKI.  Yet key rotation in PKIs is rare.
@@ -703,7 +700,7 @@ Table of Contents
    it received two certificates, only how to select between them for
    each relying party.
 
-8.2.  Adding CAs
+7.2.  Adding CAs
 
    In the single-certificate model, authenticating parties cannot use
    TLS certificates issued from a new root CA until all supported
@@ -733,7 +730,7 @@ Table of Contents
    the same time.  A multi-certificate model avoids this problem and
    allows for a more gradual deployment of post-quantum CAs.
 
-8.3.  Removing CAs
+7.3.  Removing CAs
 
    Authenticating parties in a single-certificate model are limited to
    CAs in the intersection of their supported relying parties.  As newer
@@ -751,25 +748,20 @@ Table of Contents
    new one.  The mechanisms in this document will select an appropriate
    certificate for each relying party.
 
-8.4.  Other Root Transitions
+7.4.  Other Root Transitions
 
    The mechanisms in this document can aid PKI transitions beyond key
    rotation.  For example, a CA operator may generate a postquantum root
-   CA and use the mechanism in Section 6 to issue from the classical and
-   postquantum roots concurrently.  The authenticating party will then,
-   transparently and with no configuration change, serve both.  As in
-   Section 8.1, newer relying parties can then remove the classical
-   roots, while older relying parties continue to function.
+   CA and issue from the classical and postquantum roots concurrently.
+   The authenticating party will then, transparently and with no
+   configuration change, serve both.  As in Section 7.1, newer relying
+   parties can then remove the classical roots, while older relying
+   parties continue to function.
 
    This same procedure may also be used to transition between newer,
    more size-efficient signature algorithms, as they are developed.
 
-   [[TODO: There's one missing piece, which is that some servers may
-   attempt to parse the signature algorithms out of the certificate
-   chain.  See https://github.com/davidben/tls-trust-expressions/
-   issues/9 ]]
-
-8.5.  Intermediate Elision
+7.5.  Intermediate Elision
 
    Today, root CAs typically issue shorter-lived intermediate
    certificates which, in turn, issue end-entity certificates.  The
@@ -813,7 +805,7 @@ Table of Contents
    optimize both its compressed and uncompressed size, so such an
    algorithm may not be suitable.
 
-8.6.  Conflicting Relying Party Requirements
+7.6.  Conflicting Relying Party Requirements
 
    An authenticating party may need to support relying parties with
    different requirements.  For example, in contexts where online
@@ -832,18 +824,14 @@ Table of Contents
    each, with certificate negotiation logic directing the right one to
    each relying party.
 
-8.7.  Backup Certificates
+7.7.  Backup Certificates
 
    An authenticating party may obtain certificate paths from multiple
    CAs for redundancy in the face of future CA compromises.  If one CA
    is compromised and removed from newer relying parties, the TLS server
    software will transparently serve the other one.
 
-   To support this, TLS serving software SHOULD permit users to
-   configure multiple ACME endpoints and select from the union of the
-   certificate paths returned by each ACME server.
-
-8.8.  Public Key Pinning
+7.8.  Public Key Pinning
 
    To reduce the risk of attacks from misissued certificates, relying
    parties sometimes employ public key pinning [RFC7469].  This enforces
@@ -863,9 +851,9 @@ Table of Contents
    can then, as needed, use a certificate from the pinned CA with the
    pinning relying party, and another CA with newer relying parties.
 
-9.  Privacy Considerations
+8.  Privacy Considerations
 
-9.1.  Relying Parties
+8.1.  Relying Parties
 
    The negotiation mechanism described in this document is analogous to
    the certificate_authorities extension (Section 4.2.4 of [RFC8446]),
@@ -925,7 +913,7 @@ Table of Contents
    implementing the DNS service parameter can avoid a round-trip penalty
    without such state.
 
-9.2.  Authenticating Parties
+8.2.  Authenticating Parties
 
    If the authenticating party is a server, the mechanisms in Section 5
    and Section 4.3 enumerate the trust anchors for the server's
@@ -945,9 +933,9 @@ Table of Contents
    This protocol does not enumerate the available certification paths
    for a client.
 
-10.  Security Considerations
+9.  Security Considerations
 
-10.1.  Relying Party Policies
+9.1.  Relying Party Policies
 
    PKI-based TLS authentication depends on the relying party's
    certificate policies.  If the relying party trusts an untrustworthy
@@ -962,7 +950,7 @@ Table of Contents
    Relying parties remain responsible for trusting only trustworthy CAs,
    and untrustworthy CAs remain a security risk when trusted.
 
-10.2.  Agility
+9.2.  Agility
 
    As with other TLS parameters, negotiation reduces a conflict between
    availability and security, which allows PKIs to better mitigate
@@ -971,7 +959,7 @@ Table of Contents
    negotiation helps authenticating parties navigate differences between
    those relying parties and existing relying parties.  Each set of
    requirements may be satisfied without compatibility risk to the
-   other.  Section 8 discusses such scenarios in more detail.
+   other.  Section 7 discusses such scenarios in more detail.
 
    Negotiation also reduces pressures on relying parties to sacrifice
    user security for compatibility.  Suppose an authenticating party
@@ -987,7 +975,7 @@ Table of Contents
    interoperability, while still meeting relying party B's user-security
    goals.
 
-10.3.  Incorrect Selection Metadata
+9.3.  Incorrect Selection Metadata
 
    If the authenticating party has incorrect information about trust
    anchor identifiers, it may send an untrusted certification path.
@@ -996,7 +984,7 @@ Table of Contents
    is provisioned by the CA, which is already expected to provide
    accurate information.
 
-10.4.  Serving Multiple Certificates
+9.4.  Serving Multiple Certificates
 
    Negotiation reduces compatibility pressures against authenticating
    parties choosing to serve certificates from a less common CA, as the
@@ -1004,8 +992,8 @@ Table of Contents
    together, satisfy all supported relying parties.  The CA may even
    have been distrusted by some relying parties, e.g. if it is needed
    for older, unupdated relying parties that are still important for the
-   authenticating party to support.  As discussed in Section 8 and
-   Section 10.2, this deployment model avoids compatibility risks during
+   authenticating party to support.  As discussed in Section 7 and
+   Section 9.2, this deployment model avoids compatibility risks during
    PKI transitions which mitigate security risks to users.
 
    Serving such certificates does not enable the CA to decrypt or
@@ -1050,7 +1038,7 @@ Table of Contents
    program management is a complex, security-critical process, the full
    considerations of which are outside the scope of this document.
 
-10.5.  Targeting TLS Interception
+9.5.  Targeting TLS Interception
 
    Trust Anchor Identifiers, like certificate_authorities, enables a TLS
    server to differentiate between clients that do and do not trust some
@@ -1078,9 +1066,9 @@ Table of Contents
    differentiation, with or without Trust Anchor Identifiers, has no
    significant impact.
 
-11.  IANA Considerations
+10.  IANA Considerations
 
-11.1.  TLS ExtensionType Updates
+10.1.  TLS ExtensionType Updates
 
    IANA is requested to create the following entry in the TLS
    ExtensionType Values registry, defined by [RFC8446]:
@@ -1097,7 +1085,7 @@ Table of Contents
 
                                  Table 1
 
-11.2.  Media Type Updates
+10.2.  Media Type Updates
 
    IANA is requested to create the following entry in the "Media Types"
    registry, defined in [RFC6838]:
@@ -1118,7 +1106,7 @@ Table of Contents
 
    Interoperability considerations:  None
 
-   Published specification:  [this-RFC, Section 7]
+   Published specification:  [this-RFC, Section 6.1]
 
    Applications that use this media type:  ACME clients and servers,
       HTTP servers, other applications that need to be configured with a
@@ -1140,13 +1128,13 @@ Table of Contents
 
    Change controller:  IETF
 
-11.3.  CertificatePropertyType Registry
+10.3.  CertificatePropertyType Registry
 
    [[TODO: Establish a CertificatePropertyType registry.]]
 
-12.  References
+11.  References
 
-12.1.  Normative References
+11.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1198,6 +1186,11 @@ Table of Contents
               (ACME)", RFC 8555, DOI 10.17487/RFC8555, March 2019,
               <https://www.rfc-editor.org/rfc/rfc8555>.
 
+   [RFC9110]  Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., "HTTP Semantics", STD 97, RFC 9110,
+              DOI 10.17487/RFC9110, June 2022,
+              <https://www.rfc-editor.org/rfc/rfc9110>.
+
    [RFC9371]  Baber, A. and P. Hoffman, "Registration Procedures for
               Private Enterprise Numbers (PENs)", RFC 9371,
               DOI 10.17487/RFC9371, March 2023,
@@ -1217,7 +1210,7 @@ Table of Contents
               Encoding Rules (CER) and Distinguished Encoding Rules
               (DER)", ISO/IEC 8825-1:2021, 2021.
 
-12.2.  Informative References
+11.2.  Informative References
 
    [CHROME-ROOTS]
               Chromium, "Chrome Root Store", 30 August 2023, <https://ch
@@ -1297,7 +1290,7 @@ Appendix A.  Comparison to TLS Trust Expressions
       identifiers.
 
    *  trust_anchors, when trust anchors are conditionally sent, has
-      different fingerprinting properties.  See Section 9.
+      different fingerprinting properties.  See Section 8.
 
    *  trust_anchors can only express large client trust stores (for
       server certificates), not large server trust stores.  Large trust
@@ -1314,7 +1307,8 @@ Appendix A.  Comparison to TLS Trust Expressions
 Acknowledgements
 
    The authors thank Nick Harper, and Emily Stark for many valuable
-   discussions and insights which led to this document.
+   discussions and insights which led to this document.  Thanks also to
+   Aaron Gable for providing feedback on ACME extensions.
 
 Authors' Addresses
 
