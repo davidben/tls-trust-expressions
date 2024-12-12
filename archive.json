@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-10T01:59:53.514824+00:00",
+  "timestamp": "2024-12-12T01:57:48.748339+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -79,7 +79,7 @@
       "comments": [
         {
           "author": "aarongable",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "This was my first thought when I read the draft -- unlimited growth with no way to prune old versions which contain only expired anchors will be a footgun, whether it's for reasons we can forsee right now or not. I'm strongly in favor of allowing pruning.",
           "createdAt": "2023-11-20T20:51:01Z",
           "updatedAt": "2023-11-20T20:51:01Z"
@@ -719,7 +719,7 @@
       "labels": [],
       "body": "[Merkle Tree Certificates](https://datatracker.ietf.org/doc/html/draft-davidben-tls-merkle-tree-certs-03) require the `trust_anchors` extension defined in this repository, as well as the `server_certificate_type` and `client_certificate_type` extensions defined in [RFC 7250](https://datatracker.ietf.org/doc/html/rfc7250) (raw public keys).\r\n\r\nThe current draft says:\r\n> If the subscriber sends a certification path that matches the relying party\u2019s trust_anchors extension, as described in [Section 4.2](https://datatracker.ietf.org/doc/html/draft-beck-tls-trust-anchor-ids-01#certificate-selection), the subscriber MUST send an empty trust_anchors extension in the first CertificateEntry of the Certificate message.\r\n\r\nIf we change this to include the selected Trust Anchor instead, we would implicitly negotiate the certificate type as well and leave out the `server_certificate_type` and `client_certificate_type` extensions.\r\nI considered the following scenarios:\r\n\r\n- For negotiating the server certificate type, the client sends the supported Trust Anchors, possibly covering multiple certificate types such as X509 and Bikeshed. The server sends back the selected trust anchor (if match found) as `trust_anchors` extension, with exactly one entry in the first `CertificateEntry` of the `Certificate` message. \r\n  (As an optimization, we could introduce a separate extension only to be used in the `CertificateEntry` message that always contains exactly one entry. This would save two bytes for the length encoding.)\r\n- For negotiating the client certificate type, the server sends the supported Trust Anchors in the `CertificateRequest` message and would again retrieve the selected one as part of the `Certificate` message.\r\n\r\nThis approach has a few implications:\r\n- We need to have a unified representation of the certificate data in the `CertificateEntry` message to allow the application to interpret the data after it processed the extensions. See https://github.com/davidben/merkle-tree-certs/pull/95\r\n- It does increase the size of the extension placed in the `CertificateEntry` message, as it transmits the TAI instead of an empty extension. We could think of sending the TAI only for certificate types that are not X509, but that might complicate things.\r\n- It aligns server and client certificate type negotiation and therefore solves client certificate negotiation identified as a difficulty in [Merkle Tree Certificates](https://datatracker.ietf.org/doc/html/draft-davidben-tls-merkle-tree-certs-03#appendix-B)",
       "createdAt": "2024-10-15T07:49:16Z",
-      "updatedAt": "2024-10-23T11:50:55Z",
+      "updatedAt": "2024-12-11T09:39:34Z",
       "closedAt": "2024-10-23T11:50:55Z",
       "comments": [
         {
@@ -4212,24 +4212,26 @@
       "id": "PR_kwDOKigz-s6EoCIz",
       "title": "Trim the ACME section a bit",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/80",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Based on feedback from @aarongable, let's just define the media type and how to use it with the existing ACME mechanisms. In particular, the alternate chain mechanism is not quite ideal for parallel issuance. Parallel issuance can be better solved in a separate document, as it's really orthogonal to the exact trust anchor negotiation strategy.\r\n\r\nThere's probably other bits we can trim, but I've left them alone for now.",
       "createdAt": "2024-12-10T00:45:05Z",
-      "updatedAt": "2024-12-10T01:13:58Z",
+      "updatedAt": "2024-12-10T20:47:24Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "bde7925e5f4eaf20b53a9fefb89b03bd2e872f95",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "acme-update",
       "headRefOid": "d0c81dadfad95eec7b032795b370297e14bd36aa",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-12-10T20:47:22Z",
+      "mergedAt": "2024-12-10T20:47:22Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "2245ae5b0c6afba71baac3eee7ac61afa3830c8b"
+      },
       "comments": [],
       "reviews": [
         {
@@ -4238,7 +4240,7 @@
             "abbreviatedOid": "855c6c7"
           },
           "author": "aarongable",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "LGTM with typo fix",
           "createdAt": "2024-12-10T00:57:04Z",
@@ -4251,6 +4253,32 @@
               "updatedAt": "2024-12-10T00:58:49Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Um7cB",
+          "commit": {
+            "abbreviatedOid": "d0c81da"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Looks good to me. ",
+          "createdAt": "2024-12-10T18:25:23Z",
+          "updatedAt": "2024-12-10T18:25:23Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKigz-s6UnCau",
+          "commit": {
+            "abbreviatedOid": "d0c81da"
+          },
+          "author": "aarongable",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-10T18:38:45Z",
+          "updatedAt": "2024-12-10T18:38:45Z",
+          "comments": []
         }
       ]
     }
