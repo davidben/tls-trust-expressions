@@ -97,9 +97,9 @@ Table of Contents
      6.1.  Media Type
      6.2.  ACME Extension
    7.  Use Cases
-     7.1.  Key Rotation
-     7.2.  Adding CAs
-     7.3.  Removing CAs
+     7.1.  Making Use of Newly-Trusted CAs
+     7.2.  Removing Untrustworthy CAs
+     7.3.  Key Rotation
      7.4.  Other Root Transitions
      7.5.  Intermediate Elision
      7.6.  Conflicting Relying Party Requirements
@@ -657,96 +657,104 @@ Table of Contents
 
 7.  Use Cases
 
-7.1.  Key Rotation
+   trust_anchors, like certificate_authorities, implements trust anchor
+   negotiation.  That is, it allows an authenticating party to
+   incorporate relying party trust anchors into certificate selection.
+   trust_anchors allows a wider range of TLS applications to use trust
+   anchor negotiation, notably those that would be unable to use
+   certificate_authorities due to size or privacy limitations.
 
-   In most X.509 deployments, a compromise of _any_ root CA's private
-   key compromises the entire PKI.  Yet key rotation in PKIs is rare.
-   In 2023, the oldest root in [CHROME-ROOTS] and [MOZILLA-ROOTS] was 25
-   years old, dating to 1998.  Key rotation is challenging in a single-
-   certificate deployment model.  As long as any older relying party
-   requires the old root, authenticating parties cannot switch to the
-   new root, which in turn means relying parties cannot distrust the old
-   root, leaving them vulnerable.
+   Without trust anchor negotiation, authenticating parties are limited
+   to CAs in the intersection of all supported relying parties.
+   However, trust anchors can vary significantly between different
+   relying party implementations and different versions of a single
+   relying party implementation, particularly as PKIs evolve to meet
+   user security needs.
 
-   A multi-certificate deployment model avoids these transition
-   problems.  Key rotation may proceed as follows:
+   As security-positive PKI changes increase variance, this intersection
+   shrinks.  This leads to a conflict between user security and service
+   availability.  When the authenticating party cannot serve a
+   certificate in the intersection, either the relying party must risk
+   user security by not changing the PKI, or the authenticating party
+   must degrade service availability by dropping support for some
+   relying parties.
 
-   1.  The CA operator generates a new root CA with a separate key, but
-       continues operating the old root CA.
+   The rest of this section discusses uses cases for trust anchor
+   negotiation.
 
-   2.  Root programs begin trusting the new root CA alongside the old
-       one, as a transition state.  Both root CAs are configured to
-       participate in trust anchor negotiation.
+7.1.  Making Use of Newly-Trusted CAs
 
-   3.  When authenticating parties request certificates, the CA operator
-       issues certificates from both roots and provisions the
-       authenticating party with both certificates.
+   When one relying party trusts a new CA, other relying parties, such
+   as older ones, may not yet trust it.  Trust anchor negotiation allows
+   an authenticating party to negotiate a certificate from the newer CA
+   with relying parties that do trust it, while continuing to negotiate
+   another certificate with relying parties that do not.  This allows
+   PKI transitions to progress smoothly.  Connections can make use of,
+   for example, a new CA's stronger signature algorithms, stronger
+   validation practices, better automation, or more efficient
+   certificate sizes, without interruptions to other connections.
 
-   4.  Trust anchor negotiation selects the old root for relying parties
-       that only trust the old root, and the new root for relying
-       parties that only trust the new root.  In transition, relying
-       parties that trust both may be served either, but prioritizing
-       the new root helps monitor the transition.
+   Without negotiation, the authenticating party is limited to its
+   relying parties' intersection and must wait for every supported
+   relying party to be updated before the transition even begins.  This
+   wait could often take many years.  In some cases, such as with IoT
+   devices, relying parties may never receive updates.
 
-   5.  Once authenticating parties have been provisioned with new
-       certificates, root programs can safely distrust the old root in
-       new relying parties.  The CA operator may continue to operate the
-       old root CA for as long as it wishes to serve authenticating
-       parties that, in turn, wish to serve older relying parties.
+   In some contexts, other fields can provide a partial signal.  For
+   example, post-quantum-capable relying parties may be detected with
+   the signature_algorithms and signature_algorithms_cert extensions.
+   However, this relies on all post-quantum CAs being added at roughly
+   the same time and that they are sufficiently interchangeable to be
+   negotiated with these extensions.  Trust anchor negotiation directly
+   addresses this problem and allows for both gradual and possibly
+   heterogeneous deployment of post-quantum CAs across relying parties.
 
-   This process requires no configuration changes to the authenticating
-   party, given an automated, multi-certificate-aware certificate
-   issuance process.  The authenticating party does not need to know why
-   it received two certificates, only how to select between them for
-   each relying party.
+7.2.  Removing Untrustworthy CAs
 
-7.2.  Adding CAs
+   When CAs are determined to be untrustworthy, relying parties must
+   remove them to mitigate the risk to user security.  Over time, this
+   shrinks their intersection with older relying parties.  Without
+   negotiation, the result is authenticating parties have fewer and
+   fewer CA choices available.  Even determining the intersecting CAs
+   can be difficult.  Often, the only option is to try the new
+   certificate and monitor errors.  For authenticating parties that
+   serve many diverse relying parties, this is a disruptive and risky
+   process.
 
-   In the single-certificate model, authenticating parties cannot use
-   TLS certificates issued from a new root CA until all supported
-   relying parties have been updated to trust the new root CA.  This can
-   take years or more.  Some relying parties, such as IoT devices, may
-   never receive trust store updates at all.
+   Trust anchor negotiation removes this constraint.  If an
+   authenticating party's CA is distrusted, it can use a new CA in
+   addition to the existing one.  The addition does not risk outages for
+   older relying parties and may be chosen from a wider set of CAs, as
+   it only needs to be compatible with the relying parties that
+   distrusted the other CA.
 
-   As a result, it is very difficult for authenticating parties that
-   serve a wide variety of relying parties to use a newly-trusted root
-   CA.  When trust stores diverge too far, authenticating parties often
-   must partition their services into multiple TLS endpoints (i.e.
-   different DNS names) and direct different relying parties to
-   different endpoints.  Authenticating parties sometimes resort to TLS
-   fingerprinting, to detect particular relying parties.  But, as this
-   repurposes other TLS fields for unintended purposes, this is
-   unreliable and usually requires writing custom service-specific
-   logic.
+   Over time, the authenticating party can monitor which certificates it
+   serves, and re-evaluate which CA or CAs to use.  For example, it may
+   find the new CA was sufficient, or that older relying parties have
+   since all been updated.  However, user security depends on the
+   relying party's trust anchors, not the authenticating party's choice
+   of CA, so this can occur asynchronously, based on serving needs and
+   costs, rather than delay the response to a security incident.
 
-   In a multi-certificate deployment model, authenticating parties can
-   begin serving certificates from new root CAs without interrupting
-   relying parties that depend on existing ones.
+7.3.  Key Rotation
 
-   In some contexts, it may be possible to use other fields to select
-   the new CA.  For example, post-quantum-capable clients may be
-   detected with the signature_algorithms and signature_algorithms_cert
-   extensions.  However, this assumes all post-quantum CAs are added at
-   the same time.  A multi-certificate model avoids this problem and
-   allows for a more gradual deployment of post-quantum CAs.
+   Despite the severity of root CA private key compromise and the
+   benefits of routinely rotating cryptographic key material, such
+   rotation in PKIs is often very rare.  In 2023, the oldest root in
+   [CHROME-ROOTS] and [MOZILLA-ROOTS] was 25 years old, dating to 1998.
 
-7.3.  Removing CAs
+   Key rotation in PKIs used in TLS is challenging, as it combines the
+   challenges described in both Section 7.1 and Section 7.2.  Without
+   trust anchor negotiation, authenticating parties cannot switch to the
+   new root as long as any supported older relying party requires the
+   old root.  That, in turn, means relying parties cannot distrust the
+   old root, leaving them vulnerable.
 
-   Authenticating parties in a single-certificate model are limited to
-   CAs in the intersection of their supported relying parties.  As newer
-   relying parties remove untrusted CAs over time,the intersection with
-   older relying parties shrinks.  Moreover, the authenticating party
-   may not even know which CAs are in the intersection.  Often, the only
-   option is to try the new certificate and monitor errors.  For
-   authenticating parties that serve many diverse relying parties, this
-   is a disruptive and risky process.
-
-   The multi-certificate model removes this constraint.  If an
-   authenticating party's CA is distrusted, it can continue to use that
-   CA, in addition to a newer one.  This removes the risk that some
-   older relying party required that CA and was incompatible with the
-   new one.  The mechanisms in this document will select an appropriate
-   certificate for each relying party.
+   Trust anchor negotiation offers a smooth transition for CA key
+   rotation.  The CA can provide certification paths for the old and new
+   root.  The authenticating party can then serve both paths without
+   impacting older relying parties.  New relying parties can then
+   distrust the old root.
 
 7.4.  Other Root Transitions
 
@@ -754,7 +762,7 @@ Table of Contents
    rotation.  For example, a CA operator may generate a postquantum root
    CA and issue from the classical and postquantum roots concurrently.
    The authenticating party will then, transparently and with no
-   configuration change, serve both.  As in Section 7.1, newer relying
+   configuration change, serve both.  As in Section 7.3, newer relying
    parties can then remove the classical roots, while older relying
    parties continue to function.
 
@@ -763,81 +771,60 @@ Table of Contents
 
 7.5.  Intermediate Elision
 
-   Today, root CAs typically issue shorter-lived intermediate
-   certificates which, in turn, issue end-entity certificates.  The
-   long-lived root key is less exposed to attack, while the short-lived
-   intermediate key can be more easily replaced without changes to
-   relying parties.
+   In my PKIs, root CAs issue shorter-lived intermediate certificates
+   which, in turn, issue end-entity certificates.  This comes at a
+   bandwidth cost: the TLS handshake includes an extra certificate,
+   which includes a public key, signature, and X.509 metadata.  Post-
+   quantum signature algorithms will dramatically increase this cost.
+   ML-DSA-65 [FIPS204], for example, has a total public key and
+   signature size of 5,261 bytes.
 
-   This operational improvement comes at a bandwidth cost: the TLS
-   handshake includes an extra certificate, which includes a public key,
-   signature, and X.509 metadata.  An average X.509 name in the Chrome
-   Root Store [CHROME-ROOTS] or Mozilla CA Certificate Program
-   [MOZILLA-ROOTS] is around 100 bytes alone.  Post-quantum signature
-   algorithms will dramatically shift this tradeoff.  ML-DSA-65
-   [FIPS204], for example, has a total public key and signature size of
-   5,261 bytes.
+   [I-D.ietf-tls-cert-abridge] predistributes a specific set of
+   intermediate CA certificates to relying parties so that these
+   certificates can be omitted from TLS connections, as a compression
+   scheme.  Negotiating intermediate CAs as short-lived trust anchors
+   also achieves this effect, but is usable by more relying parties than
+   the specific intermediate set accommodates.
 
-   [I-D.ietf-tls-cert-abridge] proposes to predistribute known
-   intermediate certificates to relying parties, as a compression
-   scheme.  A multi-certificate deployment model provides another way to
-   achieve this effect.  To relying parties, a predistributed
-   intermediate certificate is functionally equivalent to a root
-   certificate.  PKIs use intermediate certificates because changing
-   root certificates requires updating relying parties, but
-   predistributed intermediates already presume updated relying parties.
+   In this model, a CA operator provides authenticating parties with two
+   certification paths: a longer path ending at a long-lived root and
+   shorter path the other ending at a short-lived root.  Relying parties
+   trust both the long-lived root and the most recent short-lived root.
+   The authenticating party sends the shorter path when possible,
+   falling back to the longer path when the relying party’s short-lived
+   root is stale.
 
-   A CA operator could provide authenticating parties with two
-   certification paths: a longer path ending at a long-lived trust
-   anchor and shorter path the other ending at a short-lived, revocable
-   root.  Relying parties would be configured to trust both the long-
-   lived root and the most recent short-lived root.  A server that
-   prioritizes the shorter path would then send the shorter path to up-
-   to-date relying parties and the longer path to older relying parties.
-
-   This achieves the same effect with a more general-purpose multi-
-   certificate mechanism.  It is also more flexible, as the two paths
-   need not be related.  For example, root CA public keys are not
-   distributed in each TLS connection, so a post-quantum signature
-   algorithm that optimizes for signature size may be preferable.  In
-   this model, both the long-lived and short-lived roots may use such an
-   algorithm.  In a compression-based model, the same intermediate must
-   optimize both its compressed and uncompressed size, so such an
-   algorithm may not be suitable.
+   This achieves the same effect with a simpler and more flexible,
+   general-purpose mechanism.
 
 7.6.  Conflicting Relying Party Requirements
 
    An authenticating party may need to support relying parties with
-   different requirements.  For example, in contexts where online
-   revocation checks are expensive, unreliable, or privacy-sensitive,
-   user security is best served by short-lived certificates.  In other
-   contexts, long-lived certificates may be more appropriate for, e.g.,
-   systems that are offline for long periods of time or have unreliable
-   clocks.
+   different, potentially conflicting requirements.  For example, in
+   contexts where online revocation checks are expensive, unreliable, or
+   privacy-sensitive, user security is best served by short-lived
+   certificates.  In other contexts, long-lived certificates may be more
+   appropriate for, e.g., systems that are offline for long periods of
+   time or have unreliable clocks.
 
-   A single-certificate deployment model forces authenticating parties
-   to find a single certificate that meets all requirements.  User
-   security then suffers in all contexts, as the PKI may not quite meet
-   anyone's needs.  In a multi-certificate deployment model, different
-   contexts may use different trust anchors.  An authenticating party
-   that supports multiple contexts would provision certificates for
-   each, with certificate negotiation logic directing the right one to
-   each relying party.
+   Trust anchor negotiation allows these conflicts to be resolved by
+   different trust anchors where necessary.  This avoids the need to
+   compromise on user security or service availability.
 
 7.7.  Backup Certificates
 
    An authenticating party may obtain certificate paths from multiple
-   CAs for redundancy in the face of future CA compromises.  If one CA
-   is compromised and removed from newer relying parties, the TLS server
-   software will transparently serve the other one.
+   CAs for redundancy.  If one CA is compromised and removed from newer
+   relying parties, the TLS server software will be able to gracefully
+   serve a backup certificate path, avoiding the immediate breakage that
+   would otherwise be caused by this removal.
 
 7.8.  Public Key Pinning
 
-   To reduce the risk of attacks from misissued certificates, relying
-   parties sometimes employ public key pinning [RFC7469].  This enforces
-   that one of some set of public keys appear in the final certificate
-   path.  This effectively reduces a relying party's trust anchor list
-   to a subset of the original set.
+   To reduce security risk from misissued certificates, relying parties
+   sometimes employ public key pinning [RFC7469].  Pinning effectively
+   reduces a relying party's trust anchor list to a subset of the
+   original set.
 
    As other relying parties in the PKI evolve, the pinning relying party
    limits the authenticating party to satisfy both the pinning
@@ -846,10 +833,11 @@ Table of Contents
    relying party.  The authenticating party is then forced to either
    break the pinning relying party, or break the newer ones.
 
-   This protocol reduces this conflict if the pinning relying party uses
-   its effective, reduced trust anchor list.  The authenticating party
-   can then, as needed, use a certificate from the pinned CA with the
-   pinning relying party, and another CA with newer relying parties.
+   Trust anchor negotiation reduces this conflict, provided the pinning
+   relying party negotiates with its reduced trust anchor list.  The
+   authenticating party can then use a certificate from the pinned CA
+   with the pinning relying party, and another CA with other relying
+   parties.
 
 8.  Privacy Considerations
 
