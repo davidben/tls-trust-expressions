@@ -5,10 +5,10 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 13 June 2025                                         Google LLC
+Expires: 16 June 2025                                         Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                        10 December 2024
+                                                        13 December 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 June 2025.
+   This Internet-Draft will expire on 16 June 2025.
 
 Copyright Notice
 
@@ -774,9 +774,9 @@ Table of Contents
    signature, and X.509 metadata.  An average X.509 name in the Chrome
    Root Store [CHROME-ROOTS] or Mozilla CA Certificate Program
    [MOZILLA-ROOTS] is around 100 bytes alone.  Post-quantum signature
-   algorithms will dramatically shift this tradeoff.  Dilithium3
-   [Dilithium], for example, has a total public key and signature size
-   of 5,245 bytes.
+   algorithms will dramatically shift this tradeoff.  ML-DSA-65
+   [FIPS204], for example, has a total public key and signature size of
+   5,261 bytes.
 
    [I-D.ietf-tls-cert-abridge] proposes to predistribute known
    intermediate certificates to relying parties, as a compression
@@ -1217,13 +1217,10 @@ Table of Contents
               romium.googlesource.com/chromium/src/+/main/net/data/ssl/
               chrome_root_store>.
 
-   [Dilithium]
-              Bai, S., Ducas, L., Kiltz, E., Lepoint, T., Lyubashevsky,
-              V., Schwabe, P., Seiler, G., and D. Stehlé, "CRYSTALS-
-              Dilithium Algorithm Specifications and Supporting
-              Documentation", 8 February 2021, <https://pq-
-              crystals.org/dilithium/data/dilithium-specification-
-              round3-20210208.pdf>.
+   [FIPS204]  National Institute of Standards and Technology (NIST),
+              "Module-Lattice-based Digital Signature Standard", FIPS
+              PUB 204, August 2023, <https://csrc.nist.gov/projects/
+              post-quantum-cryptography>.
 
    [I-D.davidben-tls-trust-expr]
               Benjamin, D., O'Brien, D., and B. Beck, "TLS Trust
