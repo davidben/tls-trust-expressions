@@ -77,35 +77,15 @@ informative:
     author:
     - org: Mozilla
 
-  Dilithium:
-    title: CRYSTALS-Dilithium Algorithm Specifications and Supporting Documentation
-    target: https://pq-crystals.org/dilithium/data/dilithium-specification-round3-20210208.pdf
-    date: 2021-02-08
+  FIPS204:
+    target: https://csrc.nist.gov/projects/post-quantum-cryptography
+    title: >
+      Module-Lattice-based Digital Signature Standard
     author:
-    -
-      ins: "S. Bai"
-      name: "Shi Bai"
-    -
-      ins: "L. Ducas"
-      name: "Léo Ducas"
-    -
-      ins: "E. Kiltz"
-      name: "Eike Kiltz"
-    -
-      ins: "T. Lepoint"
-      name: "Tancrède Lepoint"
-    -
-      ins: "V. Lyubashevsky"
-      name: "Vadim Lyubashevsky"
-    -
-      ins: "P. Schwabe"
-      name: "Peter Schwabe"
-    -
-      ins: "G. Seiler"
-      name: "Gregor Seiler"
-    -
-      ins: "D. Stehlé"
-      name: "Damien Stehlé"
+    - org: National Institute of Standards and Technology (NIST)
+    date: 2023-08
+    seriesinfo:
+      "FIPS PUB": "204"
 
 --- abstract
 
@@ -432,7 +412,7 @@ This same procedure may also be used to transition between newer, more size-effi
 
 Today, root CAs typically issue shorter-lived intermediate certificates which, in turn, issue end-entity certificates. The long-lived root key is less exposed to attack, while the short-lived intermediate key can be more easily replaced without changes to relying parties.
 
-This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate, which includes a public key, signature, and X.509 metadata. An average X.509 name in the Chrome Root Store {{CHROME-ROOTS}} or Mozilla CA Certificate Program {{MOZILLA-ROOTS}} is around 100 bytes alone. Post-quantum signature algorithms will dramatically shift this tradeoff. Dilithium3 {{Dilithium}}, for example, has a total public key and signature size of 5,245 bytes.
+This operational improvement comes at a bandwidth cost: the TLS handshake includes an extra certificate, which includes a public key, signature, and X.509 metadata. An average X.509 name in the Chrome Root Store {{CHROME-ROOTS}} or Mozilla CA Certificate Program {{MOZILLA-ROOTS}} is around 100 bytes alone. Post-quantum signature algorithms will dramatically shift this tradeoff. ML-DSA-65 {{FIPS204}}, for example, has a total public key and signature size of 5,261 bytes.
 
 {{?I-D.ietf-tls-cert-abridge}} proposes to predistribute known intermediate certificates to relying parties, as a compression scheme. A multi-certificate deployment model provides another way to achieve this effect. To relying parties, a predistributed intermediate certificate is functionally equivalent to a root certificate. PKIs use intermediate certificates because changing root certificates requires updating relying parties, but predistributed intermediates already presume updated relying parties.
 
