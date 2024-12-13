@@ -5,10 +5,10 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 15 June 2025                                         Google LLC
+Expires: 16 June 2025                                         Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                        12 December 2024
+                                                        13 December 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 June 2025.
+   This Internet-Draft will expire on 16 June 2025.
 
 Copyright Notice
 
@@ -776,7 +776,7 @@ Table of Contents
    [MOZILLA-ROOTS] is around 100 bytes alone.  Post-quantum signature
    algorithms will dramatically shift this tradeoff.  ML-DSA-65
    [FIPS204], for example, has a total public key and signature size of
-   5,245 bytes.
+   5,261 bytes.
 
    [I-D.ietf-tls-cert-abridge] proposes to predistribute known
    intermediate certificates to relying parties, as a compression
