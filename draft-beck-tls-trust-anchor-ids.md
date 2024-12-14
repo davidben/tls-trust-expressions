@@ -574,26 +574,6 @@ Change controller:
 
 --- back
 
-# Comparison to TLS Trust Expressions
-
-{{?I-D.davidben-tls-trust-expr}} describes Trust Expressions, another trust anchor negotiation mechanism that aims to solve similar problems. The mechanisms differ in the following ways:
-
-* `trust_anchors` is usable by more kinds of PKIs. Trust Expressions express trust anchor lists relative to named “trust stores”, maintained by root programs. Arbitrary lists may not be easily expressible. `trust_anchors` does not have this restriction.
-
-* When used with large trust stores, the retry mechanism in `trust_anchors` requires a new connection. In most applications, this must be implemented outside the TLS stack, so more components must be changed and redeployed. In deployments that are limited by client changes, this may be a more difficult transition. [[TODO: See {{retry-mechanism}} for an alternate retry scheme that avoids this.]]
-
-* Trust Expressions works with static server configuration. An ideal `trust_anchors` deployment requires automation to synchronize a server's DNS and TLS configuration. {{?I-D.ietf-tls-wkech}} could be a starting point for this automation. In deployments that are limited by server changes, this may be a more difficult transition.
-
-* Trust Expressions require that CAs continually fetch information from manifests that are published by root programs, while `trust_anchors` relies only on static pre-assigned trust anchor identifiers.
-
-* `trust_anchors`, when trust anchors are conditionally sent, has different fingerprinting properties. See {{privacy-considerations}}.
-
-* `trust_anchors` can only express large client trust stores (for server certificates), not large server trust stores. Large trust stores rely on the retry mechanism described in {{retry-mechanism}}, which is not available to client certificates.
-
-The two mechanisms can be deployed together. An authenticating party can have metadata for both mechanisms available, and a relying party can advertise both.
-
-[[TODO: remove this or move to supporting documentation after more working group consensus]]
-
 # Acknowledgements
 {:numbered="false"}
 
