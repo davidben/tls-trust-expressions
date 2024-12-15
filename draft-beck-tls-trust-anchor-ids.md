@@ -574,6 +574,18 @@ Change controller:
 
 --- back
 
+# ASN.1 Module
+
+~~~
+TrustAnchorIdentifiers DEFINITIONS ::= BEGIN
+
+id-trustAnchorIdentifier OBJECT IDENTIFIER ::= { TBD }
+
+TrustAnchorIdentifier ::= RELATIVE-OID
+
+END
+~~~
+
 # Acknowledgements
 {:numbered="false"}
 
