@@ -5,10 +5,10 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 16 June 2025                                         Google LLC
+Expires: 19 June 2025                                         Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                        13 December 2024
+                                                        16 December 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 June 2025.
+   This Internet-Draft will expire on 19 June 2025.
 
 Copyright Notice
 
@@ -221,9 +221,10 @@ Table of Contents
    Additionally, there are several terms used throughout this document
    to describe this proposal:
 
-   Trust anchor:  A pre-distributed public key or certificate that
+   Trust anchor:  A pre-distributed X.509 name and public key that
       relying parties use to determine whether a certification path is
-      trusted.
+      trusted.  See Section 6.1.1 of [RFC5280].  Trust anchors are
+      sometimes configured as self-signed certificates.
 
    Certification path:  An ordered list of X.509 certificates starting
       with the target certificate.  Each certificate is issued by the
