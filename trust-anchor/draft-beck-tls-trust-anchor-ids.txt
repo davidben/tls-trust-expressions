@@ -224,7 +224,7 @@ Table of Contents
    Trust anchor:  A pre-distributed X.509 name and public key that
       relying parties use to determine whether a certification path is
       trusted.  See Section 6.1.1 of [RFC5280].  Trust anchors are
-      sometimes represented as self-signed certificates.
+      sometimes configured as self-signed certificates.
 
    Certification path:  An ordered list of X.509 certificates starting
       with the target certificate.  Each certificate is issued by the
