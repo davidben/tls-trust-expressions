@@ -144,7 +144,7 @@ Certification authority (CA):
 Additionally, there are several terms used throughout this document to describe this proposal:
 
 Trust anchor:
-: A pre-distributed public key or certificate that relying parties use to determine whether a certification path is trusted.
+: A pre-distributed X.509 name and public key that relying parties use to determine whether a certification path is trusted. See {{Section 6.1.1 of !RFC5280}}. Trust anchors are sometimes configured as self-signed certificates.
 
 Certification path:
 : An ordered list of X.509 certificates starting with the target certificate. Each certificate is issued by the next certificate, except the last, which is issued by a trust anchor.
