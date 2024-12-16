@@ -320,7 +320,7 @@ Table of Contents
    anchors.  Each trust anchor which participates in this protocol must
    have an associated trust anchor identifier.
 
-   When trust anchors are self-signed X.509 certificates, the X.509
+   When trust anchors are represented as X.509 certificates, the X.509
    trust anchor identifier extension MAY be used to carry this
    identifier.  The trust anchor identifier extension has an extnID of
    id-trustAnchorIdentifier and an extnValue containing a DER-encoded
