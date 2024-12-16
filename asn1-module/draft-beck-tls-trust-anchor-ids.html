@@ -1051,7 +1051,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Beck, et al.</td>
-<td class="center">Expires 18 June 2025</td>
+<td class="center">Expires 19 June 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-beck-tls-trust-anchor-ids-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-12-15" class="published">15 December 2024</time>
+<time datetime="2024-12-16" class="published">16 December 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-06-18">18 June 2025</time></dd>
+<dd class="expires"><time datetime="2025-06-19">19 June 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1132,7 +1132,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 18 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 19 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1311,16 +1311,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-comparison-to-tls-trust-exp" class="internal xref">Comparison to TLS Trust Expressions</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-asn1-module" class="internal xref">ASN.1 Module</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-asn1-module" class="internal xref">ASN.1 Module</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.14.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1395,7 +1392,7 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 <span class="break"></span><dl class="dlParallel" id="section-2.1-4">
           <dt id="section-2.1-4.1">Trust anchor:</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-4.2">
-            <p id="section-2.1-4.2.1">A pre-distributed public key or certificate that relying parties use to determine whether a certification path is trusted.<a href="#section-2.1-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-4.2.1">A pre-distributed X.509 name and public key that relying parties use to determine whether a certification path is trusted. See <span><a href="https://rfc-editor.org/rfc/rfc5280#section-6.1.1" class="relref">Section 6.1.1</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>. Trust anchors are sometimes configured as self-signed certificates.<a href="#section-2.1-4.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-2.1-4.3">Certification path:</dt>
@@ -1463,7 +1460,7 @@ CertificateProperty CertificatePropertyList&lt;0..2^16-1&gt;;
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-relying-party-configuration" class="section-name selfRef">Relying Party Configuration</a>
         </h3>
 <p id="section-3.2-1">Relying parties are configured with one or more supported trust anchors. Each trust anchor which participates in this protocol must have an associated trust anchor identifier.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">When trust anchors are self-signed X.509 certificates, the X.509 trust anchor identifier extension MAY be used to carry this identifier. The trust anchor identifier extension has an <code>extnID</code> of <code>id-trustAnchorIdentifier</code> and an <code>extnValue</code> containing a DER-encoded TrustAnchorIdentifier structure, defined below. The TrustAnchorIdentifier is the trust anchor identifier's ASN.1 representation, described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. This extension MUST be non-critical.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">When trust anchors are represented as X.509 certificates, the X.509 trust anchor identifier extension MAY be used to carry this identifier. The trust anchor identifier extension has an <code>extnID</code> of <code>id-trustAnchorIdentifier</code> and an <code>extnValue</code> containing a DER-encoded TrustAnchorIdentifier structure, defined below. The TrustAnchorIdentifier is the trust anchor identifier's ASN.1 representation, described in <a href="#trust-anchor-ids" class="auto internal xref">Section 3</a>. This extension MUST be non-critical.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.2-3">
 <pre>
 id-trustAnchorIdentifier OBJECT IDENTIFIER ::= { TBD }
@@ -2081,17 +2078,9 @@ TODO fill in an example
         <dd>
 <span class="refAuthor">National Institute of Standards and Technology (NIST)</span>, <span class="refTitle">"Module-Lattice-based Digital Signature Standard"</span>, <span class="seriesInfo">FIPS PUB 204</span>, <time datetime="2023-08" class="refDate">August 2023</time>, <span>&lt;<a href="https://csrc.nist.gov/projects/post-quantum-cryptography">https://csrc.nist.gov/projects/post-quantum-cryptography</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="I-D.davidben-tls-trust-expr">[I-D.davidben-tls-trust-expr]</dt>
-        <dd>
-<span class="refAuthor">Benjamin, D.</span>, <span class="refAuthor">O'Brien, D.</span>, and <span class="refAuthor">B. Beck</span>, <span class="refTitle">"TLS Trust Expressions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-davidben-tls-trust-expr-04</span>, <time datetime="2024-06-28" class="refDate">28 June 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04">https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr-04</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="I-D.ietf-tls-cert-abridge">[I-D.ietf-tls-cert-abridge]</dt>
         <dd>
 <span class="refAuthor">Jackson, D.</span>, <span class="refTitle">"Abridged Compression for WebPKI Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-cert-abridge-02</span>, <time datetime="2024-09-16" class="refDate">16 September 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-02">https://datatracker.ietf.org/doc/html/draft-ietf-tls-cert-abridge-02</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="I-D.ietf-tls-wkech">[I-D.ietf-tls-wkech]</dt>
-        <dd>
-<span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Salz, R.</span>, and <span class="refAuthor">B. M. Schwartz</span>, <span class="refTitle">"A well-known URI for publishing service parameters"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-wkech-06</span>, <time datetime="2024-10-01" class="refDate">1 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-06">https://datatracker.ietf.org/doc/html/draft-ietf-tls-wkech-06</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="MOZILLA-ROOTS">[MOZILLA-ROOTS]</dt>
         <dd>
@@ -2110,42 +2099,12 @@ TODO fill in an example
 </div>
 </section>
 </div>
-<div id="comparison-to-tls-trust-expressions">
-<section id="appendix-A">
-      <h2 id="name-comparison-to-tls-trust-exp">
-<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-comparison-to-tls-trust-exp" class="section-name selfRef">Comparison to TLS Trust Expressions</a>
-      </h2>
-<p id="appendix-A-1"><span>[<a href="#I-D.davidben-tls-trust-expr" class="cite xref">I-D.davidben-tls-trust-expr</a>]</span> describes Trust Expressions, another trust anchor negotiation mechanism that aims to solve similar problems. The mechanisms differ in the following ways:<a href="#appendix-A-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-A-2.1">
-          <p id="appendix-A-2.1.1"><code>trust_anchors</code> is usable by more kinds of PKIs. Trust Expressions express trust anchor lists relative to named “trust stores”, maintained by root programs. Arbitrary lists may not be easily expressible. <code>trust_anchors</code> does not have this restriction.<a href="#appendix-A-2.1.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-A-2.2">
-          <p id="appendix-A-2.2.1">When used with large trust stores, the retry mechanism in <code>trust_anchors</code> requires a new connection. In most applications, this must be implemented outside the TLS stack, so more components must be changed and redeployed. In deployments that are limited by client changes, this may be a more difficult transition. [[TODO: See <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a> for an alternate retry scheme that avoids this.]]<a href="#appendix-A-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-A-2.3">
-          <p id="appendix-A-2.3.1">Trust Expressions works with static server configuration. An ideal <code>trust_anchors</code> deployment requires automation to synchronize a server's DNS and TLS configuration. <span>[<a href="#I-D.ietf-tls-wkech" class="cite xref">I-D.ietf-tls-wkech</a>]</span> could be a starting point for this automation. In deployments that are limited by server changes, this may be a more difficult transition.<a href="#appendix-A-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-A-2.4">
-          <p id="appendix-A-2.4.1">Trust Expressions require that CAs continually fetch information from manifests that are published by root programs, while <code>trust_anchors</code> relies only on static pre-assigned trust anchor identifiers.<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-A-2.5">
-          <p id="appendix-A-2.5.1"><code>trust_anchors</code>, when trust anchors are conditionally sent, has different fingerprinting properties. See <a href="#privacy-considerations" class="auto internal xref">Section 8</a>.<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-A-2.6">
-          <p id="appendix-A-2.6.1"><code>trust_anchors</code> can only express large client trust stores (for server certificates), not large server trust stores. Large trust stores rely on the retry mechanism described in <a href="#retry-mechanism" class="auto internal xref">Section 4.3</a>, which is not available to client certificates.<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
-</li>
-      </ul>
-<p id="appendix-A-3">The two mechanisms can be deployed together. An authenticating party can have metadata for both mechanisms available, and a relying party can advertise both.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
-<p id="appendix-A-4">[[TODO: remove this or move to supporting documentation after more working group consensus]]<a href="#appendix-A-4" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="asn1-module">
-<section id="appendix-B">
+<section id="appendix-A">
       <h2 id="name-asn1-module">
-<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-asn1-module" class="section-name selfRef">ASN.1 Module</a>
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-asn1-module" class="section-name selfRef">ASN.1 Module</a>
       </h2>
-<div class="alignLeft art-text artwork" id="appendix-B-1">
+<div class="alignLeft art-text artwork" id="appendix-A-1">
 <pre>
 TrustAnchorIdentifiers DEFINITIONS ::= BEGIN
 
@@ -2154,20 +2113,20 @@ id-trustAnchorIdentifier OBJECT IDENTIFIER ::= { TBD }
 TrustAnchorIdentifier ::= RELATIVE-OID
 
 END
-</pre><a href="#appendix-B-1" class="pilcrow">¶</a>
+</pre><a href="#appendix-A-1" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="acknowledgements">
-<section id="appendix-C">
+<section id="appendix-B">
       <h2 id="name-acknowledgements">
 <a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
       </h2>
-<p id="appendix-C-1">The authors thank Nick Harper, and Emily Stark for many valuable discussions and insights which led to this document. Thanks also to Aaron Gable for providing feedback on ACME extensions.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-1">The authors thank Nick Harper, and Emily Stark for many valuable discussions and insights which led to this document. Thanks also to Aaron Gable for providing feedback on ACME extensions.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-D">
+<section id="appendix-C">
       <h2 id="name-authors-addresses">
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>
