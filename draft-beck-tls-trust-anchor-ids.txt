@@ -121,6 +121,7 @@ Table of Contents
    11. References
      11.1.  Normative References
      11.2.  Informative References
+   Appendix A.  ASN.1 Module
    Acknowledgements
    Authors' Addresses
 
@@ -1228,6 +1229,16 @@ Table of Contents
    [RFC7469]  Evans, C., Palmer, C., and R. Sleevi, "Public Key Pinning
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
               2015, <https://www.rfc-editor.org/rfc/rfc7469>.
+
+Appendix A.  ASN.1 Module
+
+   TrustAnchorIdentifiers DEFINITIONS ::= BEGIN
+
+   id-trustAnchorIdentifier OBJECT IDENTIFIER ::= { TBD }
+
+   TrustAnchorIdentifier ::= RELATIVE-OID
+
+   END
 
 Acknowledgements
 
