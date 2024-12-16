@@ -1003,14 +1003,13 @@ Table of Contents
    intercept a connection.
 
    Rather, it is the relying party's choice of trusted CAs that
-   determines interceptibility.  If the relying party trusts an
-   attacker-controlled CA, the attacker can intercept the connection,
-   whether the authenticating party uses that CA or another CA.  In both
-   cases, the attacker must present a different certificate, with a
-   different public key.  Conversely, if the relying party does not
-   trust the attacker's CA, the attacker cannot use it to substitute in
-   a different public key, independent of the authenticating party's
-   choice of CA.
+   determines susceptibility to interception.  If the relying party
+   trusts a misbehaving or attacker-controlled CA, the attacker can
+   intercept the connection with a public key certified by that CA,
+   regardless of which CA is used by the intended authenticating party.
+   Conversely, if the relying party does not trust the attacker's CA,
+   the attacker cannot successfully intercept the connection using a
+   public key certified by this CA.
 
    Choosing trusted CAs is a complex, security-critical process, the
    full considerations of which are outside the scope of this document.
