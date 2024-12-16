@@ -438,7 +438,7 @@ Trust anchor negotiation reduces this conflict, provided the pinning relying par
 
 ## Relying Parties
 
-The `trust_anchors` extension is analogous to the `certificate_authorities` extension ({{Section 4.2.4 of RFC8446}}), but more size-efficient. Like `certificate_authorities`, `trust_anchors` reveals some information about the relying party's trust anchors. Unlike `certificate_authorities`, allows a relying party to only reveal a trust anchor in response to the authenticating party's list, which reduces the fingerprinting exposure. This section provides guidance for a relying party to configure this mechanism, based on its privacy goals.
+The `trust_anchors` extension is analogous to the `certificate_authorities` extension ({{Section 4.2.4 of RFC8446}}), but more size-efficient. Like `certificate_authorities`, `trust_anchors` reveals some information about the relying party's trust anchors. However, unlike `certificate_authorities`, `trust_anchors` allows a relying party to only reveal a trust anchor in response to the authenticating party's list, which reduces the fingerprinting exposure. This section provides guidance for a relying party to configure this mechanism, based on its privacy goals.
 
 When using this extension, a relying party's trust anchors may be divided into three categories:
 
