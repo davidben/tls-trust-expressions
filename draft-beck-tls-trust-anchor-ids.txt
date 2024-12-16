@@ -82,9 +82,8 @@ Table of Contents
    2.  Conventions and Definitions
      2.1.  Terminology and Roles
    3.  Trust Anchor Identifiers
-     3.1.  Certificate Properties
-     3.2.  Relying Party Configuration
-     3.3.  Authenticating Party Configuration
+     3.1.  Relying Party Configuration
+     3.2.  Authenticating Party Configuration
    4.  TLS Extension
      4.1.  Overview
      4.2.  Certificate Selection
@@ -93,7 +92,7 @@ Table of Contents
      5.1.  Syntax
      5.2.  Configuring Services
      5.3.  Client Behavior
-   6.  Provisioning Certificates
+   6.  Certificate Properties
      6.1.  Media Type
      6.2.  ACME Extension
    7.  Use Cases
@@ -231,10 +230,6 @@ Table of Contents
       next certificate, except the last, which is issued by a trust
       anchor.
 
-   CertificatePropertyList:  A structure associated with a certification
-      path, containing additional information from the CA, for use by
-      the authenticating party when presenting the certification path.
-
 3.  Trust Anchor Identifiers
 
    This section defines trust anchor identifiers, which are short,
@@ -283,38 +278,7 @@ Table of Contents
    NOT exceed 255 bytes.  It SHOULD be significantly shorter, for
    bandwidth efficiency.
 
-3.1.  Certificate Properties
-
-   This document introduces an extensible CertificatePropertyList
-   structure for CAs to communicate additional information to
-   authenticating parties, such as associated trust anchor identifiers.
-   A CertificatePropertyList is defined using the TLS presentation
-   language (Section 3 of [RFC8446]) below:
-
-  enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
-
-  struct {
-      CertificatePropertyType type;
-      opaque data<0..2^16-1>;
-  } CertificateProperty;
-
-  CertificateProperty CertificatePropertyList<0..2^16-1>;
-
-   The entries in a CertificatePropertyList MUST be sorted numerically
-   by type and MUST NOT contain values with a duplicate type.  Inputs
-   that do not satisfy these invariants are syntax errors and MUST be
-   rejected by parsers.
-
-   This document defines a single property, trust_anchor_identifier.
-   The data field of the property contains the binary representation of
-   the trust anchor identifier of the certification path's trust anchor,
-   as described in Section 3.  Future documents may define other
-   properties for use with other mechanisms.
-
-   Authenticating parties MUST ignore properties with unrecognized
-   CertificatePropertyType values.
-
-3.2.  Relying Party Configuration
+3.1.  Relying Party Configuration
 
    Relying parties are configured with one or more supported trust
    anchors.  Each trust anchor which participates in this protocol must
@@ -342,7 +306,7 @@ Table of Contents
    anchor negotiation protocols, such as the certificate_authorities
    extension.
 
-3.3.  Authenticating Party Configuration
+3.2.  Authenticating Party Configuration
 
    Authenticating parties are configured with one or more candidate
    certification paths to present in TLS, in some preference order.
@@ -352,17 +316,17 @@ Table of Contents
    private keys.
 
    Each candidate path which participates in this protocol must be
-   provisioned with the trust anchor identifier for its corresponding
-   trust anchor in the CertificatePropertyList.
+   configured with the trust anchor identifier for its corresponding
+   trust anchor.  It is RECOMMENDED, though not required, that this
+   information come from the CA.  Section 6 defines a RECOMMENDED format
+   for this information, along with an optional ACME [RFC8555] extension
+   for CAs to send it.
 
    Authenticating parties MAY have candidate certification paths without
    associated trust anchor identifiers, but such paths will not
    participate in this protocol.  Those paths MAY participate in other
    trust anchor negotiation protocols, such as the
    certificate_authorities extension.
-
-   Section 6 defines some ways for authenticating parties to be
-   configured with this information.
 
 4.  TLS Extension
 
@@ -404,7 +368,7 @@ Table of Contents
    relying party indicates some set of supported trust anchors in the
    ClientHello or CertificateRequest trust_anchors extension.  The
    authenticating party then selects a certificate from its candidate
-   certification paths (see Section 3.3), as described in
+   certification paths (see Section 3.2), as described in
    Section 4.4.2.2 of [RFC8446] and Section 4.4.2.3 of [RFC8446].  This
    process is extended as follows:
 
@@ -586,17 +550,53 @@ Table of Contents
    and servers MUST continue to implement the provisions described in
    Section 4.3, even when using this service parameter.
 
-6.  Provisioning Certificates
+6.  Certificate Properties
 
-   While this document does not prescribe a specific configuration
-   format or provisioning process, this section defines optional
-   extensions to aid TLS applications using PEM [RFC7468] or ACME
-   [RFC8555].
+   As described in Section 3.2, certification paths participating in
+   this mechanism must be configured with a trust anchor identifier.
+   This section introduces a RECOMMENDED extensible
+   CertificatePropertyList structure for representing this and other
+   additional properties of a certification path.
+   CertificatePropertyLists may be used as part of authenticating party
+   configuration, and for CAs to communicate additional properties
+   during certificate issuance.
+
+   The extensibility aims to simply application deployment as PKI
+   mechanisms evolve.  When certificate issuance and application
+   software is updated to pass this structure to the underlying TLS
+   implementation, new properties may be transparently defined without
+   changes to certificate and configuration management.
+
+   A CertificatePropertyList is defined using the TLS presentation
+   language (Section 3 of [RFC8446]) below:
+
+  enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
+
+  struct {
+      CertificatePropertyType type;
+      opaque data<0..2^16-1>;
+  } CertificateProperty;
+
+  CertificateProperty CertificatePropertyList<0..2^16-1>;
+
+   The entries in a CertificatePropertyList MUST be sorted numerically
+   by type and MUST NOT contain values with a duplicate type.  Inputs
+   that do not satisfy these invariants are syntax errors and MUST be
+   rejected by parsers.
+
+   This document defines a single property, trust_anchor_identifier.
+   The data field of the property contains the binary representation of
+   the trust anchor identifier of the certification path's trust anchor,
+   as described in Section 3.2.  Future documents may define other
+   properties for use with other mechanisms.
+
+   Authenticating parties MUST ignore properties with unrecognized
+   CertificatePropertyType values.
 
 6.1.  Media Type
 
-   A certification path with its associated CertificationPropertyList
-   may be represented in a PEM [RFC7468] structure in a file of type
+   A certification path with its associated CertificatePropertyList may
+   be represented in a PEM [RFC7468] structure in a file of type
    "application/pem-certificate-chain-with-properties".  Files of this
    type MUST use the strict encoding and MUST NOT include explanatory
    text.  The ABNF [RFC5234] for this format is as follows, where
@@ -614,7 +614,7 @@ Table of Contents
 
    CertificatePropertyLists are encoded using the "CERTIFICATE
    PROPERTIES" label.  The encoded data is a serialized
-   CertificatePropertyList, defined in Section 3.1.
+   CertificatePropertyList, defined in Section 6.
 
    Certificates are encoded as in Section 5.1 of [RFC7468], except DER
    [X690] MUST be used.
