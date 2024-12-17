@@ -869,7 +869,8 @@ Table of Contents
        record or trust anchor list in EncryptedExtensions.
 
    3.  Trust anchors whose identifiers the relying party sends
-       _unconditionally_, i.e. independently of the server's behavior.
+       _unconditionally_, i.e. independently of the authenticating
+       party's behavior.
 
    Each of these categories carries a different fingerprinting exposure:
 
