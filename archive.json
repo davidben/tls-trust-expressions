@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-15T02:05:13.941230+00:00",
+  "timestamp": "2024-12-17T01:57:37.606803+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -460,7 +460,7 @@
       "id": "I_kwDOKigz-s6PHsH9",
       "title": "Add a copy of the ASN.1 module to an appendix",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/41",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
@@ -469,8 +469,8 @@
       ],
       "body": "Requested by Russ Housley. There's not much ASN.1 here, but we do have an X.509 extension.",
       "createdAt": "2024-07-10T16:05:54Z",
-      "updatedAt": "2024-07-10T16:06:10Z",
-      "closedAt": null,
+      "updatedAt": "2024-12-16T22:03:02Z",
+      "closedAt": "2024-12-16T22:03:02Z",
       "comments": []
     },
     {
@@ -4432,52 +4432,377 @@
       "id": "PR_kwDOKigz-s6FPHqO",
       "title": "Move CertificatePropertyList definition to later",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/83",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Playing with a slightly different structure. We actually don't refer to this structure much. The thinking here is that, like the ACME extension and the media type, this isn't really fundamental to the extension, just a RECOMMENDED way to deploy it. This lets us get to the meat of the mechanism sooner.\r\n\r\nI also demoted it from the glossary, since it's now only relevant for the \"optional but recommended\" section.\r\n\r\nThoughts?",
       "createdAt": "2024-12-14T19:04:10Z",
-      "updatedAt": "2024-12-14T19:04:11Z",
+      "updatedAt": "2024-12-16T22:03:26Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "1c6c2d0d20fb84bce9ef13840646dae87a5a1097",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "move-cpl",
       "headRefOid": "053c7fdb355bc5f67868de5f85a8c1d8053b1596",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-12-16T22:03:23Z",
+      "mergedAt": "2024-12-16T22:03:23Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "a7f3f2f7512a940a32c8a9a7d281aa712b52dd5d"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6Vc_p_",
+          "commit": {
+            "abbreviatedOid": "053c7fd"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Yeah, I think demoting the prominence of CPL and setting it as recommended are overall good changes. It's a bit unfortunate we don't have a more concrete definition for CPLs that can be used as a reference, but this will definitely do for now.",
+          "createdAt": "2024-12-16T21:35:38Z",
+          "updatedAt": "2024-12-16T21:35:38Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 84,
       "id": "PR_kwDOKigz-s6FPIc6",
       "title": "Remove trust exprs comparison from draft-beck-tls-trust-anchor-ids",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/84",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The comparison is in the explainer and no longer needed in the draft itself.",
       "createdAt": "2024-12-14T19:14:58Z",
-      "updatedAt": "2024-12-14T19:14:59Z",
+      "updatedAt": "2024-12-16T21:24:56Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "1c6c2d0d20fb84bce9ef13840646dae87a5a1097",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "trust-expr-compare",
       "headRefOid": "88bd16c929728ec7aa5a8dc11df2f2b20fb62903",
+      "closedAt": "2024-12-16T21:24:56Z",
+      "mergedAt": "2024-12-16T21:24:56Z",
+      "mergedBy": "devonobrien",
+      "mergeCommit": {
+        "oid": "6328eb6f4e5f175798ba4a545e4989a38fe3fe63"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6Vc7mK",
+          "commit": {
+            "abbreviatedOid": "88bd16c"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-16T21:24:40Z",
+          "updatedAt": "2024-12-16T21:24:40Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 85,
+      "id": "PR_kwDOKigz-s6FRe1C",
+      "title": "Add a copy of the ASN.1 module to the appendix",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/85",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "I think this is the right syntax? Not that there's really much of an ASN.1 module here at all. Closes #41",
+      "createdAt": "2024-12-15T19:18:15Z",
+      "updatedAt": "2024-12-16T22:03:03Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "6328eb6f4e5f175798ba4a545e4989a38fe3fe63",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "asn1-module",
+      "headRefOid": "cdb2ac7c99f6b3722388dbef67f0a7a18f257cfd",
+      "closedAt": "2024-12-16T22:03:01Z",
+      "mergedAt": "2024-12-16T22:03:01Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "72a40c3b1846d94a1a7515044f54c76f62bb74b4"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6VdAzr",
+          "commit": {
+            "abbreviatedOid": "d1a4a70"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-16T21:38:49Z",
+          "updatedAt": "2024-12-16T21:38:49Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 86,
+      "id": "PR_kwDOKigz-s6FRfSw",
+      "title": "Slight tweak to wording of X.509 extension",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/86",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "I think it's better to say the trust anchor is *represented* as an X.509 certificate rather than that it *is* an X.509 certificate. You might represent the \"same\" trust anchor in different ways. RFC 5280 doesn't do a great job of nailing this down.\r\n\r\nAlso drop the \"self-signed\" because it might be, e.g., draft-davidben-x509-alg-none. (But I don't think it actually makes sense to cite that draft, so just leave it unspecified.)",
+      "createdAt": "2024-12-15T19:23:32Z",
+      "updatedAt": "2024-12-16T19:07:55Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "1c6c2d0d20fb84bce9ef13840646dae87a5a1097",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "not-necessarily-self-signed",
+      "headRefOid": "061a241f570d59952fabf8391a2b09e029b03384",
+      "closedAt": "2024-12-16T17:33:30Z",
+      "mergedAt": "2024-12-16T17:33:30Z",
+      "mergedBy": "devonobrien",
+      "mergeCommit": {
+        "oid": "8acd81be49f644c3028d02a507415ef692a1668c"
+      },
+      "comments": [
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "This naturally leads to another question you might want to address: if a TA has different representations then surely they would use the same public key? ;)",
+          "createdAt": "2024-12-16T11:36:43Z",
+          "updatedAt": "2024-12-16T11:36:43Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Not sure I follow. Trust anchors are a notion from X.509. We're not defining them or anything. And, yes, if you change the public key, that's decidedly not the same trust anchor.",
+          "createdAt": "2024-12-16T13:01:54Z",
+          "updatedAt": "2024-12-16T13:01:54Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "(if you change the subject name, it's also not the same trust anchor. If you change other stuff, it gets more complicated, but that's a core X.509 ambiguity and not specific to this document.)",
+          "createdAt": "2024-12-16T13:03:08Z",
+          "updatedAt": "2024-12-16T13:03:08Z"
+        },
+        {
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "body": "In light of redefining TAs as Subject + Public Key in PR #88 , I think \"represented by\" is clear and unambiguous. ",
+          "createdAt": "2024-12-16T17:28:38Z",
+          "updatedAt": "2024-12-16T17:29:50Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6Va3a6",
+          "commit": {
+            "abbreviatedOid": "061a241"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-16T17:29:31Z",
+          "updatedAt": "2024-12-16T17:29:31Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 87,
+      "id": "PR_kwDOKigz-s6FSCz3",
+      "title": "Tighten up privacy and security considerations",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/87",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Did an editorial pass. Hopefully this is shorter and clearer.",
+      "createdAt": "2024-12-16T00:01:52Z",
+      "updatedAt": "2024-12-17T01:11:29Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "a7f3f2f7512a940a32c8a9a7d281aa712b52dd5d",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "privacy-security-considerations",
+      "headRefOid": "1427b6353bb80c95669eaa423f64058ef686bd33",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6VdFUe",
+          "commit": {
+            "abbreviatedOid": "c5dbf72"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-16T21:51:28Z",
+          "updatedAt": "2024-12-16T22:44:21Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "```suggestion\r\nThe `trust_anchors` extension is analogous to the `certificate_authorities` extension ({{Section 4.2.4 of RFC8446}}), but more size-efficient. Like `certificate_authorities`, `trust_anchors` reveals some information about the relying party's trust anchors. However, unlike `certificate_authorities`, `trust_anchors` allows a relying party to only reveal a trust anchor in response to the authenticating party's list, which reduces the fingerprinting exposure. This section provides guidance for a relying party to configure this mechanism, based on its privacy goals.\r\n```",
+              "createdAt": "2024-12-16T21:51:28Z",
+              "updatedAt": "2024-12-16T22:44:21Z"
+            },
+            {
+              "originalPosition": 18,
+              "body": "The 3 part categorization above isn't fully covered by the \"Each of these categories\" fingerprinting exposure analysis directly following. It's rather trivial, but we could simply state that trust anchors not participating in the mechanism do not introduce fingerprinting exposure.",
+              "createdAt": "2024-12-16T21:55:58Z",
+              "updatedAt": "2024-12-16T22:44:21Z"
+            },
+            {
+              "originalPosition": 32,
+              "body": "```suggestion\r\nIf the authenticating party has provisioned certification paths with incorrect trust anchor identifier information, it may inadvertently send untrusted certification paths when matching against this identifier and additionally may overlook this certification path when attempting to match against the correct identifier. In either case, this will not result in that path becoming trusted, but the connection will fail when this leads to the selection of an untrusted certification path.\r\n```",
+              "createdAt": "2024-12-16T22:03:48Z",
+              "updatedAt": "2024-12-16T22:44:21Z"
+            },
+            {
+              "originalPosition": 66,
+              "body": "```suggestion\r\nRather, it is the relying party's choice of trusted CAs that determines susceptibility to interception. If the relying party trusts a misbehaving or attacker-controlled CA, the attacker can intercept the connection with a public key certified by that CA, regardless of which CA is used by the intended authenticating party. Conversely, if the relying party does not trust the attacker's CA, the attacker cannot successfully intercept the connection using a public key certified by this CA.\r\n```",
+              "createdAt": "2024-12-16T22:43:14Z",
+              "updatedAt": "2024-12-16T22:44:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6VdcJZ",
+          "commit": {
+            "abbreviatedOid": "c5dbf72"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-16T23:00:23Z",
+          "updatedAt": "2024-12-16T23:00:23Z",
+          "comments": [
+            {
+              "originalPosition": 18,
+              "body": "It's kind of covered by \"This is similar to the baseline exposure for trust anchors that do not participate in negotiation. [...]\" but I agree this is kinda weird. Will take another pass.",
+              "createdAt": "2024-12-16T23:00:23Z",
+              "updatedAt": "2024-12-16T23:00:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Vd8zI",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-17T01:11:14Z",
+          "updatedAt": "2024-12-17T01:11:15Z",
+          "comments": [
+            {
+              "originalPosition": 18,
+              "body": "I reversed the order, which I think made it flow a bit better. How's this read?",
+              "createdAt": "2024-12-17T01:11:14Z",
+              "updatedAt": "2024-12-17T01:11:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Vd82K",
+          "commit": {
+            "abbreviatedOid": "c5dbf72"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-17T01:11:29Z",
+          "updatedAt": "2024-12-17T01:11:29Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "Applied and then wordsmithed.",
+              "createdAt": "2024-12-17T01:11:29Z",
+              "updatedAt": "2024-12-17T01:11:30Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 88,
+      "id": "PR_kwDOKigz-s6FXZ7X",
+      "title": "Fix the definition of a trust anchor",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/88",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Prompted by chatting with @bwesterb\r\n\r\nA trust anchor is not just a pre-distributed key. It also, at minimum, includes the name. It is also not a self-signed certificate. Self-signed certificates are just a common way to specify them. Just cite the definition from RFC 5280.\r\n\r\nAn astute reader of RFC 5280 might notice that this implies no other properties of the root certificate (when using one) matter. This is... complicated.  Path validation takes a bunch of extra things as inputs. RFC 5937 discusses how to fill in those parameters from other values in the root certificate. This means, formally, a trust anchor is just the name and key, and then any other constraints the application applies are just decisions it made in how to set those other inputs. Those inputs don't cover all application behaviors in practice. You can think of this as application-specific extensions of Section 6.1 to add more inputs to the process.\r\n\r\nWe don't current discuss or handle those specifically. Possibly worth some discussion, but I'll leave that for a separate PR. Broadly, the answers there are:\r\n\r\n- The CA should mostly know what constraints its under and should mostly not issue certs incompatible with that\r\n\r\n- If it does, the retry flow allows the client to ask for a new cert and try again",
+      "createdAt": "2024-12-16T14:32:40Z",
+      "updatedAt": "2024-12-16T19:07:47Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "1c6c2d0d20fb84bce9ef13840646dae87a5a1097",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "trust-anchor",
+      "headRefOid": "51772e5d7a3d5fb383e2b9175ed394f7c499aa11",
+      "closedAt": "2024-12-16T17:26:04Z",
+      "mergedAt": "2024-12-16T17:26:04Z",
+      "mergedBy": "devonobrien",
+      "mergeCommit": {
+        "oid": "8deaa06ea975dfdde3b0e07ed04bce1457d4f09f"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6VZCPF",
+          "commit": {
+            "abbreviatedOid": "51772e5"
+          },
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-16T14:35:34Z",
+          "updatedAt": "2024-12-16T14:35:34Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Vaz7a",
+          "commit": {
+            "abbreviatedOid": "51772e5"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-16T17:23:45Z",
+          "updatedAt": "2024-12-16T17:23:45Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
