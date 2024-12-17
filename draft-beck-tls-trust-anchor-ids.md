@@ -445,7 +445,7 @@ When using this extension, a relying party's trust anchors may be divided into t
 
 Each of these categories carries a different fingerprinting exposure:
 
-Trust anchors that do not participate are not revealed by this extension. However, they still carry a baseline level of fingerprinting exposure. Given a certification path, an authenticating party can probe whether the relying party trusts the trust anchor by seeing if the relying party accepts it.
+Trust anchors that do not participate are not revealed by this extension. However, they have some fingerprinting exposure due to being trusted. Given a certification path, an authenticating party can probe whether the relying party trusts the trust anchor by seeing if the relying party accepts it.
 
 Trust anchor identifiers sent in response to the authenticating party can only be observed actively. That is, the authenticating party could vary its list and observe how the client responds, in order to probe for the client's trust anchor list. This is similar to the baseline exposure, except that the trust anchor can be probed by only knowing the trust anchor identifier.
 
