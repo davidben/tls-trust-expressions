@@ -988,12 +988,13 @@ Table of Contents
 
 9.2.3.  Serving Multiple Certificates
 
-   Negotiation reduces compatibility pressures against authenticating
-   parties serving certificates from a less common CA, as they can be
-   served with other certificates.  In some cases, the CA may have been
-   distrusted, but still used to support older relying parties.  As
-   discussed in Section 7 and Section 9.2.2, this capability aids PKI
-   transitions that mitigate security risks to users.
+   Trust anchor negotiation reduces compatibility pressures against
+   authenticating parties serving certificates from a less common CA, as
+   they can be served with other certificates.  In some cases, the CA
+   may have been distrusted, but still used to support older relying
+   parties.  As discussed in Section 7 and Section 9.2.2, this
+   capability aids PKI transitions that mitigate security risks to
+   users.
 
    Even if the CA is untrustworthy, these certificates do not enable the
    CA to decrypt or intercept the connection.  If a certificate asserts
