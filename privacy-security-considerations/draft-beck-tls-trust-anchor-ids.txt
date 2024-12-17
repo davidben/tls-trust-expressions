@@ -5,10 +5,10 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 19 June 2025                                         Google LLC
+Expires: 20 June 2025                                         Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                        16 December 2024
+                                                        17 December 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 June 2025.
+   This Internet-Draft will expire on 20 June 2025.
 
 Copyright Notice
 
@@ -82,9 +82,8 @@ Table of Contents
    2.  Conventions and Definitions
      2.1.  Terminology and Roles
    3.  Trust Anchor Identifiers
-     3.1.  Certificate Properties
-     3.2.  Relying Party Configuration
-     3.3.  Authenticating Party Configuration
+     3.1.  Relying Party Configuration
+     3.2.  Authenticating Party Configuration
    4.  TLS Extension
      4.1.  Overview
      4.2.  Certificate Selection
@@ -93,7 +92,7 @@ Table of Contents
      5.1.  Syntax
      5.2.  Configuring Services
      5.3.  Client Behavior
-   6.  Provisioning Certificates
+   6.  Certificate Properties
      6.1.  Media Type
      6.2.  ACME Extension
    7.  Use Cases
@@ -122,7 +121,7 @@ Table of Contents
    11. References
      11.1.  Normative References
      11.2.  Informative References
-   Appendix A.  Comparison to TLS Trust Expressions
+   Appendix A.  ASN.1 Module
    Acknowledgements
    Authors' Addresses
 
@@ -222,18 +221,15 @@ Table of Contents
    Additionally, there are several terms used throughout this document
    to describe this proposal:
 
-   Trust anchor:  A pre-distributed public key or certificate that
+   Trust anchor:  A pre-distributed X.509 name and public key that
       relying parties use to determine whether a certification path is
-      trusted.
+      trusted.  See Section 6.1.1 of [RFC5280].  Trust anchors are
+      sometimes configured as self-signed certificates.
 
    Certification path:  An ordered list of X.509 certificates starting
       with the target certificate.  Each certificate is issued by the
       next certificate, except the last, which is issued by a trust
       anchor.
-
-   CertificatePropertyList:  A structure associated with a certification
-      path, containing additional information from the CA, for use by
-      the authenticating party when presenting the certification path.
 
 3.  Trust Anchor Identifiers
 
@@ -283,44 +279,13 @@ Table of Contents
    NOT exceed 255 bytes.  It SHOULD be significantly shorter, for
    bandwidth efficiency.
 
-3.1.  Certificate Properties
-
-   This document introduces an extensible CertificatePropertyList
-   structure for CAs to communicate additional information to
-   authenticating parties, such as associated trust anchor identifiers.
-   A CertificatePropertyList is defined using the TLS presentation
-   language (Section 3 of [RFC8446]) below:
-
-  enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
-
-  struct {
-      CertificatePropertyType type;
-      opaque data<0..2^16-1>;
-  } CertificateProperty;
-
-  CertificateProperty CertificatePropertyList<0..2^16-1>;
-
-   The entries in a CertificatePropertyList MUST be sorted numerically
-   by type and MUST NOT contain values with a duplicate type.  Inputs
-   that do not satisfy these invariants are syntax errors and MUST be
-   rejected by parsers.
-
-   This document defines a single property, trust_anchor_identifier.
-   The data field of the property contains the binary representation of
-   the trust anchor identifier of the certification path's trust anchor,
-   as described in Section 3.  Future documents may define other
-   properties for use with other mechanisms.
-
-   Authenticating parties MUST ignore properties with unrecognized
-   CertificatePropertyType values.
-
-3.2.  Relying Party Configuration
+3.1.  Relying Party Configuration
 
    Relying parties are configured with one or more supported trust
    anchors.  Each trust anchor which participates in this protocol must
    have an associated trust anchor identifier.
 
-   When trust anchors are self-signed X.509 certificates, the X.509
+   When trust anchors are represented as X.509 certificates, the X.509
    trust anchor identifier extension MAY be used to carry this
    identifier.  The trust anchor identifier extension has an extnID of
    id-trustAnchorIdentifier and an extnValue containing a DER-encoded
@@ -342,7 +307,7 @@ Table of Contents
    anchor negotiation protocols, such as the certificate_authorities
    extension.
 
-3.3.  Authenticating Party Configuration
+3.2.  Authenticating Party Configuration
 
    Authenticating parties are configured with one or more candidate
    certification paths to present in TLS, in some preference order.
@@ -352,17 +317,17 @@ Table of Contents
    private keys.
 
    Each candidate path which participates in this protocol must be
-   provisioned with the trust anchor identifier for its corresponding
-   trust anchor in the CertificatePropertyList.
+   configured with the trust anchor identifier for its corresponding
+   trust anchor.  It is RECOMMENDED, though not required, that this
+   information come from the CA.  Section 6 defines a RECOMMENDED format
+   for this information, along with an optional ACME [RFC8555] extension
+   for CAs to send it.
 
    Authenticating parties MAY have candidate certification paths without
    associated trust anchor identifiers, but such paths will not
    participate in this protocol.  Those paths MAY participate in other
    trust anchor negotiation protocols, such as the
    certificate_authorities extension.
-
-   Section 6 defines some ways for authenticating parties to be
-   configured with this information.
 
 4.  TLS Extension
 
@@ -404,7 +369,7 @@ Table of Contents
    relying party indicates some set of supported trust anchors in the
    ClientHello or CertificateRequest trust_anchors extension.  The
    authenticating party then selects a certificate from its candidate
-   certification paths (see Section 3.3), as described in
+   certification paths (see Section 3.2), as described in
    Section 4.4.2.2 of [RFC8446] and Section 4.4.2.3 of [RFC8446].  This
    process is extended as follows:
 
@@ -586,17 +551,53 @@ Table of Contents
    and servers MUST continue to implement the provisions described in
    Section 4.3, even when using this service parameter.
 
-6.  Provisioning Certificates
+6.  Certificate Properties
 
-   While this document does not prescribe a specific configuration
-   format or provisioning process, this section defines optional
-   extensions to aid TLS applications using PEM [RFC7468] or ACME
-   [RFC8555].
+   As described in Section 3.2, certification paths participating in
+   this mechanism must be configured with a trust anchor identifier.
+   This section introduces a RECOMMENDED extensible
+   CertificatePropertyList structure for representing this and other
+   additional properties of a certification path.
+   CertificatePropertyLists may be used as part of authenticating party
+   configuration, and for CAs to communicate additional properties
+   during certificate issuance.
+
+   The extensibility aims to simply application deployment as PKI
+   mechanisms evolve.  When certificate issuance and application
+   software is updated to pass this structure to the underlying TLS
+   implementation, new properties may be transparently defined without
+   changes to certificate and configuration management.
+
+   A CertificatePropertyList is defined using the TLS presentation
+   language (Section 3 of [RFC8446]) below:
+
+  enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
+
+  struct {
+      CertificatePropertyType type;
+      opaque data<0..2^16-1>;
+  } CertificateProperty;
+
+  CertificateProperty CertificatePropertyList<0..2^16-1>;
+
+   The entries in a CertificatePropertyList MUST be sorted numerically
+   by type and MUST NOT contain values with a duplicate type.  Inputs
+   that do not satisfy these invariants are syntax errors and MUST be
+   rejected by parsers.
+
+   This document defines a single property, trust_anchor_identifier.
+   The data field of the property contains the binary representation of
+   the trust anchor identifier of the certification path's trust anchor,
+   as described in Section 3.2.  Future documents may define other
+   properties for use with other mechanisms.
+
+   Authenticating parties MUST ignore properties with unrecognized
+   CertificatePropertyType values.
 
 6.1.  Media Type
 
-   A certification path with its associated CertificationPropertyList
-   may be represented in a PEM [RFC7468] structure in a file of type
+   A certification path with its associated CertificatePropertyList may
+   be represented in a PEM [RFC7468] structure in a file of type
    "application/pem-certificate-chain-with-properties".  Files of this
    type MUST use the strict encoding and MUST NOT include explanatory
    text.  The ABNF [RFC5234] for this format is as follows, where
@@ -614,7 +615,7 @@ Table of Contents
 
    CertificatePropertyLists are encoded using the "CERTIFICATE
    PROPERTIES" label.  The encoded data is a serialized
-   CertificatePropertyList, defined in Section 3.1.
+   CertificatePropertyList, defined in Section 6.
 
    Certificates are encoded as in Section 5.1 of [RFC7468], except DER
    [X690] MUST be used.
@@ -857,9 +858,9 @@ Table of Contents
    When using this extension, a relying party's trust anchors may be
    divided into three categories:
 
-   1.  Trust anchors whose identifiers the relying party sends
-       _unconditionally_, i.e. independently of the server's HTTPS/SVCB
-       record, trust anchor list in EncryptedExtensions, etc.
+   1.  Trust anchors whose identifiers the relying party never sends,
+       but still trusts.  These are trust anchors that do not
+       participate in this mechanism.
 
    2.  Trust anchors whose identifiers the relying party sends
        _conditionally_, i.e. only if the server offers them.  For
@@ -867,11 +868,23 @@ Table of Contents
        anchor if its identifier is listed in the server's HTTPS/SVCB
        record or trust anchor list in EncryptedExtensions.
 
-   3.  Trust anchors whose identifiers the relying party never sends,
-       but still trusts.  These are trust anchors that do not
-       participate in this mechanism.
+   3.  Trust anchors whose identifiers the relying party sends
+       _unconditionally_, i.e. independently of the server's behavior.
 
    Each of these categories carries a different fingerprinting exposure:
+
+   Trust anchors that do not participate are not revealed by this
+   extension.  However, they still carry a baseline level of
+   fingerprinting exposure.  Given a certification path, an
+   authenticating party can probe whether the relying party trusts the
+   trust anchor by seeing if the relying party accepts it.
+
+   Trust anchor identifiers sent in response to the authenticating party
+   can only be observed actively.  That is, the authenticating party
+   could vary its list and observe how the client responds, in order to
+   probe for the client's trust anchor list.  This is similar to the
+   baseline exposure, except that the trust anchor can be probed by only
+   knowing the trust anchor identifier.
 
    Trust anchor identifiers sent unconditionally can be observed
    passively.  This mode is analogous to the certificate_authorities
@@ -880,18 +893,6 @@ Table of Contents
    unconditionally-advertised lists SHOULD be empty or computed only
    from the trust anchors common to the relying party's anonymity set
    (Section 3.3 of [RFC6973]).
-
-   Trust anchor identifiers sent in response to the authenticating party
-   can only be observed actively.  That is, the authenticating party
-   could vary its list and observe how the client responds, in order to
-   probe for the client's trust anchor list.
-
-   This is similar to the baseline exposure for trust anchors that do
-   not participate in negotiation.  An authenticating party in
-   possession of a certificate can send it and determine if the relying
-   party accepts or rejects it.  Unlike this baseline exposure, trust
-   anchors that participate in this protocol can be probed by only
-   knowing the trust anchor identifier.
 
    Relying parties SHOULD determine which trust anchors participate in
    this mechanism, and whether to advertise them unconditionally or
@@ -931,10 +932,11 @@ Table of Contents
 
 9.1.  Incorrect Selection Metadata
 
-   If the authenticating party has incorrect information about trust
-   anchor identifiers, it may send an untrusted certification path.
-   This will not result in that path being trusted, but the connection
-   will likely fail.
+   If the authenticating party has provisioned certification paths with
+   incorrect trust anchor identifiers, it may negotiate inaccurately and
+   send an untrusted path to the relying party when another candidate
+   would have been trusted.  This will not result in the untrusted path
+   becoming trusted, but the connection will fail.
 
 9.2.  Trust Anchor Negotiation
 
@@ -1200,26 +1202,12 @@ Table of Contents
               PUB 204, August 2023, <https://csrc.nist.gov/projects/
               post-quantum-cryptography>.
 
-   [I-D.davidben-tls-trust-expr]
-              Benjamin, D., O'Brien, D., and B. Beck, "TLS Trust
-              Expressions", Work in Progress, Internet-Draft, draft-
-              davidben-tls-trust-expr-04, 28 June 2024,
-              <https://datatracker.ietf.org/doc/html/draft-davidben-tls-
-              trust-expr-04>.
-
    [I-D.ietf-tls-cert-abridge]
               Jackson, D., "Abridged Compression for WebPKI
               Certificates", Work in Progress, Internet-Draft, draft-
               ietf-tls-cert-abridge-02, 16 September 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
               cert-abridge-02>.
-
-   [I-D.ietf-tls-wkech]
-              Farrell, S., Salz, R., and B. M. Schwartz, "A well-known
-              URI for publishing service parameters", Work in Progress,
-              Internet-Draft, draft-ietf-tls-wkech-06, 1 October 2024,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              wkech-06>.
 
    [MOZILLA-ROOTS]
               Mozilla, "Mozilla Included CA Certificate List", 30 August
@@ -1233,51 +1221,15 @@ Table of Contents
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
               2015, <https://www.rfc-editor.org/rfc/rfc7469>.
 
-Appendix A.  Comparison to TLS Trust Expressions
+Appendix A.  ASN.1 Module
 
-   [I-D.davidben-tls-trust-expr] describes Trust Expressions, another
-   trust anchor negotiation mechanism that aims to solve similar
-   problems.  The mechanisms differ in the following ways:
+   TrustAnchorIdentifiers DEFINITIONS ::= BEGIN
 
-   *  trust_anchors is usable by more kinds of PKIs.  Trust Expressions
-      express trust anchor lists relative to named “trust stores”,
-      maintained by root programs.  Arbitrary lists may not be easily
-      expressible. trust_anchors does not have this restriction.
+   id-trustAnchorIdentifier OBJECT IDENTIFIER ::= { TBD }
 
-   *  When used with large trust stores, the retry mechanism in
-      trust_anchors requires a new connection.  In most applications,
-      this must be implemented outside the TLS stack, so more components
-      must be changed and redeployed.  In deployments that are limited
-      by client changes, this may be a more difficult transition.
-      [[TODO: See Section 4.3 for an alternate retry scheme that avoids
-      this.]]
+   TrustAnchorIdentifier ::= RELATIVE-OID
 
-   *  Trust Expressions works with static server configuration.  An
-      ideal trust_anchors deployment requires automation to synchronize
-      a server's DNS and TLS configuration.  [I-D.ietf-tls-wkech] could
-      be a starting point for this automation.  In deployments that are
-      limited by server changes, this may be a more difficult
-      transition.
-
-   *  Trust Expressions require that CAs continually fetch information
-      from manifests that are published by root programs, while
-      trust_anchors relies only on static pre-assigned trust anchor
-      identifiers.
-
-   *  trust_anchors, when trust anchors are conditionally sent, has
-      different fingerprinting properties.  See Section 8.
-
-   *  trust_anchors can only express large client trust stores (for
-      server certificates), not large server trust stores.  Large trust
-      stores rely on the retry mechanism described in Section 4.3, which
-      is not available to client certificates.
-
-   The two mechanisms can be deployed together.  An authenticating party
-   can have metadata for both mechanisms available, and a relying party
-   can advertise both.
-
-   [[TODO: remove this or move to supporting documentation after more
-   working group consensus]]
+   END
 
 Acknowledgements
 
