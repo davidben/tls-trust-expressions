@@ -1038,7 +1038,7 @@ Table of Contents
    fingerprint.  Transport properties, such as IP geolocation, may also
    be used.  While fingerprinting's heuristic nature makes broad,
    legitimate use difficult, a network attacker's single interception
-   service can easily use it.
+   service can easily use it for targeted attacks.
 
    If the attacker targets any clients that enforce Certificate
    Transparency [RFC6962], the misissued certificates will need to be
