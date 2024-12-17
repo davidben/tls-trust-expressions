@@ -487,7 +487,7 @@ Negotiation also reduces pressures on relying parties to sacrifice user security
 
 ### Serving Multiple Certificates
 
-Negotiation reduces compatibility pressures against authenticating parties serving certificates from a less common CA, as they can be served with other certificates. In some cases, the CA may have been distrusted, but still used to support older relying parties. As discussed in {{use-cases}} and {{agility}}, this capability aids PKI transitions that mitigate security risks to users.
+Trust anchor negotiation reduces compatibility pressures against authenticating parties serving certificates from a less common CA, as they can be served with other certificates. In some cases, the CA may have been distrusted, but still used to support older relying parties. As discussed in {{use-cases}} and {{agility}}, this capability aids PKI transitions that mitigate security risks to users.
 
 Even if the CA is untrustworthy, these certificates do not enable the CA to decrypt or intercept the connection. If a certificate asserts the correct information about the authenticating party, notably the correct public key, the authenticating party can safely present it. Issuing a certificate for the authenticating party's public key does not grant the CA access to the corresponding private key. Conversely, if the attacker already has access to the authenticating party's private key, they do not need to be in control of a CA to intercept a connection.
 
