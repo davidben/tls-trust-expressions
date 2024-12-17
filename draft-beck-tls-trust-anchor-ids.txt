@@ -5,10 +5,10 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 19 June 2025                                         Google LLC
+Expires: 20 June 2025                                         Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                        16 December 2024
+                                                        17 December 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 June 2025.
+   This Internet-Draft will expire on 20 June 2025.
 
 Copyright Notice
 
@@ -108,11 +108,12 @@ Table of Contents
      8.1.  Relying Parties
      8.2.  Authenticating Parties
    9.  Security Considerations
-     9.1.  Relying Party Policies
-     9.2.  Agility
-     9.3.  Incorrect Selection Metadata
-     9.4.  Serving Multiple Certificates
-     9.5.  Targeting TLS Interception
+     9.1.  Incorrect Selection Metadata
+     9.2.  Trust Anchor Negotiation
+       9.2.1.  Relying Party Policies
+       9.2.2.  Agility
+       9.2.3.  Serving Multiple Certificates
+       9.2.4.  Targeting TLS Interception
    10. IANA Considerations
      10.1.  TLS ExtensionType Updates
      10.2.  Media Type Updates
@@ -844,18 +845,22 @@ Table of Contents
 
 8.1.  Relying Parties
 
-   The negotiation mechanism described in this document is analogous to
-   the certificate_authorities extension (Section 4.2.4 of [RFC8446]),
-   but more size-efficient.  Like that extension, it presumes the
-   requested trust anchor list is not sensitive.
+   The trust_anchors extension is analogous to the
+   certificate_authorities extension (Section 4.2.4 of [RFC8446]), but
+   more size-efficient.  Like certificate_authorities, trust_anchors
+   reveals some information about the relying party's trust anchors.
+   However, unlike certificate_authorities, trust_anchors allows a
+   relying party to only reveal a trust anchor in response to the
+   authenticating party's list, which reduces the fingerprinting
+   exposure.  This section provides guidance for a relying party to
+   configure this mechanism, based on its privacy goals.
 
-   The privacy implications of this are determined by how a relying
-   party uses this extension.  Trust anchors supported by a relying
-   party may be divided into three categories:
+   When using this extension, a relying party's trust anchors may be
+   divided into three categories:
 
-   1.  Trust anchors whose identifiers the relying party sends
-       _unconditionally_, i.e. not in response to the server's HTTPS/
-       SVCB record, trust anchor list in EncryptedExtensions, etc.
+   1.  Trust anchors whose identifiers the relying party never sends,
+       but still trusts.  These are trust anchors that do not
+       participate in this mechanism.
 
    2.  Trust anchors whose identifiers the relying party sends
        _conditionally_, i.e. only if the server offers them.  For
@@ -863,30 +868,33 @@ Table of Contents
        anchor if its identifier is listed in the server's HTTPS/SVCB
        record or trust anchor list in EncryptedExtensions.
 
-   3.  Trust anchors whose identifiers the relying party never sends,
-       but still trusts.  These are trust anchors which do not
-       participate in this mechanism.
+   3.  Trust anchors whose identifiers the relying party sends
+       _unconditionally_, i.e. independently of the authenticating
+       party's behavior.
 
    Each of these categories carries a different fingerprinting exposure:
 
-   Trust anchor identifiers sent unconditionally can be observed
-   passively.  Thus, relying parties SHOULD NOT unconditionally
-   advertise trust anchor lists which are unique to an individual user.
-   Rather, such lists SHOULD be either empty or computed only from the
-   trust anchors common to the relying party's anonymity set
-   (Section 3.3 of [RFC6973]).
+   Trust anchors that do not participate are not revealed by this
+   extension.  However, they have some fingerprinting exposure due to
+   being trusted.  Given a certification path, an authenticating party
+   can probe whether the relying party trusts the trust anchor by seeing
+   if the relying party accepts it.
 
    Trust anchor identifiers sent in response to the authenticating party
    can only be observed actively.  That is, the authenticating party
    could vary its list and observe how the client responds, in order to
-   probe for the client's trust anchor list.
+   probe for the client's trust anchor list.  This is similar to the
+   exposure of trust anchors not participating in this extension, except
+   that the trust anchor can be probed by only knowing the trust anchor
+   identifier.
 
-   This is similar to the baseline exposure for trust anchors that do
-   not participate in negotiation.  An authenticating party in
-   possession of a certificate can send it and determine if the relying
-   party accepts or rejects it.  Unlike this baseline exposure, trust
-   anchors that participate in this protocol can be probed by only
-   knowing the trust anchor identifier.
+   Trust anchor identifiers sent unconditionally can be observed
+   passively.  This mode is analogous to the certificate_authorities
+   extension.  Relying parties SHOULD NOT unconditionally advertise
+   trust anchor lists that are unique to an individual user.  Rather,
+   unconditionally-advertised lists SHOULD be empty or computed only
+   from the trust anchors common to the relying party's anonymity set
+   (Section 3.3 of [RFC6973]).
 
    Relying parties SHOULD determine which trust anchors participate in
    this mechanism, and whether to advertise them unconditionally or
@@ -924,7 +932,23 @@ Table of Contents
 
 9.  Security Considerations
 
-9.1.  Relying Party Policies
+9.1.  Incorrect Selection Metadata
+
+   If the authenticating party has provisioned certification paths with
+   incorrect trust anchor identifiers, it may negotiate inaccurately and
+   send an untrusted path to the relying party when another candidate
+   would have been trusted.  This will not result in the untrusted path
+   becoming trusted, but the connection will fail.
+
+9.2.  Trust Anchor Negotiation
+
+   Both the trust_anchors and certificate_authorities (Section 4.2.4 of
+   [RFC8446]) extensions implement trust anchor negotiation, so security
+   considerations are largely unchanged from certificate_authorities.
+   This section discusses security considerations for trust anchor
+   negotiation in general.
+
+9.2.1.  Relying Party Policies
 
    PKI-based TLS authentication depends on the relying party's
    certificate policies.  If the relying party trusts an untrustworthy
@@ -939,7 +963,7 @@ Table of Contents
    Relying parties remain responsible for trusting only trustworthy CAs,
    and untrustworthy CAs remain a security risk when trusted.
 
-9.2.  Agility
+9.2.2.  Agility
 
    As with other TLS parameters, negotiation reduces a conflict between
    availability and security, which allows PKIs to better mitigate
@@ -951,108 +975,79 @@ Table of Contents
    other.  Section 7 discusses such scenarios in more detail.
 
    Negotiation also reduces pressures on relying parties to sacrifice
-   user security for compatibility.  Suppose an authenticating party
-   currently uses some CA, but a relying party deems trusting that CA to
-   pose an unacceptable security risk to its users.  In a single-
-   certificate deployment, those authenticating parties may be unwilling
-   to adopt a CA trusted by the relying party, as switching CAs risks
-   compatibility problems elsewhere.  The relying party then faces
-   compatibility pressure and adds this CA, sacrificing user security.
-   However, in a multi-certificate deployment, the authenticating party
-   can use its existing CA _in addition to_ another CA trusted by
-   relying party B.  This allows the ecosystem to improve
-   interoperability, while still meeting relying party B's user-security
-   goals.
+   user security for compatibility.  If a relying party does not trust
+   an authenticating party's current CA, connections between the two
+   will fail until either the relying party trusts the CA or the
+   authenticating party uses an already trusted CA.  Without trust
+   anchor negotiation, the authenticating party is limited to one
+   certificate, and therefore switching CAs risks compatibility problems
+   with other relying parties.  The relying party then faces
+   compatibility pressure to add this CA, even if it deems the CA a
+   security risk.  With trust anchor negotiation, the authenticating
+   party can use its existing CA _in addition to_ another CA trusted by
+   the relying party.  This allows the ecosystem to improve
+   interoperability without sacrificing user security.
 
-9.3.  Incorrect Selection Metadata
+9.2.3.  Serving Multiple Certificates
 
-   If the authenticating party has incorrect information about trust
-   anchor identifiers, it may send an untrusted certification path.
-   This will not result in that path being trusted, but does present the
-   possibility of a degradation of service.  However, this information
-   is provisioned by the CA, which is already expected to provide
-   accurate information.
+   Trust anchor negotiation reduces compatibility pressures against
+   authenticating parties serving certificates from a less common CA, as
+   they can be served with other certificates.  In some cases, the CA
+   may have been distrusted, but still used to support older relying
+   parties.  As discussed in Section 7 and Section 9.2.2, this
+   capability aids PKI transitions that mitigate security risks to
+   users.
 
-9.4.  Serving Multiple Certificates
+   Even if the CA is untrustworthy, these certificates do not enable the
+   CA to decrypt or intercept the connection.  If a certificate asserts
+   the correct information about the authenticating party, notably the
+   correct public key, the authenticating party can safely present it.
+   Issuing a certificate for the authenticating party's public key does
+   not grant the CA access to the corresponding private key.
+   Conversely, if the attacker already has access to the authenticating
+   party's private key, they do not need to be in control of a CA to
+   intercept a connection.
 
-   Negotiation reduces compatibility pressures against authenticating
-   parties choosing to serve certificates from a less common CA, as the
-   authenticating party can serve it in addition to other CAs that,
-   together, satisfy all supported relying parties.  The CA may even
-   have been distrusted by some relying parties, e.g. if it is needed
-   for older, unupdated relying parties that are still important for the
-   authenticating party to support.  As discussed in Section 7 and
-   Section 9.2, this deployment model avoids compatibility risks during
-   PKI transitions which mitigate security risks to users.
+   Rather, it is the relying party's choice of trusted CAs that
+   determines susceptibility to interception.  If the relying party
+   trusts a misbehaving or attacker-controlled CA, the attacker can
+   intercept the connection with a public key certified by that CA,
+   regardless of which CA is used by the intended authenticating party.
+   Conversely, if the relying party does not trust the attacker's CA,
+   the attacker cannot successfully intercept the connection using a
+   public key certified by this CA.
 
-   Serving such certificates does not enable the CA to decrypt or
-   intercept the connection.  If a certificate asserts the correct
-   information about the authenticating party, notably the correct
-   public key, the authenticating party can safely present it, whether
-   or not the issuing CA is otherwise trustworthy.  Issuing a
-   certificate for the authenticating party's public key does not grant
-   the CA access to the corresponding private key.  Conversely, if the
-   attacker already has access to the authenticating party's private
-   key, they do not need to be in control of a CA to intercept a
-   connection.
-
-   While the choice of CA is a security-critical decision in a PKI, it
-   is the relying party's choice of trusted CAs that determines
-   interceptibility, not the authenticating party's choice of
-   certificates to present.  If the relying party trusts an attacker-
-   controlled CA, the attacker can intercept the connection independent
-   of whether the authenticating party uses that CA or another CA.  In
-   both cases, the attacker would need to present a different
-   certificate, with a different public key.  Conversely, if the relying
-   party does not trust the attacker's CA, the authenticating party's
-   correct but untrusted attacker-issued certificate will not enable the
-   attacker to substitute in a different public key.  The ability to
-   intercept a connection via the PKI is determined solely by relying
-   party trust decisions.
-
+   Choosing trusted CAs is a complex, security-critical process, the
+   full considerations of which are outside the scope of this document.
    Relying parties thus SHOULD NOT interpret the authenticating party's
-   choice of CA list as an endorsement of the CA.  The authenticating
-   party's role is to present a certificate which will demonstrate its
-   name and TLS key to the relying party.  Authenticating parties do not
-   vet CAs for trustworthiness, only the correctness of their specific,
-   configured certificates and the CA's ability to meet the
-   authenticating party's requirements, such as availability,
-   compatibility, and performance.  It is the responsibility of the
-   relying party, and its corresponding root program, to determine the
-   set of trusted CAs.  Trusting a CA means trusting _all_ certificates
-   issued by that CA, so it is not enough to observe authenticating
-   parties serving correct certificates.  An untrustworthy CA may sign
-   one correct certificate, but also sign incorrect certificates,
-   possibly in the future, that can attack the relying party.  Root
-   program management is a complex, security-critical process, the full
-   considerations of which are outside the scope of this document.
+   choice of CA as an endorsement of the CA.  Trusting a CA means
+   trusting _all_ certificates issued by that CA, so it is not enough to
+   observe correct certificates from an authenticating party.  An
+   untrustworthy CA may sign one correct certificate, but also sign
+   incorrect certificates, possibly in the future, that can attack the
+   relying party.
 
-9.5.  Targeting TLS Interception
+9.2.4.  Targeting TLS Interception
 
-   Trust Anchor Identifiers, like certificate_authorities, enables a TLS
-   server to differentiate between clients that do and do not trust some
-   CA.  If this CA mis-issued a certificate, this could be used by a
-   network attacker to only enable TLS interception with clients that
-   trust the CA.  The network attacker may wish to do this reduce the
-   odds of detection.  Clients which do not trust the CA will not accept
-   the mis-issued certificate, which may be user-visible.
+   A network attacker in possession of a misissued certificate could use
+   trust anchor negotiation to differentiate clients and only enable TLS
+   interception with clients that accept the certificate.  The network
+   attacker may wish to do this reduce the odds of detection.
 
-   However, the attacker could also use any existing mechanism for
-   differentiating clients.  In TLS parameter negotiation, the client
-   offers all its available TLS features, including cipher suites and
-   other extensions, in the TLS ClientHello.  This means any variation
-   in any client TLS policies, related or unrelated to trust anchors,
-   may be used as an implementation fingerprint to differentiate
-   clients.  While fingerprinting's heuristic nature makes it not viable
-   for a broad, diverse set of TLS servers, it is viable for a network
-   attacker's single interception service.  Trust Anchor Identifiers
-   only impacts detection where this differentiation was not already
-   possible.
+   However, trust anchor negotiation only impacts detection where this
+   differentiation was not already possible.  In TLS, the client offers
+   all its available TLS features, including cipher suites and other
+   extensions, in the TLS ClientHello.  Any variation in client TLS
+   policies, related or unrelated to trust anchors, may be used as a
+   fingerprint.  Transport properties, such as IP geolocation, may also
+   be used.  While fingerprinting's heuristic nature makes broad,
+   legitimate use difficult, a network attacker's single interception
+   service can easily use it for targeted attacks.
 
    If the attacker targets any clients that enforce Certificate
-   Transparency [RFC6962], the mis-issued certificates will need to be
+   Transparency [RFC6962], the misissued certificates will need to be
    publicly logged.  In this case, detection is more robust, and client
-   differentiation, with or without Trust Anchor Identifiers, has no
+   differentiation, with or without trust anchor negotiation, has no
    significant impact.
 
 10.  IANA Considerations
