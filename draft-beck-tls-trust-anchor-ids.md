@@ -437,19 +437,19 @@ The `trust_anchors` extension is analogous to the `certificate_authorities` exte
 
 When using this extension, a relying party's trust anchors may be divided into three categories:
 
-1. Trust anchors whose identifiers the relying party sends *unconditionally*, i.e. independently of the server's HTTPS/SVCB record, trust anchor list in EncryptedExtensions, etc.
+1. Trust anchors whose identifiers the relying party never sends, but still trusts. These are trust anchors that do not participate in this mechanism.
 
 2. Trust anchors whose identifiers the relying party sends *conditionally*, i.e. only if the server offers them. For example, the relying party may indicate support for a trust anchor if its identifier is listed in the server's HTTPS/SVCB record or trust anchor list in EncryptedExtensions.
 
-3. Trust anchors whose identifiers the relying party never sends, but still trusts. These are trust anchors that do not participate in this mechanism.
+3. Trust anchors whose identifiers the relying party sends *unconditionally*, i.e. independently of the server's behavior.
 
 Each of these categories carries a different fingerprinting exposure:
 
+Trust anchors that do not participate are not revealed by this extension. However, they still carry a baseline level of fingerprinting exposure. Given a certification path, an authenticating party can probe whether the relying party trusts the trust anchor by seeing if the relying party accepts it.
+
+Trust anchor identifiers sent in response to the authenticating party can only be observed actively. That is, the authenticating party could vary its list and observe how the client responds, in order to probe for the client's trust anchor list. This is similar to the baseline exposure, except that the trust anchor can be probed by only knowing the trust anchor identifier.
+
 Trust anchor identifiers sent unconditionally can be observed passively. This mode is analogous to the `certificate_authorities` extension. Relying parties SHOULD NOT unconditionally advertise trust anchor lists that are unique to an individual user. Rather, unconditionally-advertised lists SHOULD be empty or computed only from the trust anchors common to the relying party's anonymity set ({{Section 3.3 of !RFC6973}}).
-
-Trust anchor identifiers sent in response to the authenticating party can only be observed actively. That is, the authenticating party could vary its list and observe how the client responds, in order to probe for the client's trust anchor list.
-
-This is similar to the baseline exposure for trust anchors that do not participate in negotiation. An authenticating party in possession of a certificate can send it and determine if the relying party accepts or rejects it. Unlike this baseline exposure, trust anchors that participate in this protocol can be probed by only knowing the trust anchor identifier.
 
 Relying parties SHOULD determine which trust anchors participate in this mechanism, and whether to advertise them unconditionally or conditionally, based on their privacy goals. PKIs that reliably use the DNS service parameter ({{dns-service-parameter}}) can rely on conditional advertisement for stronger privacy properties without a round-trip penalty.
 
@@ -467,7 +467,7 @@ The above does not apply if the authenticating party is a client. This protocol 
 
 ## Incorrect Selection Metadata
 
-If the authenticating party has incorrect information about trust anchor identifiers, it may send an untrusted certification path. This will not result in that path being trusted, but the connection will likely fail.
+If the authenticating party has provisioned certification paths with incorrect trust anchor identifiers, it may negotiate inaccurately and send an untrusted path to the relying party when another candidate would have been trusted. This will not result in the untrusted path becoming trusted, but the connection will fail.
 
 ## Trust Anchor Negotiation
 
