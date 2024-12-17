@@ -884,8 +884,9 @@ Table of Contents
    can only be observed actively.  That is, the authenticating party
    could vary its list and observe how the client responds, in order to
    probe for the client's trust anchor list.  This is similar to the
-   baseline exposure, except that the trust anchor can be probed by only
-   knowing the trust anchor identifier.
+   exposure of trust anchors not participating in this extension, except
+   that the trust anchor can be probed by only knowing the trust anchor
+   identifier.
 
    Trust anchor identifiers sent unconditionally can be observed
    passively.  This mode is analogous to the certificate_authorities
