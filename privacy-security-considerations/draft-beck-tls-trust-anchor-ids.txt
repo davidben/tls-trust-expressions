@@ -977,14 +977,15 @@ Table of Contents
    user security for compatibility.  If a relying party does not trust
    an authenticating party's current CA, connections between the two
    will fail until either the relying party trusts the CA or the
-   authenticating party uses a already trusted CA.  If the
-   authenticating party is limited to one certificate, switching CAs
-   risks compatibility problems with other relying parties.  The relying
-   party then faces compatibility pressure to add this CA, even if it
-   deems the CA a security risk.  With trust anchor negotiation, the
-   authenticating party can use its existing CA _in addition to_ another
-   CA trusted by the relying party.  This allows the ecosystem to
-   improve interoperability without sacrificing user security.
+   authenticating party uses an already trusted CA.  Without trust
+   anchor negotiation, the authenticating party is limited to one
+   certificate, and therefore switching CAs risks compatibility problems
+   with other relying parties.  The relying party then faces
+   compatibility pressure to add this CA, even if it deems the CA a
+   security risk.  With trust anchor negotiation, the authenticating
+   party can use its existing CA _in addition to_ another CA trusted by
+   the relying party.  This allows the ecosystem to improve
+   interoperability without sacrificing user security.
 
 9.2.3.  Serving Multiple Certificates
 
