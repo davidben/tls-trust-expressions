@@ -441,7 +441,7 @@ When using this extension, a relying party's trust anchors may be divided into t
 
 2. Trust anchors whose identifiers the relying party sends *conditionally*, i.e. only if the server offers them. For example, the relying party may indicate support for a trust anchor if its identifier is listed in the server's HTTPS/SVCB record or trust anchor list in EncryptedExtensions.
 
-3. Trust anchors whose identifiers the relying party sends *unconditionally*, i.e. independently of the server's behavior.
+3. Trust anchors whose identifiers the relying party sends *unconditionally*, i.e. independently of the authenticating party's behavior.
 
 Each of these categories carries a different fingerprinting exposure:
 
