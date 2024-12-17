@@ -499,7 +499,7 @@ Choosing trusted CAs is a complex, security-critical process, the full considera
 
 A network attacker in possession of a misissued certificate could use trust anchor negotiation to differentiate clients and only enable TLS interception with clients that accept the certificate. The network attacker may wish to do this reduce the odds of detection.
 
-However, trust anchor negotiation only impacts detection where this differentiation was not already possible. In TLS, the client offers all its available TLS features, including cipher suites and other extensions, in the TLS ClientHello. Any variation in client TLS policies, related or unrelated to trust anchors, may be used as a fingerprint. Transport properties, such as IP geolocation, may also be used. While fingerprinting's heuristic nature makes broad, legitimate use difficult, a network attacker's single interception service can easily use it.
+However, trust anchor negotiation only impacts detection where this differentiation was not already possible. In TLS, the client offers all its available TLS features, including cipher suites and other extensions, in the TLS ClientHello. Any variation in client TLS policies, related or unrelated to trust anchors, may be used as a fingerprint. Transport properties, such as IP geolocation, may also be used. While fingerprinting's heuristic nature makes broad, legitimate use difficult, a network attacker's single interception service can easily use it for targeted attacks.
 
 If the attacker targets any clients that enforce Certificate Transparency {{?RFC6962}}, the misissued certificates will need to be publicly logged. In this case, detection is more robust, and client differentiation, with or without trust anchor negotiation, has no significant impact.
 
