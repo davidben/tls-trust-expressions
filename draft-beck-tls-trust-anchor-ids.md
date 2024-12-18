@@ -105,7 +105,7 @@ However, `certificate_authorities`'s size is impractical for some applications. 
 
 Without a negotiation mechanism, the authenticating party must obtain a single certificate that simultaneously satisfies all relying parties. This is challenging when relying parties are diverse. PKI transitions, including those necessary for user security, naturally lead to relying party diversity, so the result is that service availability conflicts with security and overall PKI evolution:
 
-* For an authenticating party to use a CA in its single certificate, all supported relying parties must trust the CA. PKI transitions then become difficult when authentiating parties support older, unupdated relying parties. This impacts both new keys from existing CA operators and new CA operators.
+* For an authenticating party to use a CA in its single certificate, all supported relying parties must trust the CA. PKI transitions then become difficult when authenticating parties support older, unupdated relying parties. This impacts both new keys from existing CA operators and new CA operators.
 
 * When a relying party must update its policies to meet new security requirements, it adds to relying party diversity and the challenges that authenticating parties and CAs face. The relying party must then choose between compromising on user security or burdening the rest of the ecosystem, potentially impacting availability in the process.
 
@@ -153,7 +153,7 @@ Certification path:
 
 This section defines trust anchor identifiers, which are short, unique identifiers for a trust anchor. To simplify allocation, these identifiers are defined with object identifiers (OIDs) {{X680}} and IANA-registered Private Enterprise Numbers (PENs) {{!RFC9371}}:
 
-A trust anchor identifier is defined with a OID under the OID arc of some PEN. For compactness, they are represented as relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. For example, an organization with PEN 32473 might define a trust anchor identifier with the OID `1.3.6.1.4.1.32473.1`. As a relative object identifier, it would be the OID `32473.1`.
+A trust anchor identifier is defined with an OID under the OID arc of some PEN. For compactness, they are represented as relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. For example, an organization with PEN 32473 might define a trust anchor identifier with the OID `1.3.6.1.4.1.32473.1`. As a relative object identifier, it would be the OID `32473.1`.
 
 Depending on the protocol, trust anchor identifiers may be represented in one of three ways:
 
@@ -169,7 +169,7 @@ The length of a trust anchor identifier's binary representation MUST NOT exceed 
 
 ## Relying Party Configuration
 
-Relying parties are configured with one or more supported trust anchors. Each trust anchor which participates in this protocol must have an associated trust anchor identifier.
+Relying parties are configured with one or more supported trust anchors. Each trust anchor that participates in this protocol must have an associated trust anchor identifier.
 
 When trust anchors are represented as X.509 certificates, the X.509 trust anchor identifier extension MAY be used to carry this identifier. The trust anchor identifier extension has an `extnID` of `id-trustAnchorIdentifier` and an `extnValue` containing a DER-encoded TrustAnchorIdentifier structure, defined below. The TrustAnchorIdentifier is the trust anchor identifier's ASN.1 representation, described in {{trust-anchor-ids}}. This extension MUST be non-critical.
 
@@ -297,7 +297,7 @@ Although this service parameter is intended to reduce trust anchor mismatches, m
 
 As described in {{authenticating-party-configuration}}, certification paths participating in this mechanism must be configured with a trust anchor identifier. This section introduces a RECOMMENDED extensible CertificatePropertyList structure for representing this and other additional properties of a certification path. CertificatePropertyLists may be used as part of authenticating party configuration, and for CAs to communicate additional properties during certificate issuance.
 
-The extensibility aims to simply application deployment as PKI mechanisms evolve. When certificate issuance and application software is updated to pass this structure to the underlying TLS implementation, new properties may be transparently defined without changes to certificate and configuration management.
+The extensibility aims to simplify application deployment as PKI mechanisms evolve. When certificate issuance and application software is updated to pass this structure to the underlying TLS implementation, new properties may be transparently defined without changes to certificate and configuration management.
 
 A CertificatePropertyList is defined using the TLS presentation language ({{Section 3 of !RFC8446}}) below:
 
@@ -393,7 +393,7 @@ Despite the severity of root CA private key compromise and the benefits of routi
 
 Key rotation in PKIs used in TLS is challenging, as it combines the challenges described in both {{making-use-of-newly-trusted-cas}} and {{removing-untrustworthy-cas}}. Without trust anchor negotiation, authenticating parties cannot switch to the new root as long as any supported older relying party requires the old root. That, in turn, means relying parties cannot distrust the old root, leaving them vulnerable.
 
-Trust anchor negotiation offers a smooth transition for CA key rotation. The CA can provide certification paths for the old and new root. The authenticating party can then serve both paths without impacting older relying parties. New relying parties can then distrust the old root.
+Trust anchor negotiation offers a smooth transition for CA key rotation. The CA can provide certification paths for the old and new roots. The authenticating party can then serve both paths without impacting older relying parties. New relying parties can then distrust the old root.
 
 ## Other Root Transitions
 
@@ -497,7 +497,7 @@ Choosing trusted CAs is a complex, security-critical process, the full considera
 
 ### Targeting TLS Interception
 
-A network attacker in possession of a misissued certificate could use trust anchor negotiation to differentiate clients and only enable TLS interception with clients that accept the certificate. The network attacker may wish to do this reduce the odds of detection.
+A network attacker in possession of a misissued certificate could use trust anchor negotiation to differentiate clients and only enable TLS interception with clients that accept the certificate. The network attacker may wish to do this to reduce the odds of detection.
 
 However, trust anchor negotiation only impacts detection where this differentiation was not already possible. In TLS, the client offers all its available TLS features, including cipher suites and other extensions, in the TLS ClientHello. Any variation in client TLS policies, related or unrelated to trust anchors, may be used as a fingerprint. Transport properties, such as IP geolocation, may also be used. While fingerprinting's heuristic nature makes broad, legitimate use difficult, a network attacker's single interception service can easily use it for targeted attacks.
 
