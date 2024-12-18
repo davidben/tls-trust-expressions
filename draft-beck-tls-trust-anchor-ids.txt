@@ -5,10 +5,10 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 20 June 2025                                         Google LLC
+Expires: 21 June 2025                                         Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                        17 December 2024
+                                                        18 December 2024
 
 
                       TLS Trust Anchor Identifiers
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 June 2025.
+   This Internet-Draft will expire on 21 June 2025.
 
 Copyright Notice
 
@@ -159,7 +159,7 @@ Table of Contents
 
    *  For an authenticating party to use a CA in its single certificate,
       all supported relying parties must trust the CA.  PKI transitions
-      then become difficult when authentiating parties support older,
+      then become difficult when authenticating parties support older,
       unupdated relying parties.  This impacts both new keys from
       existing CA operators and new CA operators.
 
@@ -238,7 +238,7 @@ Table of Contents
    identifiers are defined with object identifiers (OIDs) [X680] and
    IANA-registered Private Enterprise Numbers (PENs) [RFC9371]:
 
-   A trust anchor identifier is defined with a OID under the OID arc of
+   A trust anchor identifier is defined with an OID under the OID arc of
    some PEN.  For compactness, they are represented as relative object
    identifiers (see Section 33 of [X680]), relative to the OID prefix
    1.3.6.1.4.1.  For example, an organization with PEN 32473 might
@@ -282,7 +282,7 @@ Table of Contents
 3.1.  Relying Party Configuration
 
    Relying parties are configured with one or more supported trust
-   anchors.  Each trust anchor which participates in this protocol must
+   anchors.  Each trust anchor that participates in this protocol must
    have an associated trust anchor identifier.
 
    When trust anchors are represented as X.509 certificates, the X.509
@@ -562,7 +562,7 @@ Table of Contents
    configuration, and for CAs to communicate additional properties
    during certificate issuance.
 
-   The extensibility aims to simply application deployment as PKI
+   The extensibility aims to simplify application deployment as PKI
    mechanisms evolve.  When certificate issuance and application
    software is updated to pass this structure to the underlying TLS
    implementation, new properties may be transparently defined without
@@ -754,7 +754,7 @@ Table of Contents
 
    Trust anchor negotiation offers a smooth transition for CA key
    rotation.  The CA can provide certification paths for the old and new
-   root.  The authenticating party can then serve both paths without
+   roots.  The authenticating party can then serve both paths without
    impacting older relying parties.  New relying parties can then
    distrust the old root.
 
@@ -1032,7 +1032,7 @@ Table of Contents
    A network attacker in possession of a misissued certificate could use
    trust anchor negotiation to differentiate clients and only enable TLS
    interception with clients that accept the certificate.  The network
-   attacker may wish to do this reduce the odds of detection.
+   attacker may wish to do this to reduce the odds of detection.
 
    However, trust anchor negotiation only impacts detection where this
    differentiation was not already possible.  In TLS, the client offers
