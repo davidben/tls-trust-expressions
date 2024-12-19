@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-17T01:57:37.606803+00:00",
+  "timestamp": "2024-12-19T01:54:42.022296+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -654,7 +654,7 @@
       ],
       "body": "I do not think clients should send a lot of trust anchors. Nor do I think we should complicate the standard with a compression mechanism like this. It's good to think about though.\r\n\r\n### Coding subsets of integers\r\n\r\n#### Theoretical limit\r\nFor the moment, let's simplify and assume trust anchors are numbers instead of OIDs. Say there are k=200 anchors with maximum value N=62,203 (number of PENs today). There are N *choose* k possible subsets of anchors to communicate. Thus, we cannot expect to code every subset with less than lg N choose k bits. We can approximate this well using [Stirling's approximation](https://en.wikipedia.org/wiki/Stirling%27s_approximation): 243 bytes.\r\n\r\n#### Rice coding\r\nWe can get quite close to this limit using a very simple method: [Rice coding](https://en.wikipedia.org/wiki/Golomb_coding) of differences. For each delta we compute *q = floor(d / 2^b)* and *r = d mod 2^b*, where *b = round(-lg(-lg(1-k/N))) = 8*. *q* is encoded in unary and *r* in binary, so 600 would be encoded as `0b11001011000`. The `110` encodes *q=2*; the remainder is the remainder *r*. The average size using Rice coding for random subsets is about 244.3 bytes with a 95th percentile of 244.8 bytes.\r\n\r\nRice coding doesn't take advantage of big gaps. If we want to code *{N-200, N-199, ..., N-1}* that takes 255.25 bytes.\r\n\r\n#### Huffman bitlength\r\nA different approach is to write each delta in two parts: first code its bitlength, and then to write the delta (without its most significant bit). For the bitlengths we can use a Huffman code, which can be compressed efficiently using canonical trees and delta coding of the code lengths as in bzip2. (Here is [an implementation](https://github.com/bwesterb/go-ncrlite).)\r\n\r\nFor random subsets this performs worse than Rice coding: 253 bytes on average with a 95th percentile of 255 bytes. However, it encodes *{N-200, N-199, ..., N-1}* in only 50 bytes, and there is room for improvement.\r\n\r\n\r\n\r\n",
       "createdAt": "2024-07-29T10:43:49Z",
-      "updatedAt": "2024-08-27T21:17:17Z",
+      "updatedAt": "2024-12-17T14:32:42Z",
       "closedAt": null,
       "comments": [
         {
@@ -663,6 +663,20 @@
           "body": "Another goofy encoding idea I had was just ranges. The old MTC scheme could be done with aliases on the issuance side (\"if the client says batch 27, assume they also know batches 10 through 26\"), but it could also be done by letting you efficiently encode things like `32473.123.{10-27}` (`32473.123` is the MTC CA prefix).\r\n\r\nI could also imagine taking some of the goofy exclusion labels that TE had and instead recasting them as some kind of sequence of ranges. If we assume we don't need to punch too many holes, splitting ranges in two isn't horrible. And you could periodically rebalance by numbers by allocating new aliases higher up the number space, trusting that newer certs are aware of it. Not sure.\r\n\r\nThe DNS mechanism does handily remove the need for all these encoding tricks, but depends on DNS, so... \ud83e\udd37 ",
           "createdAt": "2024-08-27T21:17:15Z",
           "updatedAt": "2024-08-27T21:17:15Z"
+        },
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "I wanted to add a few more remarks here.\r\n\r\n**Rule of thumb for size.** It's not quite exact, but for N reasonably larger than k, the theoretical best average is approximately k * lg(N/k) bits to encode a random subset of k integers below N. So the number of bits per integer is directly related to the density: lg(N/k) = -lg(k/N).\r\n\r\n**Varying densities.** Most compression mechanisms (including [ncrlite](https://github.com/bwesterb/go-ncrlite/)) adapt to varying densities. If we assume the PENs used in MTC to be in the final quarter of the range, then it'd take only approximately 159 bytes to encode instead of 244.8 b.\r\n\r\n**Encoding actual TAIs instead of integers.** A subset of integers can be seen as a list or as a bitmap. We can encode a set X of true TAIs as a subset of integers Enc(X) as follows. First we group the TAIs by their first component: write n, x_1, ..., x_n, X_1, ..., X_n, L such that X = x_1 . X_1 union x_2 . X_2 union ... union x_n . X_n cup L, where x_i are distinct (the components that appear), L is a set of integers (the components as is that appear as a TAI), and X_i are sets of relative OIDs.\r\n\r\nNow, we can define\r\n\r\n```\r\nBitmap(Enc(X)) = VarUint(n) \r\n      || Bitmap({x_1, ..., x_n})\r\n      || Bitmap({i; 1 \u2264 i \u2264 n; x_i in L})\r\n      || Bitmap(Enc(X_1)) || ... || Bitmap(Enc(X_n))\r\n```\r\n\r\nI guess in practice TAIs will be mostly `<pen>` or `<pen>.<small number>`. In that case I expect this to compress about bit worse but not that much worse than a simply a subset of pens. I can run some tests later.\r\n\r\nIs the full hierarchical TAI worth it though? Isn't `<pen>.<seqno>` enough?\r\n\r\n**Tailored versus general purpose compression**. [ncrlite](https://github.com/bwesterb/go-ncrlite), Elias\u2013Fano, and the like outperform general-purpose compression algorithms when compressing the subset represented as a list of numbers. If the subset is represented as a bitmap, then general-purpose compression algorithms are quite similar or outperform them in compressed size. The difference of course is that we don't want to deal with a huge uncompressed bit map. Further advantages of the former are simpler implementation and better decompression speed.",
+          "createdAt": "2024-12-17T13:25:02Z",
+          "updatedAt": "2024-12-17T14:32:42Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "> Is the full hierarchical TAI worth it though? Isn't . enough?\r\n\r\nEh the only thing we *really* get out of the hierarchy is a cute solution to the MTC batch naming problem. Beyond that, it was just a very convenient, pre-existing namespace of short identifiers that anyone can assign out of.",
+          "createdAt": "2024-12-17T14:07:33Z",
+          "updatedAt": "2024-12-17T14:07:33Z"
         }
       ]
     },
@@ -4629,24 +4643,26 @@
       "id": "PR_kwDOKigz-s6FSCz3",
       "title": "Tighten up privacy and security considerations",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/87",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Did an editorial pass. Hopefully this is shorter and clearer.",
       "createdAt": "2024-12-16T00:01:52Z",
-      "updatedAt": "2024-12-17T01:11:29Z",
+      "updatedAt": "2024-12-17T20:37:38Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "a7f3f2f7512a940a32c8a9a7d281aa712b52dd5d",
       "headRepository": "davidben/tls-trust-expressions",
       "headRefName": "privacy-security-considerations",
-      "headRefOid": "1427b6353bb80c95669eaa423f64058ef686bd33",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "a867fa6fd99ed039bdd17937a009d6e931be9b61",
+      "closedAt": "2024-12-17T20:37:35Z",
+      "mergedAt": "2024-12-17T20:37:35Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "898526e0d2480fac5625796fed1e92e8c66261c5"
+      },
       "comments": [],
       "reviews": [
         {
@@ -4744,6 +4760,179 @@
               "body": "Applied and then wordsmithed.",
               "createdAt": "2024-12-17T01:11:29Z",
               "updatedAt": "2024-12-17T01:11:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6VlIkO",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-17T17:08:23Z",
+          "updatedAt": "2024-12-17T17:08:38Z",
+          "comments": [
+            {
+              "originalPosition": 84,
+              "body": "```suggestion\r\nHowever, trust anchor negotiation only impacts detection where this differentiation was not already possible. In TLS, the client offers all its available TLS features, including cipher suites and other extensions, in the TLS ClientHello. Any variation in client TLS policies, related or unrelated to trust anchors, may be used as a fingerprint. Transport properties, such as IP geolocation, may also be used. While fingerprinting's heuristic nature makes broad, legitimate use difficult, a network attacker's single interception service can easily use it for targeted attacks.\r\n```",
+              "createdAt": "2024-12-17T17:08:24Z",
+              "updatedAt": "2024-12-17T17:08:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6VlMCM",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-17T17:13:02Z",
+          "updatedAt": "2024-12-17T17:13:03Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "authenticating party's behaviour.\r\n(or give up and use client and server througout)",
+              "createdAt": "2024-12-17T17:13:02Z",
+              "updatedAt": "2024-12-17T17:13:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6VlPny",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-17T17:18:50Z",
+          "updatedAt": "2024-12-17T17:18:51Z",
+          "comments": [
+            {
+              "originalPosition": 60,
+              "body": "```suggestion\r\nNegotiation also reduces pressures on relying parties to sacrifice user security for compatibility. If a relying party does not trust an authenticating party's current CA, connections between the two will fail until either the relying party trusts the CA or the authenticating party uses an already trusted CA. Without trust anchor negotiation, the authenticating party is limited to one certificate, and therefore switching CAs risks compatibility problems with other relying parties. The relying party then faces compatibility pressure to add this CA, even if it deems the CA a security risk. With trust anchor negotiation, the authenticating party can use its existing CA _in addition to_ another CA trusted by the relying party. This allows the ecosystem to improve interoperability without sacrificing user security.\r\n```",
+              "createdAt": "2024-12-17T17:18:50Z",
+              "updatedAt": "2024-12-17T17:18:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6VlQxu",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-17T17:20:26Z",
+          "updatedAt": "2024-12-17T17:20:27Z",
+          "comments": [
+            {
+              "originalPosition": 66,
+              "body": "```suggestion\r\nTrust anchor negotiation reduces compatibility pressures against authenticating parties serving certificates from a less common CA, as they can be served with other certificates. In some cases, the CA may have been distrusted, but still used to support older relying parties. As discussed in {{use-cases}} and {{agility}}, this capability aids PKI transitions that mitigate security risks to users.\r\n```",
+              "createdAt": "2024-12-17T17:20:27Z",
+              "updatedAt": "2024-12-17T17:20:27Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6VlUKW",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-17T17:26:42Z",
+          "updatedAt": "2024-12-17T17:26:42Z",
+          "comments": [
+            {
+              "originalPosition": 21,
+              "body": "```suggestion\r\nTrust anchors that do not participate are not revealed by this extension. Without this extension, such trust anchors already have fingerprinting exposure. Given a certification path, an authenticating party can probe whether the relying party trusts the trust anchor by seeing if the relying party accepts it.\r\n```",
+              "createdAt": "2024-12-17T17:26:42Z",
+              "updatedAt": "2024-12-17T17:26:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6VlU7T",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-17T17:27:53Z",
+          "updatedAt": "2024-12-17T17:27:53Z",
+          "comments": [
+            {
+              "originalPosition": 24,
+              "body": "```suggestion\r\nTrust anchor identifiers sent in response to the authenticating party can only be observed actively. That is, the authenticating party could vary its list and observe how the client responds, in order to probe for the client's trust anchor list. This is similar to the exposure of trust anchors not participating in this extension, except that the trust anchor can be probed by only knowing the trust anchor identifier.\r\n```",
+              "createdAt": "2024-12-17T17:27:53Z",
+              "updatedAt": "2024-12-17T17:27:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6VlVBu",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-17T17:28:03Z",
+          "updatedAt": "2024-12-17T17:28:03Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKigz-s6Vl4Q4",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-17T18:23:02Z",
+          "updatedAt": "2024-12-17T18:23:03Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "Oops, nice catch.\r\n\r\n```suggestion\r\n3. Trust anchors whose identifiers the relying party sends *unconditionally*, i.e. independently of the authenticating party's behavior.\r\n```",
+              "createdAt": "2024-12-17T18:23:02Z",
+              "updatedAt": "2024-12-17T18:23:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6VnGYE",
+          "commit": {
+            "abbreviatedOid": "1427b63"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-12-17T20:36:53Z",
+          "updatedAt": "2024-12-17T20:36:53Z",
+          "comments": [
+            {
+              "originalPosition": 21,
+              "body": "Wordsmithed slightly. (Reads weird without the connecting word.)\r\n\r\n```suggestion\r\nTrust anchors that do not participate are not revealed by this extension. However, they have some fingerprinting exposure due to being trusted. Given a certification path, an authenticating party can probe whether the relying party trusts the trust anchor by seeing if the relying party accepts it.\r\n```",
+              "createdAt": "2024-12-17T20:36:53Z",
+              "updatedAt": "2024-12-17T20:36:53Z"
             }
           ]
         }
