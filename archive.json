@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-28T01:45:25.114627+00:00",
+  "timestamp": "2025-01-30T01:44:09.301441+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -4992,6 +4992,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 89,
+      "id": "PR_kwDOKigz-s6JbZiG",
+      "title": "Create empty TAI assignments table with basic instructions for assignment",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/89",
+      "state": "OPEN",
+      "author": "devonobrien",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-01-29T22:13:40Z",
+      "updatedAt": "2025-01-29T22:13:40Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "0fbe9935021ec86f1d7ed8dddcbe04b29b0247e4",
+      "headRepository": "devonobrien/tls-trust-expressions",
+      "headRefName": "main",
+      "headRefOid": "3553d19305d93a2c162c2faa014575b252015897",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
