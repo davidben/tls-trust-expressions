@@ -5,10 +5,10 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 21 June 2025                                         Google LLC
+Expires: 8 August 2025                                        Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                        18 December 2024
+                                                         4 February 2025
 
 
                       TLS Trust Anchor Identifiers
@@ -60,11 +60,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 June 2025.
+   This Internet-Draft will expire on 8 August 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
