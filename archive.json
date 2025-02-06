@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-30T01:44:09.301441+00:00",
+  "timestamp": "2025-02-06T01:47:41.000502+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -4998,26 +4998,138 @@
       "id": "PR_kwDOKigz-s6JbZiG",
       "title": "Create empty TAI assignments table with basic instructions for assignment",
       "url": "https://github.com/davidben/tls-trust-expressions/pull/89",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "devonobrien",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-01-29T22:13:40Z",
-      "updatedAt": "2025-01-29T22:13:40Z",
+      "updatedAt": "2025-01-30T20:38:56Z",
       "baseRepository": "davidben/tls-trust-expressions",
       "baseRefName": "main",
       "baseRefOid": "0fbe9935021ec86f1d7ed8dddcbe04b29b0247e4",
       "headRepository": "devonobrien/tls-trust-expressions",
       "headRefName": "main",
       "headRefOid": "3553d19305d93a2c162c2faa014575b252015897",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-01-30T20:19:10Z",
+      "mergedAt": "2025-01-30T20:19:10Z",
+      "mergedBy": "devonobrien",
+      "mergeCommit": {
+        "oid": "c59a314586c3ea819b4603af816d9c97ac777237"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6aE5YQ",
+          "commit": {
+            "abbreviatedOid": "3553d19"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-01-30T20:38:56Z",
+          "updatedAt": "2025-01-30T20:38:56Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "Oops, sorry missed this. LGTM but one comment: this uses the text form of the subject name, I think close-ish to RFC 2253 though OpenSSL's API has lots of options and I don't know which they use for `-subject`.\r\n\r\nThe problem is RFC 2253's syntax is not actually enough to give you back the name. It might be enough up to normalization, but normalization is kind of cursed. (The text syntax doesn't tell you what string type each field used.) I'm not sure what's the best thing to do here. There isn't an easy way to get a hex dump of the subject name.",
+              "createdAt": "2025-01-30T20:38:56Z",
+              "updatedAt": "2025-01-30T20:38:56Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 90,
+      "id": "PR_kwDOKigz-s6KEQ37",
+      "title": "Add a note about storage requirements for intermediates vs trust anchors",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/90",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-02-05T00:10:04Z",
+      "updatedAt": "2025-02-05T00:41:24Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "96d2215df233710bd9743f2ac5c5aaa889999357",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "trust-anchor-storage",
+      "headRefOid": "3140a2c3e650d9caf41202ff0517b4817b27f439",
+      "closedAt": "2025-02-05T00:41:21Z",
+      "mergedAt": "2025-02-05T00:41:21Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "1e28001341e681150b3d5bafa31e201e6823e47e"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6aosh7",
+          "commit": {
+            "abbreviatedOid": "a3dbd44"
+          },
+          "author": "nharper",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-05T00:15:12Z",
+          "updatedAt": "2025-02-05T00:15:12Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "> Crucially, there is no need to ship signatures with intermediates.\r\n\r\nI don't follow - should \"intermediates\" here be \"intermediates-as-trust-anchors\"?",
+              "createdAt": "2025-02-05T00:15:12Z",
+              "updatedAt": "2025-02-05T00:15:12Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6aoxZ-",
+          "commit": {
+            "abbreviatedOid": "a3dbd44"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-02-05T00:37:00Z",
+          "updatedAt": "2025-02-05T00:37:18Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "I might avoid the confusion by modifying this to\r\n\r\n\"while a trust anchor needs only subject information and a public key.  There is no need to ship signatures with a trust anchor.\"",
+              "createdAt": "2025-02-05T00:37:00Z",
+              "updatedAt": "2025-02-05T00:37:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKigz-s6aoyD6",
+          "commit": {
+            "abbreviatedOid": "a3dbd44"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-05T00:39:55Z",
+          "updatedAt": "2025-02-05T00:39:55Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "The public key is subject information. It's the _subject_ public key info. :-P Though yeah \"with intermediates\" was a typo. Will fix.",
+              "createdAt": "2025-02-05T00:39:55Z",
+              "updatedAt": "2025-02-05T00:39:55Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
