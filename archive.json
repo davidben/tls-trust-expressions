@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-09T01:51:50.167251+00:00",
+  "timestamp": "2025-02-11T01:47:23.166210+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -805,6 +805,37 @@
           "body": "This is done, or rather the ACME extension is simplified to just MIME type stuff, per @aarongable's feedback.",
           "createdAt": "2024-12-14T19:20:54Z",
           "updatedAt": "2024-12-14T19:20:54Z"
+        }
+      ]
+    },
+    {
+      "number": 91,
+      "id": "I_kwDOKigz-s6pemiT",
+      "title": "Should we be opinionated about when a client should indicate support for TAI?",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/91",
+      "state": "OPEN",
+      "author": "bob-beck",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "\nCurrently if the client examines a list of TAI's for a server (either via DNS SVCB, previous Encrypted Extensions, or any yet to be determined means) we do not say what the client should do as a result. \n\nIf the client decides it does not have a common intersection with this list it is free to:\n\nA) send an empty TAI extension, and hope the other end sends it updated information where it might now have an option\nB) send no TAI extension, to force the other end to do their legacy behaviour, relying on being able to path build it's way to an ubiquitious trust anchor from what the server sends it in the fallback case. \n\nIf a *server* decides for whatever reason to not advertise a full list of trust anchors, It can not rely on the client retrying if the client decides to fall back to the legacy behaviour. \n\nNot sure if this is fine, or not. ",
+      "createdAt": "2025-02-10T19:07:07Z",
+      "updatedAt": "2025-02-10T19:25:28Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "I think we should be opinionated and the answer should be yes, just send an empty one.",
+          "createdAt": "2025-02-10T19:20:21Z",
+          "updatedAt": "2025-02-10T19:20:21Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "In particular, the server is already expected to do something sensible in response to the empty list. That could be the default lowest common denominator credential, or a slightly more aggressive one targeting the common case, with the knowledge that the retry will work. This was a key point in the current design, to make the DNS bits slightly less load bearing.",
+          "createdAt": "2025-02-10T19:25:27Z",
+          "updatedAt": "2025-02-10T19:25:27Z"
         }
       ]
     }
