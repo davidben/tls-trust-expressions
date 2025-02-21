@@ -1,6 +1,8 @@
 # TLS Trust Anchor Negotiation
 
-This document is a high-level overview and [explainer](https://tag.w3.org/explainers/) for the [TLS Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html) and [TLS Trust Expressions](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html) drafts.
+This document is a high-level overview and [explainer](https://tag.w3.org/explainers/) for [TLS Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html).
+
+**Historical note:** This document also discusses [TLS Trust Expressions](https://datatracker.ietf.org/doc/draft-davidben-tls-trust-expr/), an earlier design for the same problem. That design was replaced by Trust Anchor Identifiers, but the discussion remains as a point of comparison in the design space.
 
 ## Authors
 

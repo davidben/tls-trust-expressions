@@ -12,7 +12,9 @@ This document discusses some of these changes, and different strategies for the 
 
 Difficulties in meeting these goals, e.g. if some PKI change prevents a server from simultaneously supporting old and new clients, will result in delays and pressure against the PKI change. When this happens, user security usually pays the price, so it is important for PKI transitions to proceed smoothly.
 
-When this document refers to "trust anchor negotiation" it means either of [TLS Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html) or [TLS Trust Expressions](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html). While they differ in approach, both mechanisms aim to allow the server to select certificates based on the client's trusted CAs.
+When this document refers to "trust anchor negotiation" it refers to mechanisms that allow TLS servers to automatically select certificates based on the client's trusted CAs. This includes the `certificate_authorities` extension, in PKIs where it is applicable, and [TLS Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html).
+
+**Historical note:** This repository previously also contained [TLS Trust Expressions](https://datatracker.ietf.org/doc/draft-davidben-tls-trust-expr/), an earlier design for trust anchor negotiation in Web-PKI-like PKIs. That design was replaced by Trust Anchor Identifiers, but the discussion in this document remains as a point of comparison in the design space.
 
 
 ## Key Rotation
