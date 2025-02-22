@@ -1,5 +1,7 @@
 ## Overview
 
+**Historical note:** This repository previously also contained [TLS Trust Expressions](https://datatracker.ietf.org/doc/draft-davidben-tls-trust-expr/), an earlier design for the problem solved by TLS Trust Anchor Identifiers. That design was replaced by Trust Anchor Identifiers, but the discussion in this document remains as a point of comparison in the design space.
+
 [TLS Trust Expressions](https://datatracker.ietf.org/doc/draft-davidben-tls-trust-expr/) is a proposed IETF draft that defines a way for TLS clients to signal their trust store contents to servers as well as supporting mechanisms that allow TLS servers to use this information to select a trusted certification path for authentication. In response to this proposal, several different scenarios pertaining to government surveillance have been discussed with various proposed arguments regarding the impact of TLS Trust Expressions.
 
 The purpose of this document is to concretely specify these scenarios, anchored by the goals, capabilities, and constraints of a surveillance-motivated government attempting to abuse this technology beyond its intended use so that we can analyze these proposed arguments in greater detail.

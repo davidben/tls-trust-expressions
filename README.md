@@ -1,22 +1,15 @@
-# TLS Trust Anchor Negotiation
+# TLS Trust Anchor Identifiers
 
-This repository contains a pair of draft mechanisms for negotiating certificate
+This repository contains a draft mechanism for negotiating certificate
 trust anchors in TLS. For an overview, the informal [explainer](explainer.md)
 document is a good starting point.
-
-## TLS Trust Anchor Identifiers
 
 * [Editor's Copy](https://davidben.github.io/tls-trust-expressions/#go.draft-beck-tls-trust-anchor-ids.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-beck-tls-trust-anchor-ids)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-beck-tls-trust-anchor-ids)
 * [Compare Editor's Copy to Individual Draft](https://davidben.github.io/tls-trust-expressions/#go.draft-beck-tls-trust-anchor-ids.diff)
 
-## TLS Trust Expressions
-
-* [Editor's Copy](https://davidben.github.io/tls-trust-expressions/#go.draft-davidben-tls-trust-expr.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-davidben-tls-trust-expr)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-davidben-tls-trust-expr)
-* [Compare Editor's Copy to Individual Draft](https://davidben.github.io/tls-trust-expressions/#go.draft-davidben-tls-trust-expr.diff)
+**Historical note:** This repository previously also contained [TLS Trust Expressions](https://datatracker.ietf.org/doc/draft-davidben-tls-trust-expr/), which was an earlier design for the same problem. That design was replaced by Trust Anchor Identifiers, but some discussion remains as a point of comparison in the design space.
 
 ## Additional Materials
 
