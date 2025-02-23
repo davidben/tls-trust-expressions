@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-20T01:49:12.593885+00:00",
+  "timestamp": "2025-02-23T01:55:19.803838+00:00",
   "repo": "davidben/tls-trust-expressions",
   "labels": [
     {
@@ -65,7 +65,7 @@
       "id": "I_kwDOKigz-s50ZUKW",
       "title": "Allow pruning deactivated trust anchors?",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
@@ -74,8 +74,8 @@
       ],
       "body": "The document is currently written to be append-only, which is correct for X.509 and also shouldn't grow significantly. @bwesterb points out Merkle tree certs have different properties:\r\n\r\n1. MTC trust anchors are minted every hour\r\n2. MTC trust anchors naturally deactivate themselves\r\n\r\nProperty 1 means the manifest will grow over time and potentially get unwieldy. But property 2 implies an easy fix. Once an MTC trust anchor expires, there is no benefit to listing it in the manifest beyond historical interest. So we could potentially allow those to get trimmed. That will, in turn, allow trimming the old versions since they become empty. We have no way to express either of these, so we may want to add some allowance for this in the format.\r\n\r\nWe also don't necessarily need to do this here. Since the manifest document is consumed by just the root programs and CAs, who know what type of CA they are, we can always put this extra allowance in the MTC document. But it would be convenient if the changes slot nicely into the existing format, so we may want to look at this a bit.",
       "createdAt": "2023-10-19T18:00:38Z",
-      "updatedAt": "2024-07-10T16:05:33Z",
-      "closedAt": null,
+      "updatedAt": "2025-02-22T00:46:57Z",
+      "closedAt": "2025-02-22T00:46:57Z",
       "comments": [
         {
           "author": "aarongable",
@@ -267,7 +267,7 @@
       "id": "I_kwDOKigz-s6HzX5p",
       "title": "How do trust expressions and sctNotAfter removals work?",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/13",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
@@ -276,8 +276,8 @@
       ],
       "body": "I suspect there is a way to express this with the draft as-is, since you just need newly-issued certificates to stop being associated with newer versions of the trust store, but filing this so we remember to think about this.",
       "createdAt": "2024-05-03T20:38:17Z",
-      "updatedAt": "2024-07-10T16:05:34Z",
-      "closedAt": null,
+      "updatedAt": "2025-02-22T00:46:56Z",
+      "closedAt": "2025-02-22T00:46:56Z",
       "comments": []
     },
     {
@@ -285,7 +285,7 @@
       "id": "I_kwDOKigz-s6KDjrS",
       "title": "Write up design considerations section",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/17",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -296,8 +296,8 @@
       ],
       "body": "We ought to document the design rationale somewhere. Some things we could discuss:\r\n\r\n* All the complications around how we need to handle version skew\r\n* Growth of manifest list over time \r\n* Growth of TrustStoreInclusion metadata overtime",
       "createdAt": "2024-05-24T20:13:56Z",
-      "updatedAt": "2024-07-10T16:05:35Z",
-      "closedAt": null,
+      "updatedAt": "2025-02-22T00:46:56Z",
+      "closedAt": "2025-02-22T00:46:56Z",
       "comments": []
     },
     {
@@ -392,7 +392,7 @@
       "id": "I_kwDOKigz-s6Kp5ZT",
       "title": "A server supporting trust expressions needs to have accurate time. ",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/25",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bob-beck",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -401,8 +401,8 @@
       ],
       "body": "While possibly not an unusual requirement in 2024, Today, a server serving a certificate does not need to know the time, the only time that matters is the client's notion of time to evaluate the validity of the certificate. \r\n\r\nWe need to call out that (in absence of other things) the server's time causing trust expresions to not choose a certificate it believes is expired could result in the default certificate being sent to a client that would otherwise have been presented with an expired certificate, and be allowed to possibly decide based on it's own notion of time that it was fine, (or that it did not care)\r\n\r\nI *think* this change is kind of \"ok\" but it is certainly a change compared to today. \r\n\r\n",
       "createdAt": "2024-05-30T17:48:50Z",
-      "updatedAt": "2024-07-10T16:05:35Z",
-      "closedAt": null,
+      "updatedAt": "2025-02-22T00:46:56Z",
+      "closedAt": "2025-02-22T00:46:56Z",
       "comments": []
     },
     {
@@ -410,7 +410,7 @@
       "id": "I_kwDOKigz-s6Kp9m5",
       "title": "A client does not get a chance to evaluate a non-matching certificate of a trust expression. ",
       "url": "https://github.com/davidben/tls-trust-expressions/issues/26",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bob-beck",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -419,8 +419,8 @@
       ],
       "body": "\r\nHow important this is we are unsure, but if a client sending a trust expression sends a non matching trust expression that\r\nthe server does not choose (because for example, the server has a distrusted root, time, etc) The client does not then get\r\nto look at what the server would have sent, but instead sees the (possibly very legacy) fallback certificate. \r\n\r\nAs an example, we could have a client that trusts entirely a new set of roots (PQ?) and then instead of being offered a choice\r\nof an \"older less trusted or expired\" PQ cert that it might choose to work with, It instead gets a fallback certifiate with classical algorithms it does not even support. \r\n\r\n",
       "createdAt": "2024-05-30T18:00:37Z",
-      "updatedAt": "2024-12-14T19:22:28Z",
-      "closedAt": null,
+      "updatedAt": "2025-02-22T00:46:55Z",
+      "closedAt": "2025-02-22T00:46:55Z",
       "comments": [
         {
           "author": "davidben",
@@ -817,10 +817,12 @@
       "author": "bob-beck",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "trust-anchor-ids"
+      ],
       "body": "\nCurrently if the client examines a list of TAI's for a server (either via DNS SVCB, previous Encrypted Extensions, or any yet to be determined means) we do not say what the client should do as a result. \n\nIf the client decides it does not have a common intersection with this list it is free to:\n\nA) send an empty TAI extension, and hope the other end sends it updated information where it might now have an option\nB) send no TAI extension, to force the other end to do their legacy behaviour, relying on being able to path build it's way to an ubiquitious trust anchor from what the server sends it in the fallback case. \n\nIf a *server* decides for whatever reason to not advertise a full list of trust anchors, It can not rely on the client retrying if the client decides to fall back to the legacy behaviour. \n\nNot sure if this is fine, or not. ",
       "createdAt": "2025-02-10T19:07:07Z",
-      "updatedAt": "2025-02-10T19:25:28Z",
+      "updatedAt": "2025-02-20T18:44:51Z",
       "closedAt": null,
       "comments": [
         {
@@ -838,6 +840,24 @@
           "updatedAt": "2025-02-10T19:25:27Z"
         }
       ]
+    },
+    {
+      "number": 92,
+      "id": "I_kwDOKigz-s6q4uAp",
+      "title": "s/trust anchor identifier/trust anchor ID/g",
+      "url": "https://github.com/davidben/tls-trust-expressions/issues/92",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "trust-anchor-ids"
+      ],
+      "body": "I suspect \"identifier\" came out of preemptive adherence to the style preference to expand acronyms, but surely ID is a well known enough acronym. (Or we can call it \"trust anchor identifier (trust anchor ID)\" the first time and move on.\n\nMostly I would like to have an \"official\" short-ish phrase so we stop being tempted to use \"TAI\" in more formal contexts like API names.",
+      "createdAt": "2025-02-20T18:44:32Z",
+      "updatedAt": "2025-02-20T18:44:51Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -5159,6 +5179,61 @@
               "updatedAt": "2025-02-05T00:39:55Z"
             }
           ]
+        }
+      ]
+    },
+    {
+      "number": 93,
+      "id": "PR_kwDOKigz-s6MGg_R",
+      "title": "Prepare repository for transition to tlswg",
+      "url": "https://github.com/davidben/tls-trust-expressions/pull/93",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Remove draft-davidben-tls-trust-expr (still in git history if anyone wants it for reference), and preface most of the supplementary documents with a historical note.\r\n\r\nThis does not (yet) rename the document, or update URLs. I figure that's best done after we transfer + rename the repository. But we can get this part sorted out first.\r\n\r\nAlso close out all the old trust-exprs issues:\r\n\r\n* Closes #26\r\n* Closes #25\r\n* Closes #17\r\n* Closes #13\r\n* Closes #1",
+      "createdAt": "2025-02-21T21:07:10Z",
+      "updatedAt": "2025-02-22T00:46:54Z",
+      "baseRepository": "davidben/tls-trust-expressions",
+      "baseRefName": "main",
+      "baseRefOid": "1e28001341e681150b3d5bafa31e201e6823e47e",
+      "headRepository": "davidben/tls-trust-expressions",
+      "headRefName": "prep-transfer",
+      "headRefOid": "ce61e99590b3cd281d7a6b2fca4566fad7ed7072",
+      "closedAt": "2025-02-22T00:46:54Z",
+      "mergedAt": "2025-02-22T00:46:54Z",
+      "mergedBy": "devonobrien",
+      "mergeCommit": {
+        "oid": "86bf01b1f41b3ca4ae94b34c23639d297f0b95fe"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6dAz4w",
+          "commit": {
+            "abbreviatedOid": "ce61e99"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "lgtm!",
+          "createdAt": "2025-02-21T21:17:04Z",
+          "updatedAt": "2025-02-21T21:17:04Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKigz-s6dBcr5",
+          "commit": {
+            "abbreviatedOid": "ce61e99"
+          },
+          "author": "devonobrien",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Repo prep for tlswg transfer LGTM.",
+          "createdAt": "2025-02-21T22:26:04Z",
+          "updatedAt": "2025-02-21T22:26:04Z",
+          "comments": []
         }
       ]
     }
