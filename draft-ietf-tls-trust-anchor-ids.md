@@ -16,8 +16,8 @@ venue:
   type: "Working Group"
   mail: "tls@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/tls/"
-  github: "davidben/tls-trust-expressions"
-  latest: "https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html"
+  github: "tlswg/tls-trust-anchor-ids"
+  latest: "https://tlswg.github.io/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html"
 
 author:
  -
