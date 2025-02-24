@@ -1,6 +1,6 @@
 # TLS Trust Anchor Negotiation
 
-This document is a high-level overview and [explainer](https://tag.w3.org/explainers/) for [TLS Trust Anchor Identifiers](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html).
+This document is a high-level overview and [explainer](https://tag.w3.org/explainers/) for [TLS Trust Anchor Identifiers](https://tlswg.github.io/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html).
 
 **Historical note:** This document also discusses [TLS Trust Expressions](https://datatracker.ietf.org/doc/draft-davidben-tls-trust-expr/), an earlier design for the same problem. That design was replaced by Trust Anchor Identifiers, but the discussion remains as a point of comparison in the design space.
 
@@ -12,7 +12,7 @@ This document is a high-level overview and [explainer](https://tag.w3.org/explai
 
 ## Participate
 
-* https://github.com/davidben/tls-trust-expressions/issues
+* https://github.com/tlswg/tls-trust-anchor-ids/issues
 * https://www.ietf.org/mailman/listinfo/tls
 
 ## Introduction
@@ -95,9 +95,9 @@ Although they aim to solve the same problem, the two drafts work in very differe
 
 * Trust Expressions require that CAs continually fetch information from manifests that are published by root programs, while Trust Anchor IDs rely only on static pre-assigned trust anchor identifiers.
 
-* Trust Anchor IDs, when trust anchors are conditionally sent, have different fingerprinting properties. See [Privacy Considerations](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html#name-privacy-considerations).
+* Trust Anchor IDs, when trust anchors are conditionally sent, have different fingerprinting properties. See [Privacy Considerations](https://tlswg.github.io/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-privacy-considerations).
 
-* Trust Anchor IDs can only express large client trust stores (for server certificates), not large server trust stores. Large trust stores rely on the retry mechanism described in [the draft](https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html#name-retry-mechanism), which is not available to client certificates.
+* Trust Anchor IDs can only express large client trust stores (for server certificates), not large server trust stores. Large trust stores rely on the retry mechanism described in [the draft](https://tlswg.github.io/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-retry-mechanism), which is not available to client certificates.
 
 The two mechanisms can be deployed together. An authenticating party can have metadata for both mechanisms available, and a relying party can advertise both. Mechanisms with aspects of both may potentially also be designed.
 
@@ -196,7 +196,7 @@ This means:
 ## Key Scenarios
 
 The following section is an overview of scenarios where trust anchor negotiation is helpful. For more details, see the
-[draft specification](https://davidben.github.io/tls-trust-expressions/draft-davidben-tls-trust-expr.html#name-use-cases) and [this more detailed discussion](pki-transition-strategies.md).
+[draft specification](https://tlswg.github.io/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-use-cases) and [this more detailed discussion](pki-transition-strategies.md).
 
 ### Key Rotation
 
@@ -222,7 +222,7 @@ The mechanisms in this document can aid PKI transitions beyond key rotation. For
 
 This same procedure may also be used to transition between newer, more size-efficient signature algorithms, as they are developed.
 
-[[TODO: There's one missing piece, which is that some servers may attempt to parse the signature algorithms out of the certificate chain. See https://github.com/davidben/tls-trust-expressions/issues/9 ]]
+[[TODO: There's one missing piece, which is that some servers may attempt to parse the signature algorithms out of the certificate chain. See https://github.com/tlswg/tls-trust-anchor-ids/issues/9 ]]
 
 ### Intermediate Elision
 

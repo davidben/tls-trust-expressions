@@ -107,7 +107,7 @@ Goal 2: A TLS client trusting a government-operated trust anchor allows for inte
 
 Goal 3: Trust Expressions deployment and usage has some amount of impact on the ability to actively surveil connections without detection: if some clients added the trust anchor, while others did not, the surveillant may wish to only intercept the clients that added the trust anchor. This reduces the odds of detection from certificate validation failures in other clients. Trust Expressions provides a mechanism to differentiate the two client populations.
 
-However, TLS fingerprinting—using other properties like cipher suite preferences and TLS extensions—is already used to differentiate clients. While fingerprinting is [not viable](https://github.com/davidben/tls-trust-expressions/blob/main/explainer.md#fingerprinting) for a broad, diverse set of TLS servers, it is viable for a surveillant’s single interception service. Trust Expressions only impacts detection where this differentiation was not already possible. \
+However, TLS fingerprinting—using other properties like cipher suite preferences and TLS extensions—is already used to differentiate clients. While fingerprinting is [not viable](https://github.com/tlswg/tls-trust-anchor-ids/blob/main/explainer.md#fingerprinting) for a broad, diverse set of TLS servers, it is viable for a surveillant’s single interception service. Trust Expressions only impacts detection where this differentiation was not already possible. \
  \
 If the surveillant targets any clients that enforce [Certificate Transparency](https://certificate.transparency.dev/), the mis-issued certificates will need to be publicly logged. In this case, detection is more robust, and client differentiation, with or without Trust Expressions, has no significant impact.
 
@@ -212,7 +212,7 @@ This outcome relies on root programs subverting their own trust anchor inclusion
 
 Contrary to this proposed argument, TLS Trust Expressions removes some pressure on TLS clients adding new trust anchors due to their broad deployment. Today, a root program might heavily consider the interoperability concerns of not adding a widely-trusted trust anchor due to web servers’ inability to distinguish TLS client trust. If instead, the root program knew that web servers could use trust expressions to deliver TLS client -specific certificates, there is no longer an interoperability need to trust the same set of trust anchors as all other TLS clients.
 
-This is further explored in the [Security Considerations](https://github.com/davidben/tls-trust-expressions/blob/main/draft-davidben-tls-trust-expr.md#security-considerations) section of the draft.
+This is further explored in the [Security Considerations](https://www.ietf.org/archive/id/draft-davidben-tls-trust-expr-04.html#name-security-considerations) section of the draft.
 
 
 ### Proposed Argument 2a: Pre-provisioning untrusted certificates increases the chances of mandated client trust 
