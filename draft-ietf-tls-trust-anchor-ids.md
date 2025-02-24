@@ -3,7 +3,7 @@ title: "TLS Trust Anchor Identifiers"
 category: std
 
 
-docname: draft-beck-tls-trust-anchor-ids-latest
+docname: draft-ietf-tls-trust-anchor-ids-latest
 submissiontype: IETF
 number:
 date:
