@@ -5,14 +5,14 @@
 Transport Layer Security                                         B. Beck
 Internet-Draft                                               D. Benjamin
 Intended status: Standards Track                              D. O'Brien
-Expires: 26 August 2025                                       Google LLC
+Expires: 29 August 2025                                       Google LLC
                                                               K. Nekritz
                                                                     Meta
-                                                        22 February 2025
+                                                        25 February 2025
 
 
                       TLS Trust Anchor Identifiers
-                 draft-beck-tls-trust-anchor-ids-latest
+                 draft-ietf-tls-trust-anchor-ids-latest
 
 Abstract
 
@@ -32,10 +32,9 @@ About This Document
    This note is to be removed before publishing as an RFC.
 
    The latest revision of this draft can be found at
-   https://davidben.github.io/tls-trust-expressions/draft-beck-tls-
-   trust-anchor-ids.html.  Status information for this document may be
-   found at https://datatracker.ietf.org/doc/draft-beck-tls-trust-
-   anchor-ids/.
+   https://tlswg.github.io/tls-trust-anchor-ids/draft-ietf-tls-trust-
+   anchor-ids.html.  Status information for this document may be found
+   at https://datatracker.ietf.org/doc/draft-ietf-tls-trust-anchor-ids/.
 
    Discussion of this document takes place on the Transport Layer
    Security Working Group mailing list (mailto:tls@ietf.org), which is
@@ -43,7 +42,7 @@ About This Document
    at https://www.ietf.org/mailman/listinfo/tls/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/davidben/tls-trust-expressions.
+   https://github.com/tlswg/tls-trust-anchor-ids.
 
 Status of This Memo
 
@@ -60,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 August 2025.
+   This Internet-Draft will expire on 29 August 2025.
 
 Copyright Notice
 
@@ -459,7 +458,7 @@ Table of Contents
    [[TODO: Retrying in a new connection is expensive and cannot be done
    from within the TLS stack in most implementations.  Consider
    handshake modifications to instead retry within the same connection.
-   https://github.com/davidben/tls-trust-expressions/issues/53 ]]
+   https://github.com/tlswg/tls-trust-anchor-ids/issues/53 ]]
 
    This mechanism allows the connection to recover from a certificate
    selection failure, e.g. due to the client not revealing its full
