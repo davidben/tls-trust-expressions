@@ -18,6 +18,7 @@
 Gemfile.lock
 archive.json
 draft-beck-tls-trust-anchor-ids.xml
+draft-ietf-tls-trust-anchor-ids.xml
 package-lock.json
 report.xml
 !requirements.txt

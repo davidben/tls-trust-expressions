@@ -1,4 +1,4 @@
 # License
 
 See the
-[guidelines for contributions](https://github.com/davidben/tls-trust-expressions/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/tlswg/tls-trust-anchor-ids/blob/main/CONTRIBUTING.md).

@@ -3,7 +3,7 @@ title: "TLS Trust Anchor Identifiers"
 category: std
 
 
-docname: draft-beck-tls-trust-anchor-ids-latest
+docname: draft-ietf-tls-trust-anchor-ids-latest
 submissiontype: IETF
 number:
 date:
@@ -16,8 +16,8 @@ venue:
   type: "Working Group"
   mail: "tls@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/tls/"
-  github: "davidben/tls-trust-expressions"
-  latest: "https://davidben.github.io/tls-trust-expressions/draft-beck-tls-trust-anchor-ids.html"
+  github: "tlswg/tls-trust-anchor-ids"
+  latest: "https://tlswg.github.io/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html"
 
 author:
  -
@@ -246,7 +246,7 @@ If the client receives either a connection error or an untrusted certificate, th
 
 Clients SHOULD retry at most once per connection attempt.
 
-[[TODO: Retrying in a new connection is expensive and cannot be done from within the TLS stack in most implementations. Consider handshake modifications to instead retry within the same connection. https://github.com/davidben/tls-trust-expressions/issues/53 ]]
+[[TODO: Retrying in a new connection is expensive and cannot be done from within the TLS stack in most implementations. Consider handshake modifications to instead retry within the same connection. https://github.com/tlswg/tls-trust-anchor-ids/issues/53 ]]
 
 This mechanism allows the connection to recover from a certificate selection failure, e.g. due to the client not revealing its full preference list, at additional latency cost. {{dns-service-parameter}} describes an optimization which can avoid this cost.
 
