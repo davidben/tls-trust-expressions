@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-27T01:51:34.190399+00:00",
+  "timestamp": "2025-03-02T01:56:42.852312+00:00",
   "repo": "tlswg/tls-trust-anchor-ids",
   "labels": [
     {
@@ -5283,6 +5283,48 @@
           "body": "",
           "createdAt": "2025-02-25T01:16:04Z",
           "updatedAt": "2025-02-25T01:16:04Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 95,
+      "id": "PR_kwDOKigz-s6M3vox",
+      "title": "Reformat assignment table format and add initial batch of Google IDs",
+      "url": "https://github.com/tlswg/tls-trust-anchor-ids/pull/95",
+      "state": "MERGED",
+      "author": "devonobrien",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Several Google trust anchor identifiers have been assigned OIDs under Google's 11129 PEN.  This PR adds these IDs to assignments.md",
+      "createdAt": "2025-02-28T00:12:25Z",
+      "updatedAt": "2025-02-28T21:59:47Z",
+      "baseRepository": "tlswg/tls-trust-anchor-ids",
+      "baseRefName": "main",
+      "baseRefOid": "ae24c09d83296c1e30ad36db7e61de29d8d15ebb",
+      "headRepository": "devonobrien/tls-trust-anchor-ids",
+      "headRefName": "main",
+      "headRefOid": "965123d40d26f2eed4b25da76eb2426e6319ed87",
+      "closedAt": "2025-02-28T21:59:47Z",
+      "mergedAt": "2025-02-28T21:59:47Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "b153ede3b8428bc5189dd7e6fe0ce1f8a98094cf"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKigz-s6eD_Qw",
+          "commit": {
+            "abbreviatedOid": "965123d"
+          },
+          "author": "davidben",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-02-28T21:59:37Z",
+          "updatedAt": "2025-02-28T21:59:37Z",
           "comments": []
         }
       ]
