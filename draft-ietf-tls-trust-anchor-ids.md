@@ -109,9 +109,9 @@ Without a negotiation mechanism, the authenticating party must obtain a single c
 
 * When a relying party must update its policies to meet new security requirements, it adds to relying party diversity and the challenges that authenticating parties and CAs face. The relying party must then choose between compromising on user security or burdening the rest of the ecosystem, potentially impacting availability in the process.
 
-To address this, this document introduces Trust Anchor Identifiers. There are three parts to this mechanism:
+To address this, this document introduces Trust Anchor Identifiers (Trust Anchor IDs). There are three parts to this mechanism:
 
-1. {{trust-anchor-ids}} defines *trust anchor identifiers*, which are short, unique identifiers for X.509 trust anchors.
+1. {{trust-anchor-ids}} defines *trust anchor IDs*, which are short, unique identifiers for X.509 trust anchors.
 
 2. {{tls-extension}} defines a TLS extension that communicates the relying party's requested trust anchors, and the authenticating party's available ones. When the relying party is a TLS client, it can mitigate large lists by sending a, possibly empty, subset of its trust anchors to the TLS server. The server provides its list of available trust anchors in response so that the client can retry on mismatch.
 
@@ -151,45 +151,45 @@ Certification path:
 
 # Trust Anchor Identifiers {#trust-anchor-ids}
 
-This section defines trust anchor identifiers, which are short, unique identifiers for a trust anchor. To simplify allocation, these identifiers are defined with object identifiers (OIDs) {{X680}} and IANA-registered Private Enterprise Numbers (PENs) {{!RFC9371}}:
+This section defines trust anchor IDs, which are short, unique identifiers for a trust anchor. To simplify allocation, trust anchor IDs are defined with object identifiers (OIDs) {{X680}} and IANA-registered Private Enterprise Numbers (PENs) {{!RFC9371}}:
 
-A trust anchor identifier is defined with an OID under the OID arc of some PEN. For compactness, they are represented as relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. For example, an organization with PEN 32473 might define a trust anchor identifier with the OID `1.3.6.1.4.1.32473.1`. As a relative object identifier, it would be the OID `32473.1`.
+A trust anchor ID is defined with an OID under the OID arc of some PEN. For compactness, they are represented as relative object identifiers (see Section 33 of {{X680}}), relative to the OID prefix `1.3.6.1.4.1`. For example, an organization with PEN 32473 might define a trust anchor ID with the OID `1.3.6.1.4.1.32473.1`. As a relative object identifier, it would be the OID `32473.1`.
 
-Depending on the protocol, trust anchor identifiers may be represented in one of three ways:
+Depending on the protocol, trust anchor IDs may be represented in one of three ways:
 
-* For use in ASN.1-based protocols, a trust anchor identifier's ASN.1 representation is the relative object identifier described above. This may be encoded in DER {{X690}}, or some other ASN.1 encoding. The example identifier's DER encoding is the six-octet sequence `{0x0d, 0x04, 0x81, 0xfd, 0x59, 0x01}`.
+* For use in ASN.1-based protocols, a trust anchor ID's ASN.1 representation is the relative object identifier described above. This may be encoded in DER {{X690}}, or some other ASN.1 encoding. The example ID's DER encoding is the six-octet sequence `{0x0d, 0x04, 0x81, 0xfd, 0x59, 0x01}`.
 
-* For use in binary protocols such as TLS, a trust anchor identifier's binary representation consists of the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of {{X690}}. Note this omits the tag and length portion of the encoding. The example identifier's binary representation is the four-octet sequence `{0x81, 0xfd, 0x59, 0x01}`.
+* For use in binary protocols such as TLS, a trust anchor ID's binary representation consists of the contents octets of the relative object identifier's DER encoding, as described in Section 8.20 of {{X690}}. Note this omits the tag and length portion of the encoding. The example ID's binary representation is the four-octet sequence `{0x81, 0xfd, 0x59, 0x01}`.
 
-* For use in ASCII-compatible text protocols, a trust anchor identifier's ASCII representation is the relative object identifier in dotted decimal notation. The example identifier's ASCII representation is `32473.1`.
+* For use in ASCII-compatible text protocols, a trust anchor ID's ASCII representation is the relative object identifier in dotted decimal notation. The example ID's ASCII representation is `32473.1`.
 
-Trust anchor identifiers SHOULD be allocated by the CA operator and common among relying parties that trust the CA. They MAY be allocated by another party, e.g. when bootstrapping an existing ecosystem, if all parties agree on the identifier. In particular, the protocol requires authenticating and relying parties to agree, and the authenticating party's configuration typically comes from the CA.
+Trust anchor IDs SHOULD be allocated by the CA operator and common among relying parties that trust the CA. They MAY be allocated by another party, e.g. when bootstrapping an existing ecosystem, if all parties agree on the ID. In particular, the protocol requires authenticating and relying parties to agree, and the authenticating party's configuration typically comes from the CA.
 
-The length of a trust anchor identifier's binary representation MUST NOT exceed 255 bytes. It SHOULD be significantly shorter, for bandwidth efficiency.
+The length of a trust anchor ID's binary representation MUST NOT exceed 255 bytes. It SHOULD be significantly shorter, for bandwidth efficiency.
 
 ## Relying Party Configuration
 
-Relying parties are configured with one or more supported trust anchors. Each trust anchor that participates in this protocol must have an associated trust anchor identifier.
+Relying parties are configured with one or more supported trust anchors. Each trust anchor that participates in this protocol must have an associated trust anchor ID.
 
-When trust anchors are represented as X.509 certificates, the X.509 trust anchor identifier extension MAY be used to carry this identifier. The trust anchor identifier extension has an `extnID` of `id-trustAnchorIdentifier` and an `extnValue` containing a DER-encoded TrustAnchorIdentifier structure, defined below. The TrustAnchorIdentifier is the trust anchor identifier's ASN.1 representation, described in {{trust-anchor-ids}}. This extension MUST be non-critical.
+When trust anchors are represented as X.509 certificates, the X.509 trust anchor ID extension MAY be used to carry this ID. The trust anchor ID extension has an `extnID` of `id-trustAnchorID` and an `extnValue` containing a DER-encoded TrustAnchorID structure, defined below. The TrustAnchorID is the trust anchor ID's ASN.1 representation, described in {{trust-anchor-ids}}. This extension MUST be non-critical.
 
 ~~~
-id-trustAnchorIdentifier OBJECT IDENTIFIER ::= { TBD }
+id-trustAnchorID OBJECT IDENTIFIER ::= { TBD }
 
-TrustAnchorIdentifier ::= RELATIVE-OID
+TrustAnchorID ::= RELATIVE-OID
 ~~~
 
-Relying parties MAY instead or additionally configure trust anchor identifiers via some application-specific out-of-band information.
+Relying parties MAY instead or additionally configure trust anchor IDs via some application-specific out-of-band information.
 
-Relying parties MAY support trust anchors without associated trust anchor identifiers, but such trust anchors will not participate in this protocol. Those trust anchors MAY participate in other trust anchor negotiation protocols, such as the `certificate_authorities` extension.
+Relying parties MAY support trust anchors without associated trust anchor IDs, but such trust anchors will not participate in this protocol. Those trust anchors MAY participate in other trust anchor negotiation protocols, such as the `certificate_authorities` extension.
 
 ## Authenticating Party Configuration
 
 Authenticating parties are configured with one or more candidate certification paths to present in TLS, in some preference order. This preference order is used when multiple candidate paths are usable for a connection. For example, the authenticating party may prefer candidates that minimize message size or have more performant private keys.
 
-Each candidate path which participates in this protocol must be configured with the trust anchor identifier for its corresponding trust anchor. It is RECOMMENDED, though not required, that this information come from the CA. {{certificate-properties}} defines a RECOMMENDED format for this information, along with an optional ACME {{!RFC8555}} extension for CAs to send it.
+Each candidate path which participates in this protocol must be configured with the trust anchor ID for its corresponding trust anchor. It is RECOMMENDED, though not required, that this information come from the CA. {{certificate-properties}} defines a RECOMMENDED format for this information, along with an optional ACME {{!RFC8555}} extension for CAs to send it.
 
-Authenticating parties MAY have candidate certification paths without associated trust anchor identifiers, but such paths will not participate in this protocol. Those paths MAY participate in other trust anchor negotiation protocols, such as the `certificate_authorities` extension.
+Authenticating parties MAY have candidate certification paths without associated trust anchor IDs, but such paths will not participate in this protocol. Those paths MAY participate in other trust anchor negotiation protocols, such as the `certificate_authorities` extension.
 
 # TLS Extension
 
@@ -202,22 +202,22 @@ The `trust_anchors` extension is defined using the structures below:
 ~~~
 enum { trust_anchors(TBD), (2^16-1) } ExtensionType;
 
-opaque TrustAnchorIdentifier<1..2^8-1>;
+opaque TrustAnchorID<1..2^8-1>;
 
-TrustAnchorIdentifier TrustAnchorIdentifierList<0..2^16-1>;
+TrustAnchorID TrustAnchorIDList<0..2^16-1>;
 ~~~
 
-When the extension is sent in the ClientHello or CertificateRequest messages, the `extension_data` is a TrustAnchorIdentifierList and indicates that the sender supports the specified trust anchors. The list is unordered, and MAY be empty. Each TrustAnchorIdentifier uses the binary representation, as described in {{trust-anchor-ids}}.
+When the extension is sent in the ClientHello or CertificateRequest messages, the `extension_data` is a TrustAnchorIDList and indicates that the sender supports the specified trust anchors. The list is unordered, and MAY be empty. Each TrustAnchorID uses the binary representation, as described in {{trust-anchor-ids}}.
 
-When the extension is sent in EncryptedExtensions, the `extension_data` is a TrustAnchorIdentifierList containing the list of trust anchors that server has available, in the server's preference order, and MUST NOT be empty.
+When the extension is sent in EncryptedExtensions, the `extension_data` is a TrustAnchorIDList containing the list of trust anchors that server has available, in the server's preference order, and MUST NOT be empty.
 
-When the extension is sent in Certificate, the `extension_data` MUST be empty and indicates that the sender sent the certificate because the certificate matched a trust anchor identifier sent by the peer. When used in this form, the extension may only be sent in the first CertificateEntry. It MUST NOT be sent in subsequent ones.
+When the extension is sent in Certificate, the `extension_data` MUST be empty and indicates that the sender sent the certificate because the certificate matched a trust anchor ID sent by the peer. When used in this form, the extension may only be sent in the first CertificateEntry. It MUST NOT be sent in subsequent ones.
 
 ## Certificate Selection
 
 A `trust_anchors` extension in the ClientHello or CertificateRequest is processed similarly to the `certificate_authorities` extension. The relying party indicates some set of supported trust anchors in the ClientHello or CertificateRequest `trust_anchors` extension. The authenticating party then selects a certificate from its candidate certification paths (see {{authenticating-party-configuration}}), as described in {{Section 4.4.2.2 of RFC8446}} and {{Section 4.4.2.3 of RFC8446}}. This process is extended as follows:
 
-If the ClientHello or CertificateRequest contains a `trust_anchors` extension, the authenticating party SHOULD send a certification path whose trust anchor identifier appears in the relying party's `trust_anchors` extension.
+If the ClientHello or CertificateRequest contains a `trust_anchors` extension, the authenticating party SHOULD send a certification path whose trust anchor ID appears in the relying party's `trust_anchors` extension.
 
 If the ClientHello or CertificateRequest contains both `trust_anchors` and `certificate_authorities`, certification paths that satisfy either extension's criteria may be used. This additionally applies to future extensions which play a similar role.
 
@@ -231,18 +231,18 @@ If a relying party receives this extension in the Certificate message, it MAY ch
 
 ## Retry Mechanism
 
-When the relying party is a client, it may choose not to send its full trust anchor identifier list due to fingerprinting risks (see {{privacy-considerations}}), or because the list is too large. The client MAY send a subset of supported trust anchors, or an empty list. This subset may be determined by, possibly outdated, prior knowledge about the server, such as {{dns-service-parameter}} or past connections.
+When the relying party is a client, it may choose not to send its full trust anchor ID list due to fingerprinting risks (see {{privacy-considerations}}), or because the list is too large. The client MAY send a subset of supported trust anchors, or an empty list. This subset may be determined by, possibly outdated, prior knowledge about the server, such as {{dns-service-parameter}} or past connections.
 
 To accommodate this, when receiving a ClientHello with `trust_anchors`, the server collects all candidate certification paths which:
 
-* Have a trust anchor identifier, and
+* Have a trust anchor ID, and
 * Satisfy the conditions in {{Section 4.4.2.2 of RFC8446}}, with the exception of `certification_authorities`, and any future extensions that play a similar role
 
-If this collection is non-empty, the server sends a `trust_anchors` extension in EncryptedExtensions, containing the corresponding trust anchor identifiers in preference order.
+If this collection is non-empty, the server sends a `trust_anchors` extension in EncryptedExtensions, containing the corresponding trust anchor IDs in preference order.
 
 When a client sends a subset or empty list in `trust_anchors`, it SHOULD implement the following retry mechanism:
 
-If the client receives either a connection error or an untrusted certificate, the client looks in server's EncryptedExtensions for a trust anchor identifier that it trusts. If there are multiple, it selects an option based on the server's preference order and its local preferences. It then makes a new connection to the same endpoint, sending only the selected trust anchor identifier in the ClientHello `trust_anchors` extension. If the EncryptedExtensions had no `trust_anchor` extension, or no match was found, the client returns the error to the application.
+If the client receives either a connection error or an untrusted certificate, the client looks in server's EncryptedExtensions for a trust anchor ID that it trusts. If there are multiple, it selects an option based on the server's preference order and its local preferences. It then makes a new connection to the same endpoint, sending only the selected trust anchor ID in the ClientHello `trust_anchors` extension. If the EncryptedExtensions had no `trust_anchor` extension, or no match was found, the client returns the error to the application.
 
 Clients SHOULD retry at most once per connection attempt.
 
@@ -258,11 +258,11 @@ This section defines the `tls-trust-anchors` SvcParamKey {{!RFC9460}}. TLS serve
 
 ## Syntax
 
-The `tls-trust-anchors` parameter contains an ordered list of one or more trust anchor identifiers, in server preference order.
+The `tls-trust-anchors` parameter contains an ordered list of one or more trust anchor IDs, in server preference order.
 
-The presentation `value` of the SvcParamValue is a non-empty comma-separated list ({{Appendix A.1 of RFC9460}}). Each element of the list is a trust anchor identifier in the ASCII representation defined in {{trust-anchor-ids}}. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
+The presentation `value` of the SvcParamValue is a non-empty comma-separated list ({{Appendix A.1 of RFC9460}}). Each element of the list is a trust anchor ID in the ASCII representation defined in {{trust-anchor-ids}}. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
 
-The wire format of the SvcParamValue is determined by prefixing each trust anchor identifier with its length as a single octet, then concatenating each of these length-value pairs to form the SvcParamValue. These pairs MUST exactly fill the SvcParamValue; otherwise, the SvcParamValue is malformed.
+The wire format of the SvcParamValue is determined by prefixing each trust anchor ID with its length as a single octet, then concatenating each of these length-value pairs to form the SvcParamValue. These pairs MUST exactly fill the SvcParamValue; otherwise, the SvcParamValue is malformed.
 
 For example, if a TLS server has three available certification paths issued by `32473.1`, `32473.2.1`, and `32473.2.2`, respectively, the DNS record in presentation syntax may be:
 
@@ -271,7 +271,7 @@ example.net.  7200  IN SVCB 3 server.example.net. (
     tls-trust-anchors=32473.1,32473.2.1,32473.2.2 )
 ~~~
 
-The wire format of the SvcParamValue would be the 17 octets below. In the example, the octets comprising each trust anchor identifier are placed on separate lines for clarity
+The wire format of the SvcParamValue would be the 17 octets below. In the example, the octets comprising each trust anchor ID are placed on separate lines for clarity
 
 ~~~
 0x04, 0x81, 0xfd, 0x59, 0x01,
@@ -281,9 +281,9 @@ The wire format of the SvcParamValue would be the 17 octets below. In the exampl
 
 ## Configuring Services
 
-Services SHOULD include the trust anchor identifier for each of their available certification paths, in preference order, in the `tls-trust-anchors` of their HTTPS or SVCB endpoints. As TLS configuration is updated, services SHOULD update the DNS record to match. The mechanism for this is out of scope for this document, but services are RECOMMENDED to automate this process.
+Services SHOULD include the trust anchor ID for each of their available certification paths, in preference order, in the `tls-trust-anchors` of their HTTPS or SVCB endpoints. As TLS configuration is updated, services SHOULD update the DNS record to match. The mechanism for this is out of scope for this document, but services are RECOMMENDED to automate this process.
 
-Services MAY have certification paths without trust anchor identifiers, but those paths will not participate in this mechanism.
+Services MAY have certification paths without trust anchor IDs, but those paths will not participate in this mechanism.
 
 ## Client Behavior
 
@@ -295,14 +295,14 @@ Although this service parameter is intended to reduce trust anchor mismatches, m
 
 # Certificate Properties {#certificate-properties}
 
-As described in {{authenticating-party-configuration}}, certification paths participating in this mechanism must be configured with a trust anchor identifier. This section introduces a RECOMMENDED extensible CertificatePropertyList structure for representing this and other additional properties of a certification path. CertificatePropertyLists may be used as part of authenticating party configuration, and for CAs to communicate additional properties during certificate issuance.
+As described in {{authenticating-party-configuration}}, certification paths participating in this mechanism must be configured with a trust anchor ID. This section introduces a RECOMMENDED extensible CertificatePropertyList structure for representing this and other additional properties of a certification path. CertificatePropertyLists may be used as part of authenticating party configuration, and for CAs to communicate additional properties during certificate issuance.
 
 The extensibility aims to simplify application deployment as PKI mechanisms evolve. When certificate issuance and application software is updated to pass this structure to the underlying TLS implementation, new properties may be transparently defined without changes to certificate and configuration management.
 
 A CertificatePropertyList is defined using the TLS presentation language ({{Section 3 of !RFC8446}}) below:
 
 ~~~
-enum { trust_anchor_identifier(0), (2^16-1) } CertificatePropertyType;
+enum { trust_anchor_id(0), (2^16-1) } CertificatePropertyType;
 
 struct {
     CertificatePropertyType type;
@@ -314,7 +314,7 @@ CertificateProperty CertificatePropertyList<0..2^16-1>;
 
 The entries in a CertificatePropertyList MUST be sorted numerically by `type` and MUST NOT contain values with a duplicate `type`. Inputs that do not satisfy these invariants are syntax errors and MUST be rejected by parsers.
 
-This document defines a single property, `trust_anchor_identifier`. The `data` field of the property contains the binary representation of the trust anchor identifier of the certification path's trust anchor, as described in {{authenticating-party-configuration}}. Future documents may define other properties for use with other mechanisms.
+This document defines a single property, `trust_anchor_id`. The `data` field of the property contains the binary representation of the trust anchor ID of the certification path's trust anchor, as described in {{authenticating-party-configuration}}. Future documents may define other properties for use with other mechanisms.
 
 Authenticating parties MUST ignore properties with unrecognized CertificatePropertyType values.
 
@@ -355,7 +355,7 @@ The IANA registration for this media type is described in {{media-type-updates}}
 
 ## ACME Extension
 
-The format defined in {{media-type}} can be used with ACME's alternate format mechanism (see {{Section 7.4.2 of !RFC8555}}) as follows. When downloading certificates, a supporting client SHOULD include "application/pem-certificate-chain-with-properties" in its HTTP Accept header ({{Section 12.5.1 of !RFC9110}}). When a supporting server sees such a header, it MAY then respond with that format to include a CertificatePropertyList with the certification path. This CertificatePropertyList MAY include a `trust_anchor_identifier` property for use with this protocol, or other properties defined in another document.
+The format defined in {{media-type}} can be used with ACME's alternate format mechanism (see {{Section 7.4.2 of !RFC8555}}) as follows. When downloading certificates, a supporting client SHOULD include "application/pem-certificate-chain-with-properties" in its HTTP Accept header ({{Section 12.5.1 of !RFC9110}}). When a supporting server sees such a header, it MAY then respond with that format to include a CertificatePropertyList with the certification path. This CertificatePropertyList MAY include a `trust_anchor_id` property for use with this protocol, or other properties defined in another document.
 
 When used with ACME's alternate certificate chain mechanism (see {{Section 7.4.2 of !RFC8555}}), this protocol removes the need for heuristics in determining which path to serve to which relying party.
 
@@ -437,19 +437,19 @@ The `trust_anchors` extension is analogous to the `certificate_authorities` exte
 
 When using this extension, a relying party's trust anchors may be divided into three categories:
 
-1. Trust anchors whose identifiers the relying party never sends, but still trusts. These are trust anchors that do not participate in this mechanism.
+1. Trust anchors whose IDs the relying party never sends, but still trusts. These are trust anchors that do not participate in this mechanism.
 
-2. Trust anchors whose identifiers the relying party sends *conditionally*, i.e. only if the server offers them. For example, the relying party may indicate support for a trust anchor if its identifier is listed in the server's HTTPS/SVCB record or trust anchor list in EncryptedExtensions.
+2. Trust anchors whose IDs the relying party sends *conditionally*, i.e. only if the server offers them. For example, the relying party may indicate support for a trust anchor if its ID is listed in the server's HTTPS/SVCB record or trust anchor list in EncryptedExtensions.
 
-3. Trust anchors whose identifiers the relying party sends *unconditionally*, i.e. independently of the authenticating party's behavior.
+3. Trust anchors whose IDs the relying party sends *unconditionally*, i.e. independently of the authenticating party's behavior.
 
 Each of these categories carries a different fingerprinting exposure:
 
 Trust anchors that do not participate are not revealed by this extension. However, they have some fingerprinting exposure due to being trusted. Given a certification path, an authenticating party can probe whether the relying party trusts the trust anchor by seeing if the relying party accepts it.
 
-Trust anchor identifiers sent in response to the authenticating party can only be observed actively. That is, the authenticating party could vary its list and observe how the client responds, in order to probe for the client's trust anchor list. This is similar to the exposure of trust anchors not participating in this extension, except that the trust anchor can be probed by only knowing the trust anchor identifier.
+Trust anchor IDs sent in response to the authenticating party can only be observed actively. That is, the authenticating party could vary its list and observe how the client responds, in order to probe for the client's trust anchor list. This is similar to the exposure of trust anchors not participating in this extension, except that the trust anchor can be probed by only knowing the trust anchor ID.
 
-Trust anchor identifiers sent unconditionally can be observed passively. This mode is analogous to the `certificate_authorities` extension. Relying parties SHOULD NOT unconditionally advertise trust anchor lists that are unique to an individual user. Rather, unconditionally-advertised lists SHOULD be empty or computed only from the trust anchors common to the relying party's anonymity set ({{Section 3.3 of !RFC6973}}).
+Trust anchor IDs sent unconditionally can be observed passively. This mode is analogous to the `certificate_authorities` extension. Relying parties SHOULD NOT unconditionally advertise trust anchor lists that are unique to an individual user. Rather, unconditionally-advertised lists SHOULD be empty or computed only from the trust anchors common to the relying party's anonymity set ({{Section 3.3 of !RFC6973}}).
 
 Relying parties SHOULD determine which trust anchors participate in this mechanism, and whether to advertise them unconditionally or conditionally, based on their privacy goals. PKIs that reliably use the DNS service parameter ({{dns-service-parameter}}) can rely on conditional advertisement for stronger privacy properties without a round-trip penalty.
 
@@ -467,7 +467,7 @@ The above does not apply if the authenticating party is a client. This protocol 
 
 ## Incorrect Selection Metadata
 
-If the authenticating party has provisioned certification paths with incorrect trust anchor identifiers, it may negotiate inaccurately and send an untrusted path to the relying party when another candidate would have been trusted. This will not result in the untrusted path becoming trusted, but the connection will fail.
+If the authenticating party has provisioned certification paths with incorrect trust anchor IDs, it may negotiate inaccurately and send an untrusted path to the relying party when another candidate would have been trusted. This will not result in the untrusted path becoming trusted, but the connection will fail.
 
 ## Trust Anchor Negotiation
 
@@ -576,11 +576,11 @@ Change controller:
 # ASN.1 Module
 
 ~~~
-TrustAnchorIdentifiers DEFINITIONS ::= BEGIN
+TrustAnchorIDs DEFINITIONS ::= BEGIN
 
-id-trustAnchorIdentifier OBJECT IDENTIFIER ::= { TBD }
+id-trustAnchorID OBJECT IDENTIFIER ::= { TBD }
 
-TrustAnchorIdentifier ::= RELATIVE-OID
+TrustAnchorID ::= RELATIVE-OID
 
 END
 ~~~
