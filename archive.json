@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-04T01:53:14.952868+00:00",
+  "timestamp": "2025-03-06T01:53:20.232483+00:00",
   "repo": "tlswg/tls-trust-anchor-ids",
   "labels": [
     {
@@ -5328,6 +5328,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 96,
+      "id": "PR_kwDOKigz-s6NhRqP",
+      "title": "Prefer \"trust anchor ID\" over \"trust anchor identifier\"",
+      "url": "https://github.com/tlswg/tls-trust-anchor-ids/pull/96",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In deference to Section 3.6 of RFC 7322, the section headings and first instance say \"identifier\" but from then on, just say ID.\r\n\r\nCloses #92.",
+      "createdAt": "2025-03-05T18:54:24Z",
+      "updatedAt": "2025-03-05T18:54:24Z",
+      "baseRepository": "tlswg/tls-trust-anchor-ids",
+      "baseRefName": "main",
+      "baseRefOid": "b153ede3b8428bc5189dd7e6fe0ce1f8a98094cf",
+      "headRepository": "davidben/tls-trust-anchor-ids",
+      "headRefName": "abbrev-ids",
+      "headRefOid": "eca241fc140ea05dbc3dc552c4b8e4589a15c830",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
